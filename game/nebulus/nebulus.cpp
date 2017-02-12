@@ -45,127 +45,127 @@ bool b_WM_resized = false;
 
 void CalculateFrameRate()
 {
-    float currentTime = GetTickCount() * 0.001f;    
-    ++framesPerSecond;
-    if( currentTime - lastTime > 1.0f )
-    {
-        lastTime = currentTime;
-        framesPerSecond = 0.0;
-    }
+  float currentTime = GetTickCount() * 0.001f;    
+  ++framesPerSecond;
+  if( currentTime - lastTime > 1.0f )
+  {
+    lastTime = currentTime;
+    framesPerSecond = 0.0;
+  }
 }
 
 // OpenGL calls moved to own thread
 // s. http://stackoverflow.com/questions/9833852/opengl-game-loop-multithreading
 void RenderThread(void *args)
 {
-    while (true)
+  while (true)
+  {
+    if (b_WM_resized)
     {
-        if (b_WM_resized)
-        {
-            m_proj.m_render.ReSizeGLScene(win_w,win_h);
-            b_WM_resized = false;
-        }
-
-		// 2do: mouse-move camera
-		
-		if (bCamStickToTrack)
-		{
-			// Camera fixed to vehicle
-			glm::vec3 vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
-			glm::float32 fZtmp = m_cam.Pos[2];
-			m_cam.Pos = m_proj.m_moving[1].position - vVehDirNorm*12.0f;
-			m_cam.Pos[2] = fZtmp;
-			m_cam.At = m_proj.m_moving[1].position;
-		}
-		else
-		{
-			// Camera user controlled
-//			m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
-         
-            m_cam.changeAspect(win_w,win_h);
-	        // mouse-move camera
-	        m_cam.Look_with_Mouse(glm::vec2(mouse_x, mouse_y));
-		}
-		
-		m_cam.updateView(); // View = Pos,At,Norm
-
-        m_proj.DoIt(); // render code
+      m_proj.m_render.ReSizeGLScene(win_w,win_h);
+      b_WM_resized = false;
     }
-    _endthread();
+
+    // 2do: mouse-move camera
+
+    if (bCamStickToTrack)
+    {
+      // Camera fixed to vehicle
+      glm::vec3 vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
+      glm::float32 fZtmp = m_cam.Pos[2];
+      m_cam.Pos = m_proj.m_moving[1].position - vVehDirNorm*12.0f;
+      m_cam.Pos[2] = fZtmp;
+      m_cam.At = m_proj.m_moving[1].position;
+    }
+    else
+    {
+      // Camera user controlled
+      //			m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
+
+      m_cam.changeAspect(win_w,win_h);
+      // mouse-move camera
+      m_cam.Look_with_Mouse(glm::vec2(mouse_x, mouse_y));
+    }
+
+    m_cam.updateView(); // View = Pos,At,Norm
+
+    m_proj.DoIt(); // render code
+  }
+  _endthread();
 }
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     LPTSTR    lpCmdLine,
-                     int       nCmdShow)
+  HINSTANCE hPrevInstance,
+  LPTSTR    lpCmdLine,
+  int       nCmdShow)
 {
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
+  UNREFERENCED_PARAMETER(hPrevInstance);
+  UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Hier Code einfügen.
-    MSG msg;
-    HACCEL hAccelTable;
+  // TODO: Hier Code einfügen.
+  MSG msg;
+  HACCEL hAccelTable;
 
-    // Globale Zeichenfolgen initialisieren
-	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);    // Fenstertitel etc. siehe .rc
-    LoadString(hInstance, IDC_GLSHOOT, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+  // Globale Zeichenfolgen initialisieren
+  LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);    // Fenstertitel etc. siehe .rc
+  LoadString(hInstance, IDC_GLSHOOT, szWindowClass, MAX_LOADSTRING);
+  MyRegisterClass(hInstance);
 
-	// Anwendungsinitialisierung ausführen:
-    if (!InitInstance (hInstance, nCmdShow))
+  // Anwendungsinitialisierung ausführen:
+  if (!InitInstance (hInstance, nCmdShow))
+  {
+    return FALSE;
+  }
+
+  RECT rect; 
+  if(GetWindowRect(hWnd, &rect)) 
+  { 
+    win_w = rect.right - rect.left; 
+    win_h = rect.bottom - rect.top; 
+  }
+  mouse_x = (int)(win_w/2.0f); // init
+  mouse_y = (int)(win_h/2.0f);
+
+  m_proj.m_scene.c_Scene = "..\\data\\virtualroad\\editor.scene";
+  m_proj.m_scene.c_Cfg = "..\\data\\virtualroad\\editor.cfg";
+
+  m_proj.m_render.width = win_w;
+  m_proj.m_render.height = win_h;
+  hDC = m_proj.m_render.GL_attach_to_DC(hWnd); // <== NeHe    
+
+  //    glewExperimental = GL_TRUE; // <-- Nutzen?
+  glewInit(); // <-- takes a little time
+
+  m_proj.Init();	// <-- Texture erst nach glewInit() laden!!
+  // a) data loading + b) data description c) render.Init()
+
+  // erst hier...
+  m_cam.p_MVPMatrixAttrib = &m_proj.m_render.MVPMatrixAttrib;
+  //    m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
+  m_cam.Pos[2] = 4.0f;
+  m_cam.changeAspect(win_w, win_h); // be sure that extrinsics (Pos,At) are filled here
+  m_cam.init_MVP();
+  m_proj.m_render.p_cam = &m_cam;
+
+  hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GLSHOOT));
+
+  _beginthread(RenderThread, 0, 0);
+
+  // Hauptnachrichtenschleife:
+  while (GetMessage(&msg, NULL, 0, 0))
+  {
+    wglMakeCurrent(NULL,NULL); // <-- no other access to OpenGL here!! --> only in RenderThread 
+
+    if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
     {
-        return FALSE;
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
     }
-
-    RECT rect; 
-    if(GetWindowRect(hWnd, &rect)) 
-    { 
-        win_w = rect.right - rect.left; 
-        win_h = rect.bottom - rect.top; 
-    }
-    mouse_x = (int)(win_w/2.0f); // init
-    mouse_y = (int)(win_h/2.0f);
-
-	m_proj.m_scene.c_Scene = "..\\data\\virtualroad\\editor.scene";
-	m_proj.m_scene.c_Cfg = "..\\data\\virtualroad\\editor.cfg";
-
-    m_proj.m_render.width = win_w;
-    m_proj.m_render.height = win_h;
-    hDC = m_proj.m_render.GL_attach_to_DC(hWnd); // <== NeHe    
-
-//    glewExperimental = GL_TRUE; // <-- Nutzen?
-    glewInit(); // <-- takes a little time
-
-    m_proj.Init();	// <-- Texture erst nach glewInit() laden!!
-					// a) data loading + b) data description c) render.Init()
-
-	// erst hier...
-	m_cam.p_MVPMatrixAttrib = &m_proj.m_render.MVPMatrixAttrib;
-//    m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
-	m_cam.Pos[2] = 4.0f;
-	m_cam.changeAspect(win_w, win_h); // be sure that extrinsics (Pos,At) are filled here
-	m_cam.init_MVP();
-	m_proj.m_render.p_cam = &m_cam;
-
-	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GLSHOOT));
-
-    _beginthread(RenderThread, 0, 0);
-
-    // Hauptnachrichtenschleife:
-    while (GetMessage(&msg, NULL, 0, 0))
-    {
-        wglMakeCurrent(NULL,NULL); // <-- no other access to OpenGL here!! --> only in RenderThread 
-
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
 
     // --> Projection moved to RenderThread, otherwise no autonomous object-movement possible
-    }
+  }
 
-    return (int) msg.wParam;
+  return (int) msg.wParam;
 }
 
 //
@@ -183,23 +183,23 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-	WNDCLASSEX wcex;
+  WNDCLASSEX wcex;
 
-	wcex.cbSize = sizeof(WNDCLASSEX);
+  wcex.cbSize = sizeof(WNDCLASSEX);
 
-	wcex.style			= CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc	= WndProc;
-	wcex.cbClsExtra		= 0;
-	wcex.cbWndExtra		= 0;
-	wcex.hInstance		= hInstance;
-	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_GLSHOOT));
-	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_GLSHOOT);
-	wcex.lpszClassName	= szWindowClass;
-	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+  wcex.style			= CS_HREDRAW | CS_VREDRAW;
+  wcex.lpfnWndProc	= WndProc;
+  wcex.cbClsExtra		= 0;
+  wcex.cbWndExtra		= 0;
+  wcex.hInstance		= hInstance;
+  wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_GLSHOOT));
+  wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
+  wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
+  wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_GLSHOOT);
+  wcex.lpszClassName	= szWindowClass;
+  wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
-	return RegisterClassEx(&wcex);
+  return RegisterClassEx(&wcex);
 }
 
 //
@@ -214,22 +214,22 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-//   HWND hWnd;
+  //   HWND hWnd;
 
-   hInst = hInstance; // Instanzenhandle in der globalen Variablen speichern
+  hInst = hInstance; // Instanzenhandle in der globalen Variablen speichern
 
-   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+  hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+    CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
-   if (!hWnd)
-   {
-      return FALSE;
-   }
+  if (!hWnd)
+  {
+    return FALSE;
+  }
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+  ShowWindow(hWnd, nCmdShow);
+  UpdateWindow(hWnd);
 
-   return TRUE;
+  return TRUE;
 }
 
 //
@@ -244,111 +244,111 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    int wmId, wmEvent;
-    int zDelta;
-    int pt_x,pt_y;
+  int wmId, wmEvent;
+  int zDelta;
+  int pt_x,pt_y;
 
-	glm::vec3 vVehDirNorm,vVehDirOrth;
+  glm::vec3 vVehDirNorm,vVehDirOrth;
 
-    switch (message)
+  switch (message)
+  {
+  case WM_MOUSEWHEEL: // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645617(v=vs.85).aspx
+    zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+    if (zDelta > 0) m_cam.Pos.z += 0.5; else m_cam.Pos.z -= 0.5; 
+    break;
+  case WM_MOUSEMOVE:
+    // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645616(v=vs.85).aspx
+    pt_x = GET_X_LPARAM(lParam); // LOWORD u. HIWORD fkt. nicht bei mehreren Monitoren!
+    pt_y = GET_Y_LPARAM(lParam);
+    mouse_x = pt_x;
+    mouse_y = pt_y;
+    break;
+  case WM_COMMAND:
+    wmId    = LOWORD(wParam);
+    wmEvent = HIWORD(wParam);
+    // Menüauswahl bearbeiten:
+    switch (wmId)
     {
-    case WM_MOUSEWHEEL: // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645617(v=vs.85).aspx
-        zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
-		if (zDelta > 0) m_cam.Pos.z += 0.5; else m_cam.Pos.z -= 0.5; 
-          break;
-    case WM_MOUSEMOVE:
-        // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645616(v=vs.85).aspx
-        pt_x = GET_X_LPARAM(lParam); // LOWORD u. HIWORD fkt. nicht bei mehreren Monitoren!
-        pt_y = GET_Y_LPARAM(lParam);
-        mouse_x = pt_x;
-        mouse_y = pt_y;
-        break;
-    case WM_COMMAND:
-        wmId    = LOWORD(wParam);
-        wmEvent = HIWORD(wParam);
-        // Menüauswahl bearbeiten:
-        switch (wmId)
-        {
-        case IDM_ABOUT:
-            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-            break;
-        case IDM_EXIT:
-            DestroyWindow(hWnd);
-            break;
-        default:
-            return DefWindowProc(hWnd, message, wParam, lParam);
-        }
-        break;
-//	case WM_PAINT:
-		// ... painting by OpenGL
-    case WM_KEYDOWN:
-		switch (wParam)
-		{
-		case 37: // ARROW-LEFT
-			if (bCamStickToTrack)
-			{
-				vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
-				vVehDirOrth = glm::vec3(-vVehDirNorm[1],vVehDirNorm[0],vVehDirNorm[2]);
-				m_proj.m_moving[1].Move(vVehDirOrth*0.2f);
-			}
-			else
-			{
-				if (iT >= 1) iT--; else iT = m_proj.m_scene.trajectory_len-2;
-			}
-			break;
-		case 39: // ARROW-RIGHT
-			if (bCamStickToTrack)
-			{
-				vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
-				vVehDirOrth = glm::vec3(-vVehDirNorm[1],vVehDirNorm[0],vVehDirNorm[2]);
-				m_proj.m_moving[1].Move(-vVehDirOrth*0.2f);
-			}
-			else
-			{
-				if (iT < m_proj.m_scene.trajectory_len-2) iT++; else iT = 0;
-			}
-			break;
-		case 80: // P >> Pause ON/OFF
-			m_proj.bPause = !(m_proj.bPause);
-			break;
-		case 87: // W
-//			m_proj.m_render.iWireframe = 1-m_proj.m_render.iWireframe;
-//            m_cam.Pos[0] += 1.0f;
-            m_cam.Move();
-            break;
-		}
-        break;
-    case WM_SIZE:
-        win_w = LOWORD(lParam);
-        win_h = HIWORD(lParam);
-// resize --> in the thread now, as from here no access to OpenGL-context
-        b_WM_resized = true;
-        break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
+    case IDM_ABOUT:
+      DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+      break;
+    case IDM_EXIT:
+      DestroyWindow(hWnd);
+      break;
     default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
+      return DefWindowProc(hWnd, message, wParam, lParam);
     }
-    return 0;
+    break;
+    //	case WM_PAINT:
+    // ... painting by OpenGL
+  case WM_KEYDOWN:
+    switch (wParam)
+    {
+    case 37: // ARROW-LEFT
+      if (bCamStickToTrack)
+      {
+        vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
+        vVehDirOrth = glm::vec3(-vVehDirNorm[1],vVehDirNorm[0],vVehDirNorm[2]);
+        m_proj.m_moving[1].Move(vVehDirOrth*0.2f);
+      }
+      else
+      {
+        if (iT >= 1) iT--; else iT = m_proj.m_scene.trajectory_len-2;
+      }
+      break;
+    case 39: // ARROW-RIGHT
+      if (bCamStickToTrack)
+      {
+        vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
+        vVehDirOrth = glm::vec3(-vVehDirNorm[1],vVehDirNorm[0],vVehDirNorm[2]);
+        m_proj.m_moving[1].Move(-vVehDirOrth*0.2f);
+      }
+      else
+      {
+        if (iT < m_proj.m_scene.trajectory_len-2) iT++; else iT = 0;
+      }
+      break;
+    case 80: // P >> Pause ON/OFF
+      m_proj.bPause = !(m_proj.bPause);
+      break;
+    case 87: // W
+      //			m_proj.m_render.iWireframe = 1-m_proj.m_render.iWireframe;
+      //            m_cam.Pos[0] += 1.0f;
+      m_cam.Move();
+      break;
+    }
+    break;
+  case WM_SIZE:
+    win_w = LOWORD(lParam);
+    win_h = HIWORD(lParam);
+    // resize --> in the thread now, as from here no access to OpenGL-context
+    b_WM_resized = true;
+    break;
+  case WM_DESTROY:
+    PostQuitMessage(0);
+    break;
+  default:
+    return DefWindowProc(hWnd, message, wParam, lParam);
+  }
+  return 0;
 }
 
 // Meldungshandler für Infofeld.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	UNREFERENCED_PARAMETER(lParam);
-	switch (message)
-	{
-	case WM_INITDIALOG:
-		return (INT_PTR)TRUE;
+  UNREFERENCED_PARAMETER(lParam);
+  switch (message)
+  {
+  case WM_INITDIALOG:
+    return (INT_PTR)TRUE;
 
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-		{
-			EndDialog(hDlg, LOWORD(wParam));
-			return (INT_PTR)TRUE;
-		}
-		break;
-	}
-	return (INT_PTR)FALSE;
+  case WM_COMMAND:
+    if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+    {
+      EndDialog(hDlg, LOWORD(wParam));
+      return (INT_PTR)TRUE;
+    }
+    break;
+  }
+  return (INT_PTR)FALSE;
 }

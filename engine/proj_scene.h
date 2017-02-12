@@ -4,18 +4,18 @@
 
 namespace proj
 {
-    class Scene
-    {
-    public:
-        int trajectory_len;
+  class Scene
+  {
+  public:
+    int trajectory_len;
 
-        Scene();
-        int Load();
+    Scene();
+    int Load();
 
-        std::string c_Scene;
-        std::string c_Cfg;
+    std::string c_Scene;
+    std::string c_Cfg;
 
-        proj::SceneLoader m_SceneLoader;
-    private:
-    };
+    proj::SceneLoader m_SceneLoader;
+  private:
+  };
 }

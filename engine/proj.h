@@ -10,45 +10,45 @@
 
 namespace proj
 {
-    class Proj
-    {
-    public:
-        bool bPause;
+  class Proj
+  {
+  public:
+    bool bPause;
 
-        /* ===== Constructor ===== */
+    /* ===== Constructor ===== */
 
-        Proj();
+    Proj();
 
-        /* ===== Variables ===== */
+    /* ===== Variables ===== */
 
-        proj::M3uLoader m_m3u; // to load a series of scenes
+    proj::M3uLoader m_m3u; // to load a series of scenes
 
-        proj::Scene m_scene;
+    proj::Scene m_scene;
 
-        obj::Trafficsign m_trafficsigns;
+    obj::Trafficsign m_trafficsigns;
 
-        proj::SceneBuilder m_scenebuilder; // <-- add to the scene: Guardrails / Curbstones
+    proj::SceneBuilder m_scenebuilder; // <-- add to the scene: Guardrails / Curbstones
 
-        // moving
-        obj::Moving m_moving[2];
+    // moving
+    obj::Moving m_moving[2];
 
-        std::vector <obj::CObject> vObjects;
+    std::vector <obj::CObject> vObjects;
 
-        glm::vec3 vTrajPosprev; // <--- wird benutzt für ... bewegen des Fahrzeugs, s.proj.cpp->DoIt()
+    glm::vec3 vTrajPosprev; // <--- wird benutzt für ... bewegen des Fahrzeugs, s.proj.cpp->DoIt()
 
-        proj::Render m_render;
+    proj::Render m_render;
 
-        /* ===== FUNCTIONS ===== */
+    /* ===== FUNCTIONS ===== */
 
-        int Init();
+    int Init();
 
-        int DoIt(); // call m_render to draw next frame
+    int DoIt(); // call m_render to draw next frame
 
-    private:
-        /* ===== FUNCTIONS ===== */
+  private:
+    /* ===== FUNCTIONS ===== */
 
-        void LoadMoving();
+    void LoadMoving();
 
-        int Load_Objs_to_VAOs();
-    };
+    int Load_Objs_to_VAOs();
+  };
 }

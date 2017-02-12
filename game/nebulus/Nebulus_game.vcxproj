@@ -95,7 +95,7 @@
     <ClInclude Include="..\..\engine\rnd_fbo.hpp" />
     <ClInclude Include="..\..\engine\rnd_shaderman.hpp" />
     <ClInclude Include="..\..\engine\img_DDS.hpp" />
-    <ClInclude Include="..\..\engine\nebulus.h" />
+    <ClInclude Include="nebulus.h" />
     <ClInclude Include="..\..\engine\obj_Curbstone.hpp" />
     <ClInclude Include="..\..\engine\obj_Guardrail.hpp" />
     <ClInclude Include="..\..\engine\obj_Moving.hpp" />
@@ -104,7 +104,7 @@
     <ClInclude Include="..\..\engine\proj_scene.h" />
     <ClInclude Include="..\..\engine\proj_scenebuilder.hpp" />
     <ClInclude Include="..\..\engine\proj_sceneloader.h" />
-    <ClInclude Include="..\..\engine\Resource.h" />
+    <ClInclude Include="Resource.h" />
     <ClInclude Include="..\..\common\stdafx.h" />
     <ClInclude Include="..\..\common\targetver.h" />
     <ClInclude Include="..\..\engine\Vec3f.hxx" />

@@ -11,8 +11,8 @@ Class for loading Scene description (C) Anigators
 /*
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx    
-	int proj::Render::CreateVBO_Scene()
-	{
-	}
+  int proj::Render::CreateVBO_Scene()
+  {
+  }
 }
 */
