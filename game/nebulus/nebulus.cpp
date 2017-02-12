@@ -9,9 +9,6 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-#include "camera.hpp"
-#include "proj.h"
-
 #include <process.h> // _beginthread
 
 #define MAX_LOADSTRING 100
@@ -31,7 +28,6 @@ HGLRC            hRC=NULL;                      // Permanent Rendering Context
 HDC              hDC=NULL;                      // Private GDI Device Context
 HWND             hWnd=NULL;                     // Holds Our Window Handle
 
-// render.positionBuffer ---> GLuint idVBO;
 proj::Proj m_proj;
 
 Camera m_cam;
@@ -40,11 +36,10 @@ int win_h,win_w;
 int mouse_x,mouse_y;
 
 int iT = 1;
-bool bCamStickToCar = FALSE;
+bool bCamStickToTrack = FALSE;
 
 static float framesPerSecond = 0.0f;            // This will store our fps
 static float lastTime = 0.0f;                   // This will hold the time from the last frame
-//template <typename T> std::string tostr(const T& t) { std::ostringstream os; os<<t; return os.str(); }
 
 bool b_WM_resized = false;
 
@@ -71,7 +66,9 @@ void RenderThread(void *args)
             b_WM_resized = false;
         }
 
-		if (bCamStickToCar)
+		// 2do: mouse-move camera
+		
+		if (bCamStickToTrack)
 		{
 			// Camera fixed to vehicle
 			glm::vec3 vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
@@ -84,14 +81,11 @@ void RenderThread(void *args)
 		{
 			// Camera user controlled
 //			m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
+         
+            m_cam.changeAspect(win_w,win_h);
+	        // mouse-move camera
+	        m_cam.Look_with_Mouse(glm::vec2(mouse_x, mouse_y));
 		}
-
-
-		// mouse-move camera
-		m_cam.width = win_w;
-		m_cam.height = win_h;
-		m_cam.Move_by_Mouse(glm::vec2(mouse_x, mouse_y));
-		
 		
 		m_cam.updateView(); // View = Pos,At,Norm
 
@@ -132,13 +126,14 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     mouse_x = (int)(win_w/2.0f); // init
     mouse_y = (int)(win_h/2.0f);
 
-	m_proj.m_scene.c_Scene = "C:\\__glShoot_Files\\editor.scene";
-	m_proj.m_scene.c_Cfg   = "C:\\__glShoot_Files\\editor.cfg";
+	m_proj.m_scene.c_Scene = "..\\data\\virtualroad\\editor.scene";
+	m_proj.m_scene.c_Cfg = "..\\data\\virtualroad\\editor.cfg";
 
     m_proj.m_render.width = win_w;
     m_proj.m_render.height = win_h;
     hDC = m_proj.m_render.GL_attach_to_DC(hWnd); // <== NeHe    
 
+//    glewExperimental = GL_TRUE; // <-- Nutzen?
     glewInit(); // <-- takes a little time
 
     m_proj.Init();	// <-- Texture erst nach glewInit() laden!!
@@ -146,7 +141,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 	// erst hier...
 	m_cam.p_MVPMatrixAttrib = &m_proj.m_render.MVPMatrixAttrib;
-    m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
+//    m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
 	m_cam.Pos[2] = 4.0f;
 	m_cam.changeAspect(win_w, win_h); // be sure that extrinsics (Pos,At) are filled here
 	m_cam.init_MVP();
@@ -219,7 +214,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-// s.o.  HWND hWnd;
+//   HWND hWnd;
 
    hInst = hInstance; // Instanzenhandle in der globalen Variablen speichern
 
@@ -290,7 +285,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case 37: // ARROW-LEFT
-			if (bCamStickToCar)
+			if (bCamStickToTrack)
 			{
 				vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
 				vVehDirOrth = glm::vec3(-vVehDirNorm[1],vVehDirNorm[0],vVehDirNorm[2]);
@@ -302,7 +297,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		case 39: // ARROW-RIGHT
-			if (bCamStickToCar)
+			if (bCamStickToTrack)
 			{
 				vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
 				vVehDirOrth = glm::vec3(-vVehDirNorm[1],vVehDirNorm[0],vVehDirNorm[2]);
@@ -317,8 +312,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			m_proj.bPause = !(m_proj.bPause);
 			break;
 		case 87: // W
-			m_proj.m_render.iWireframe = 1-m_proj.m_render.iWireframe;
-			break;
+//			m_proj.m_render.iWireframe = 1-m_proj.m_render.iWireframe;
+//            m_cam.Pos[0] += 1.0f;
+            m_cam.Move();
+            break;
 		}
         break;
     case WM_SIZE:

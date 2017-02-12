@@ -5,7 +5,8 @@
 #include <GL/glew.h>
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
-#include "math.h"
+#include "inc_render.h"
+#include <vector> // später proj::render übergeben und das hier entfernen
 
 // holds all trafficsigns, so they can be switched on/off, added, deleted
 // traffic-signs are immobile
@@ -22,11 +23,11 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     public:
         int Count;  // <-- Trafficsign count
 //        int triCount; // <-- triangle count
-//        int vCount;   // <-- vertex count
+        int vCount;   // <-- vertex count
 
-        int VBOindex; // z.B. 3
-        (unsigned int)* vCount; // vertex count <-- 2do: triangle count
-        GLuint* vertexArray; // <-- irgendwie in const & oder so umschreiben
+////        int VBOindex; // z.B. 3
+//        (unsigned int)* vCount; // vertex count <-- 2do: triangle count
+//        GLuint* vertexArray; // <-- irgendwie in const & oder so umschreiben
         GLuint* positionBuffer;
         GLuint* colorBuffer;
 
@@ -35,9 +36,11 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         };    // <-- inline
 
         // 2do: jetzt an Ziel-Stelle berechnet, aber stattdessen Koord. transformieren m. OGL
-        void Add(/*int iType, */GLfloat x, GLfloat y, GLfloat z1, GLfloat dirx, GLfloat diry, GLfloat dirz)
+		proj::c_VAO Add(std::vector<proj::c_VAO> & vVAOs,/*int iType, */GLfloat x, GLfloat y, GLfloat z1, GLfloat dirx, GLfloat diry, GLfloat dirz)
         {
-            vCount[VBOindex] = 3*3; // 9 = 3 triangles, 3 vertices
+		    unsigned int ui_idVBO = vVAOs.size();
+
+			vCount = 3*3; // 9 = 3 triangles, 3 vertices
 //            *(vCount+VBOindex) = 3*3;
 
             GLfloat Vertices[3*3*3]; // <-- vertex count, fix, das muss mit memset dynamisch definiert werden!
@@ -89,11 +92,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
                 Vertices[i++] = x+0.5f*_x; Vertices[i++] = y+0.5f*_y; Vertices[i++] = z2;
 //            }
 
-            glGenBuffers(1, &positionBuffer[VBOindex]); // = 2
-            glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[VBOindex]);
-        //    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW); // <-- sizeof(Pointer) = Falsch!!
-            glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount[VBOindex]*3, Vertices, GL_STATIC_DRAW); // init data storage
-
             GLfloat colors[3*3*3]; // 27 = 3 Triangles * 3 Vertices * 3 Coordinates
             i=0;
             colors[i++] = 0.6f; colors[i++] = 0.6f; colors[i++] =  0.6f;
@@ -107,9 +105,20 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
             colors[i++] = 1.0f; colors[i++] = 0.0f; colors[i++] =  0.0f;
             colors[i++] = 1.0f; colors[i++] = 0.0f; colors[i++] =  0.0f;
 
-            glGenBuffers(1, &colorBuffer[VBOindex]); // = 2
-            glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[VBOindex]);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount[VBOindex]*3, colors, GL_STATIC_DRAW);
+			// --> die infos erstmal am Objekt speichern !?
+			proj::c_VAO vao;
+			vao.t_Shade = proj::SHADER_COLOR_FLAT;
+			vao.uiVertexCount = vCount;
+
+            glGenBuffers(1, &positionBuffer[ui_idVBO]);
+            glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[ui_idVBO]);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount*3, Vertices, GL_STATIC_DRAW); // init data storage
+
+			glGenBuffers(1, &colorBuffer[ui_idVBO]);
+            glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[ui_idVBO]);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount*3, colors, GL_STATIC_DRAW);
+
+			return vao;
         }
     private:
     };

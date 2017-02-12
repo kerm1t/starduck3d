@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -21,14 +21,12 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -52,13 +50,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\__VC_Libs\glew-1.10.0\include;C:\__VC_Libs\glm\glm;..\..\engine;..\..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\lib\glew-1.10.0\include;..\..\lib\glm\glm;..\..\engine;..\..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>OpenGL32.lib;GLu32.lib;glew32sd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\__VC_Libs\glew-1.10.0_mixed\lib\Debug\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\lib\glew-1.10.0_mixed\lib\Debug\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -88,8 +86,15 @@
   <ItemGroup>
     <ClInclude Include="..\..\engine\camera.hpp" />
     <ClInclude Include="..\..\engine\img_bitmap.hpp" />
+    <ClInclude Include="..\..\engine\obj_Groundplane.hpp" />
+    <ClInclude Include="..\..\engine\obj_Tunnel.hpp" />
+    <ClInclude Include="..\..\engine\inc_render.h" />
+    <ClInclude Include="..\..\engine\mdl_wavefront.hpp" />
+    <ClInclude Include="..\..\engine\obj.hpp" />
+    <ClInclude Include="..\..\engine\obj_Scene.hpp" />
+    <ClInclude Include="..\..\engine\rnd_fbo.hpp" />
+    <ClInclude Include="..\..\engine\rnd_shaderman.hpp" />
     <ClInclude Include="..\..\engine\img_DDS.hpp" />
-    <ClInclude Include="..\..\engine\mdl_blender.hpp" />
     <ClInclude Include="..\..\engine\nebulus.h" />
     <ClInclude Include="..\..\engine\obj_Curbstone.hpp" />
     <ClInclude Include="..\..\engine\obj_Guardrail.hpp" />

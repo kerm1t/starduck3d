@@ -1,3 +1,10 @@
+// -----------------------
+//
+// Scene Loader
+//
+// loads a Lane-scene definition
+// -----------------------
+
 #pragma once
 
 #include <assert.h>

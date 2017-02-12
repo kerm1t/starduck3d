@@ -36,6 +36,7 @@ public:
 	int height;           // <-- window size change
 
 	glm::mat4 Projection; // change @ init
+	glm::mat4 projectionSave;
 	glm::mat4 View;       // camera move
 	glm::mat4 Model;	  // e.g. object rotate / translate	
 
@@ -49,9 +50,10 @@ public:
 	glm::float32 zFar;		// e.g. 100.0f
 
 	// View (extrinsics)
-	glm::vec3 Pos;
-	glm::vec3 At;
-	glm::vec3 Norm;
+	glm::vec3 Pos;          // eye - in glm-Sprech
+	glm::vec3 At;           // center (viewing "target")
+	glm::vec3 Norm;         // up
+    glm::vec3 Dir;          // viewing direction
 
 	Camera()
 	{
@@ -66,7 +68,9 @@ public:
 
 	void changeAspect(int _width, int _height)
 	{
-		aspect = glm::float32(_width)/glm::float32(_height);
+		width  = _width;
+        height = _height;
+        aspect = glm::float32(_width)/glm::float32(_height);
 //		updatePos(); // <-- 2do: hier nur die projeciton updaten und dann die MVP neu erzeugen und zur Graka hochladen
 	}
 
@@ -125,7 +129,7 @@ public:
 	void FollowObj()
 	{
 	}
-
+/*
 	void Move_by_Mouse(glm::vec2 mouse)
 	{
 		float x, y, z;
@@ -148,6 +152,41 @@ public:
 		Pos  = glm::vec3(x, y, z);               // Camera is at (x,y,z), in World Space
 		At = glm::vec3(xto, yto, zto); // and looks at ...
 		Norm = glm::vec3(0, 0, 1);  // Head is up <-- change on Oculus!
-							
 	}
+*/	
+    void Move()
+    {
+        // in "Dir" Richtung weiterbewegen
+        Pos += Dir * 1.0f;
+    }
+
+    void Look_with_Mouse(glm::vec2 mouse)
+	{
+//		float x, y, z;
+//		float xto, yto, zto;
+
+		float w_half = width / 2.0f;
+		float h_half = height/2.0f;
+		float m_x = (mouse.x-w_half) / w_half;// * PI; // [0..1] 1 = 180deg = PI
+		float m_z = (mouse.y-h_half) / h_half;      // Mouse-y = z-Achse
+
+		// get position within scene
+//		m_proj.m_render.get_xyz_Hack(iT,x,y,z,xto,yto,zto);
+//		x = 0.0f;
+//		y = 0.0f;
+//		z = 1.34f;
+/////        float turnangle = 120.0f*3.14/180.0f;
+
+//		xto  = Pos[0] + sin(m_x * fovy_RAD) * 1.0f;
+//		yto  = Pos[1] + 1.0f;
+//		zto  = Pos[2] - sin(m_z * fovy_RAD/aspect) * 1.0f;
+        Dir[0] =  sin(m_x * fovy_RAD) * 1.0f;
+        Dir[1] =  1.0f;
+        Dir[2] = -sin(m_z * fovy_RAD/aspect) * 1.0f;
+//		Pos  = glm::vec3(x, y, z);               // Camera is at (x,y,z), in World Space
+//		At = glm::vec3(xto, yto, zto); // and looks at ...
+        At = Pos + Dir;
+        Norm = glm::vec3(0, 0, 1);  // Head is up <-- change on Oculus!
+	}
+
 };

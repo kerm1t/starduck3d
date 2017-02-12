@@ -1,0 +1,55 @@
+# Blender MTL File: 'None'
+# Material Count: 5
+
+newmtl CBGlass
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_d cbglass.jpg
+refl -type sphere rflglass.jpg
+
+newmtl CBInterior
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.379608 0.348235 0.279216
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl CBRed
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.250000 0.250000 0.250000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd cbRedd.jpg
+map_Bump -bm 0.403125 cbb.jpg
+refl -type sphere rflbody.jpg
+
+newmtl CBTire
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.150000 0.150000 0.150000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd cbtired.jpg
+map_Bump -bm 0.403125 cbtireb.jpg
+refl -type sphere rflbody.jpg
+
+newmtl Material
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2

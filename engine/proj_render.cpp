@@ -6,9 +6,8 @@
 #include "glm.hpp"
 #include <gtc/matrix_transform.hpp>
 
-#include <iostream> // <-- fbo to pgm|ppm
-#include <fstream> // <-- fbo to pgm|ppm
-#include <string> // <-- fbo to pgm|ppm
+#include "stb_font_arial_10_usascii.inl"
+static stb_fontchar fontdata[STB_SOMEFONT_NUM_CHARS];
 
 // ---> GL_TRIANGLES
 // Vertexarrays (Hauptspeicher)
@@ -24,37 +23,24 @@ proj::Render::Render()
     hDC=NULL;                           // Private GDI Device Context
 //    hWnd=NULL;                          // Holds Our Window Handle
 
-    for (int iVAO=0; iVAO<VBOCOUNT; iVAO++) vCount[iVAO] = 0;
-    posAttrib = 0;
+    static unsigned char fontpixels[STB_SOMEFONT_BITMAP_HEIGHT][STB_SOMEFONT_BITMAP_WIDTH];
+    STB_SOMEFONT_CREATE(fontdata, fontpixels, STB_SOMEFONT_BITMAP_HEIGHT);
 
-    fBgColR = 1.0f;
-    fBgColG = 0.5f;
-    fBgColB = 1.0f; // <-- optional (yellow background)
-
-    bits_color = 24;
-    bits_zbuffer = 16;
-
-    b_Minimal = false;
-    b_PNG = false;
-
-    iWireframe = 0;
-
-    Init_VAOs();
     Init_Textures();
-
-    b_Guardrail = false;
-    b_Curbstones = true;
 }
 
 int proj::Render::Init()
 {
 // only f. fixed pipeline --> glEnable(GL_TEXTURE_2D);
-    glClearColor(0.3f,0.5f,1.0f,0.0f); // <-- optional (blue background)
+    glClearColor(0.3f,0.5f,1.0f,0.0f);
+
     glClearDepth(1.0f);
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST); // <-- !
 // schneidet "zu viel" weg -->    glEnable(GL_CULL_FACE);
 	
+    InitShaders(); // <-- wenn ich das auskommentiere, dann erscheint ein weisses Rechteck oben rechts !?
+
 	return 0;
 }
 
@@ -122,20 +108,22 @@ HDC proj::Render::GL_attach_to_DC(HWND hWnd)
 /*  ... when running in MTS-Thread --> s. http://www.graphicsgroups.com/6-opengl/0bafc0120a809ed8.htm
 
     According to the Windows OpenGL documentation:
+
     "Setting the pixel format of a window more than once can lead to significant 
-        complications for the Window Manager and for multithread applications, so it 
-        is not allowed. An application can only set the pixel format of a window one 
-        time. Once a window's pixel format is set, it cannot be changed." 
-        The card drivers that allow you do change the format are not following the 
-        rules; the ones (like GeForce3) that are giving you problems are giving you 
-        problems because you're violating the rules. 
-        As has been suggested elsewhere, create for yourself an invisible and/or 
-        off-screen dummy window, and use the rendering context you create for that 
-        window as your display-list share. You can either create it from a 
-        registered class with CS_OWNDC style, or you can just create a compatible DC 
-        and then not delete that DC until the program is done. Either way, this will 
-        be low-overhead solution, plus it should work on all compliant video 
-        drivers.
+     complications for the Window Manager and for multithread applications, so it 
+     is not allowed. An application can only set the pixel format of a window one 
+     time. Once a window's pixel format is set, it cannot be changed."
+
+	The card drivers that allow you do change the format are not following the 
+    rules; the ones (like GeForce3) that are giving you problems are giving you 
+    problems because you're violating the rules. 
+    As has been suggested elsewhere, create for yourself an invisible and/or 
+    off-screen dummy window, and use the rendering context you create for that 
+    window as your display-list share. You can either create it from a 
+    registered class with CS_OWNDC style, or you can just create a compatible DC 
+    and then not delete that DC until the program is done. Either way, this will 
+    be low-overhead solution, plus it should work on all compliant video 
+    drivers.
 */
 
     if (!(hRC=wglCreateContext(hDC))) // Are We Able To Get A Rendering Context?
@@ -153,323 +141,208 @@ HDC proj::Render::GL_attach_to_DC(HWND hWnd)
     return hDC;
 }
 
-void CHECK_FRAMEBUFFER_STATUS()
-{                                                         
-    GLenum status;
-    status = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER); 
-    switch(status)
-    {
-        case GL_FRAMEBUFFER_COMPLETE:
-            break;
-
-        case GL_FRAMEBUFFER_UNSUPPORTED: // choose different formats
-            break;
-
-        default: // programming error; will fail on all hardware
-    //        fputs("Framebuffer Error\n", stderr);
-            exit(-1);
-    }
-}
-
-void proj::Render::init_FBO()
-{
-    glGenFramebuffers(1, &fb);
-    glGenTextures(1, &color);
-    glGenRenderbuffers(1, &depth);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, fb);
-
-    glBindTexture(GL_TEXTURE_2D, color);
-    glTexImage2D(GL_TEXTURE_2D, 
-            0, 
-            GL_RGBA, 
-            fbo_width, fbo_height,
-            0, 
-            GL_RGBA,
-            GL_UNSIGNED_BYTE, 
-            NULL);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color, 0);
-
-    glBindRenderbuffer(GL_RENDERBUFFER, depth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, fbo_width, fbo_height);
-    glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
-
-    CHECK_FRAMEBUFFER_STATUS();
-}
-
-// s. http://open.gl/drawing
-void proj::Render::InitShaders()
-{
-    char buffer[512];
-    // "GLSL" starts -->
-
-//#define COLORIZE
-//#define TEXTURIZE
-#define COLS_N_TEXTURES
-#ifdef COLORIZE
-    const GLchar *vertexShaderSource[] = { // vec4 (x,y,z,w)
-        "#version 150\n"
-        "uniform mat4 MVPMatrix;\n"
-        "in vec3 position;\n"
-        "uniform vec3 offset;\n" // <-- for object-movement = uniform!!
-        "in vec3 color;\n"
-        "out vec3 fragColor;\n"
-        "void main()\n"
-        "{\n"
-        "    fragColor = color;\n"
-        "    vec4 totaloffset = vec4(offset.x, offset.y, offset.z, 0.0);\n"
-        "    gl_Position = MVPMatrix * (vec4(position, 1.0) + totaloffset);\n" // totaloffset <-- fragementshader for movement! 
-        "}"
-    };
-// der Vertexshader gibt die fragColor an den Fragment-Shader weiter!!
-    const GLchar *fragmentShaderSource[] = {
-        "#version 150\n"
-        "in vec3 fragColor;\n"
-        "out vec4 outColor;\n"
-        "void main()\n"
-        "{\n"
-        "    outColor = vec4(fragColor, 1.0);\n"
-        "}"
-    };
-#endif
-#ifdef TEXTURIZE
-    const GLchar *vertexShaderSource[] = {
-        "#version 330 core\n"
-        "uniform mat4 MVPMatrix;\n"
-        "in vec3 position;\n"
-        "uniform vec3 offset;\n" // <-- for object-movement = uniform!!
-        "in vec2 vertexUV;\n"
-        "out vec2 UV;\n"
-        "void main()\n"
-        "{\n"
-//        "    gl_Position = MVPMatrix * vec4(position, 1.0);\n"
-        "    vec4 totaloffset = vec4(offset.x, offset.y, offset.z, 0.0);\n"
-        "    gl_Position = MVPMatrix * (vec4(position, 1.0) + totaloffset);\n" // totaloffset <-- fragementshader for movement! 
-        "    UV = vertexUV;\n"
-        "}"
-    };
-// der Vertexshader gibt die fragColor an den Fragment-Shader weiter!!
-    const GLchar *fragmentShaderSource[] = {
-        "#version 330 core\n"
-        "in vec2 UV;\n"
-        "uniform sampler2D myTexSampler;\n" // <-- hier hatte ich das Semikolon vergessen
-        "out vec3 outColor;\n"              // <-- hier hatte ich zunächst .rgb einem vec4 zugeordnet (.rgba -> vec4)
-        "void main()\n"
-        "{\n"
-        "    outColor = texture(myTexSampler, UV).rgb;\n" // texture2D ist deprecated
-        "}"
-    };
-#endif
-#ifdef COLS_N_TEXTURES
-    const GLchar *vertexShaderSource[] = {
-        "#version 330 core\n"
-        "uniform mat4 MVPMatrix;\n"
-        "in vec3 position;\n"
-        "uniform vec3 offset;\n"  // <-- for object-movement = uniform!!
-        "in vec2 vertexUV;\n"
-        "out vec2 UV;\n"
-        "in vec3 color;\n"
-        "out vec3 fragColor;\n"
-        "void main()\n"
-        "{\n"
-        "    fragColor = color;\n"
-//        "    gl_Position = MVPMatrix * vec4(position, 1.0);\n"
-        "    vec4 totaloffset = vec4(offset.x, offset.y, offset.z, 0.0);\n"
-        "    gl_Position = MVPMatrix * (vec4(position, 1.0) + totaloffset);\n" // totaloffset <-- fragementshader for movement! 
-        "    UV = vertexUV;\n"
-        "}"
-    };
-// der Vertexshader gibt die fragColor an den Fragment-Shader weiter!!
-    const GLchar *fragmentShaderSource[] = {
-        "#version 330 core\n"
-        "in vec2 UV;\n"
-        "uniform sampler2D myTexSampler;\n" // <-- hier hatte ich das Semikolon vergessen
-        "uniform int col_tex;\n" // 0 = color, 1 = texture
-        "in vec3 fragColor;\n"
-        "out vec3 outColor;\n"              // <-- texture
-//        "out vec4 outColor;\n"              // <-- color
-        "void main()\n"
-        "{\n"
-		"    if (col_tex==0)\n"
-        "        outColor = vec3(fragColor);\n"
-		"    else\n"
-        "        outColor = texture(myTexSampler, UV).rgb;\n" // texture2D ist deprecated
-        "}"
-    };
-#endif
-// s. auch: http://wiki.lwjgl.org/index.php?title=GLSL_Tutorial:_Communicating_with_Shaders
-
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, vertexShaderSource, 0);
-    glCompileShader(vertexShader);
-    glGetShaderInfoLog(vertexShader, 512, NULL, buffer); // <-- debug, kann man sich schoen im debugger ansehen!!
-
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, fragmentShaderSource, 0); // set array of strings as source code
-    glCompileShader(fragmentShader); // compile
-    glGetShaderInfoLog(fragmentShader, 512, NULL, buffer); // <-- debug
-
-    program = glCreateProgram(); // create empty program object
-    glAttachShader(program, vertexShader); // attach shader
-    glAttachShader(program, fragmentShader); // attach shader
-    glLinkProgram(program); // link
-    glUseProgram(program); // install ... and use in the further runtime ...
-
-    // attribs (fix)
-    posAttrib       = glGetAttribLocation(program, "position");
-    colAttrib       = glGetAttribLocation(program, "color");
-    texAttrib       = glGetAttribLocation(program, "vertexUV");
-    // uniforms
-    offsetAttrib    = glGetUniformLocation(program, "offset");       // object movement
-    MVPMatrixAttrib = glGetUniformLocation(program, "MVPMatrix");    // camera movement
-    SamplerAttrib   = glGetUniformLocation(program, "myTexSampler");
-	col_texAttrib   = glGetUniformLocation(program, "col_tex");
-
-    // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-    glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-    // Camera matrix
-    glm::mat4 View       = glm::lookAt(
-                                glm::vec3(0,0,1.33), // Camera is at (4,3,-3), in World Space
-                                glm::vec3(1,0,1.33), // and looks at the origin
-                                glm::vec3(0,0,1)     // Head is up (set to 0,-1,0 to look upside-down)
-                           );
-    // Model matrix : an identity matrix (model will be at the origin)
-    glm::mat4 Model      = glm::mat4(1.0f);
-    // Our ModelViewProjection : multiplication of our 3 matrices
-    glm::mat4 MVPMatrix  = Projection * View * Model; // Remember, matrix multiplication is the other way around
-    glUniformMatrix4fv(MVPMatrixAttrib, 1, GL_FALSE, &MVPMatrix[0][0]); // load matrix into shader
-
-    glActiveTexture(GL_TEXTURE0);
-    // Set our "myTextureSampler" sampler to user Texture Unit 0
-    glBindTexture(GL_TEXTURE_2D, Texture[1]);
-    glUniform1i(SamplerAttrib, 0);
-}
-
-void proj::Render::Init_VAOs()
-{
-    // s. proj.LoadVAOs() ...
-/*
-    for (int iVAO = 0; iVAO < VBOCOUNT; iVAO++)
-    {
-        aVAOs[iVAO].t_Shade = SHADER_COLOR_FLAT;
-    }
-*/
-    aVAOs[VBO_2TRIANGLES].t_Shade   = SHADER_COLOR_FLAT;
-    aVAOs[VBO_LEFT].t_Shade         = SHADER_COLOR_FLAT;
-    aVAOs[VBO_RIGHT].t_Shade        = SHADER_COLOR_FLAT;
-    aVAOs[VBO_ROAD].t_Shade         = SHADER_TEXTURE;
-    aVAOs[VBO_TRAFFICSIGNS].t_Shade = SHADER_COLOR_FLAT;
-    aVAOs[VBO_GUARDRAIL].t_Shade    = SHADER_COLOR_FLAT;
-    aVAOs[VBO_CURBSTONES].t_Shade   = SHADER_COLOR_FLAT;
-    aVAOs[VBO_MOVING1].t_Shade      = SHADER_TEXTURE;
-    aVAOs[VBO_MOVING2].t_Shade      = SHADER_TEXTURE;
-}
-
 void proj::Render::Init_Textures()
 {
     // s. proj.Init() ...
-    aTextures[0].fXWorld = 5.0f; // [m]
-    aTextures[0].fYWorld = 5.0f; // [m]
+//    aTextures[0].fXWorld = 5.0f; // [m]
+//    aTextures[0].fYWorld = 5.0f; // [m]
 }
 
-// Initialize / Bind Vertex Array Objects
-void proj::Render::Bind_VAOs() // s. http://www.arcsynthesis.org/gltut/Positioning/Tutorial%2005.html
+/* Bind vertex buffers to VAO's
+   vertex buffers can hold any information: position, color, uv-coordinates
+   VAO's only exist from OpengL >=
+*/
+void proj::Render::Bind_VAOs_NEU() // s. http://www.arcsynthesis.org/gltut/Positioning/Tutorial%2005.html
 {
-    glGenVertexArrays((VBOCOUNT-1), &vertexArray[0]);
-    for (int iVAO = 0; iVAO < VBOCOUNT; iVAO++)
+	GLuint gi;
+	for (unsigned int iVAO = 0; iVAO < vVAOs.size(); iVAO++)
+  {
+		vVertexArray.push_back(gi);
+	}
+	glGenVertexArrays(vVAOs.size(), &vVertexArray[0]);
+
+/*
+    ===== 2d-VBO's (FPS shader) =====
+    [...]
+*/
+
+    // 3d-VBO's (regular shader, i.e. Scene + Objects)
+    for (unsigned int iVAO = 0; iVAO < vVAOs.size(); iVAO++) // <-- start with 1, as 0 is for FPS-coords
     {
-        glBindVertexArray(vertexArray[iVAO]); // Bind
-    
-        glEnableVertexAttribArray(posAttrib);
+        glBindVertexArray(vVertexArray[iVAO]);  // select/bind array and
+                                                // attach a)  position and
+                                                //        b1) col or
+                                                //        b2) texture/uv-buffers
         glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[iVAO]);
         glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // wichtig, hier das richtige Attrib (nicht 0 oder 1) zu übergeben!
+        glEnableVertexAttribArray(posAttrib);
 
-        if (aVAOs[iVAO].t_Shade == SHADER_COLOR_FLAT) // flat (number of elements per Vertex = 3)
+		if (vVAOs[iVAO].t_Shade == SHADER_COLOR_FLAT) // flat (number of elements per Vertex = 3)
         {    
-            glEnableVertexAttribArray(colAttrib); // s. http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_03
             glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[iVAO]);
             glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+            glEnableVertexAttribArray(colAttrib); // s. http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_03
         }
-        else if (aVAOs[iVAO].t_Shade == SHADER_TEXTURE) // texture (number of elements per Vertex = 2)
+        else if (vVAOs[iVAO].t_Shade == SHADER_TEXTURE) // texture (number of elements per Vertex = 2)
         {
-            glEnableVertexAttribArray(texAttrib);
-			// HACK!!!!!!
-//			if (iVAO == VBO_MOVING2)
-//				glBindBuffer(GL_ARRAY_BUFFER, m_Moving[1]->uvs); // set appropriate Texture-ID!!! <-- 2do!!!!!!!! saublöd, deswegen habe ich wochenlang
-//			else 
-//				glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[1]); // set appropriate Texture-ID!!! <-- 2do!!!!!!!! saublöd, deswegen habe ich wochenlang
-                                                                                                          // das Importblender debuggt!!
-			glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[iVAO]); // set appropriate Texture-ID!!! <-- 2do
+			glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[iVAO]); // u,v-texture-coords
 			glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+            glEnableVertexAttribArray(texAttrib);
 		}
         glBindVertexArray(0); // Unbind
     }
 }
 
-// most simple VBO/VAO, just in case errors happen...
-int proj::Render::CreateVBO_2Triangles()
+void proj::Render::FPS()
 {
-    #define COORDS_PER_VERTEX 3
-    #define VERTICES_PER_TRI 3
-    #define TRIANGLES 2
-    #define TRI_COORDS TRIANGLES*VERTICES_PER_TRI*COORDS_PER_VERTEX // 18 = 2 Triangles * 3 Vertices * 3 Coordinates
+	std::vector<GLfloat> coords;
+// 3D
+    coords.push_back( 0.0f); coords.push_back(0.0f); coords.push_back(0.5f);
+    coords.push_back( 0.0f); coords.push_back(2.0f); coords.push_back(0.5f); 
+    coords.push_back( 6.0f); coords.push_back(0.0f); coords.push_back(0.5f); 
 
-    vCount[VBO_2TRIANGLES] = TRIANGLES*VERTICES_PER_TRI; // Vertices
-    GLfloat Coords[TRI_COORDS];
-    // Setup triangle vertices
-    int i=0;
-    Coords[i++] = 0.6f; Coords[i++] = 0.1f; Coords[i++] = 0.0f; 
-    Coords[i++] = 0.9f; Coords[i++] = 0.5f; Coords[i++] = 0.0f; 
-    Coords[i++] = 0.0f; Coords[i++] = 0.7f; Coords[i++] = 0.0f; 
+    coords.push_back( 6.0f); coords.push_back(0.0f); coords.push_back(0.5f); 
+    coords.push_back( 6.0f); coords.push_back(2.0f); coords.push_back(0.5f); 
+    coords.push_back( 0.0f); coords.push_back(2.0f); coords.push_back(0.5f);
+// 2D
+//
+//         +-------+-------+ (1,1)
+//         |       |       |
+//         +-------+ (0,0) +
+//         |       |       |
+// (-1,-1) +---------------+ 
+//
+/*
+    coords.push_back( -1.0f); coords.push_back(-1.0f); coords.push_back(1.0f);
+    coords.push_back( -1.0f); coords.push_back(-1.0f); coords.push_back(1.0f);
+    coords.push_back( -1.0f); coords.push_back( 1.0f); coords.push_back(1.0f);
+    coords.push_back( -1.0f); coords.push_back( 1.0f); coords.push_back(1.0f);
+*/
+	std::vector<GLfloat> uvs;
+    uvs.push_back( 0.0f); uvs.push_back(0.0f);
+    uvs.push_back( 0.0f); uvs.push_back(1.0f);
+    uvs.push_back( 1.0f); uvs.push_back(0.0f);
+    uvs.push_back( 1.0f); uvs.push_back(0.0f);
+    uvs.push_back( 1.0f); uvs.push_back(1.0f);
+    uvs.push_back( 0.0f); uvs.push_back(1.0f);
 
-    Coords[i++] = -0.4f; Coords[i++] = 0.1f; Coords[i++] = 0.0f; 
-    Coords[i++] =  0.4f; Coords[i++] = 0.1f; Coords[i++] = 0.0f; 
-    Coords[i++] =  0.0f; Coords[i++] = 0.7f; Coords[i++] = 0.0f; 
+	// ---------------------------
+	// >>> now Push to OpenGL! >>>
+	// ---------------------------
+    unsigned int ui_idVBO = vVAOs.size();
+	glGenBuffers(1, &positionBuffer[ui_idVBO]);
+    glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[ui_idVBO]);
+    glBufferData(GL_ARRAY_BUFFER, 6*3*sizeof(GLfloat), &coords[0], GL_STATIC_DRAW);
+//    glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), &coords[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &positionBuffer[VBO_2TRIANGLES]); // a) position-buffer
-    glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[VBO_2TRIANGLES]);
-    glBufferData(GL_ARRAY_BUFFER, TRI_COORDS*sizeof(GLfloat), Coords, GL_STATIC_DRAW); // init data storage
+	glGenBuffers(1, &uvBuffer[ui_idVBO]);
+    glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[ui_idVBO]);
+    glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), &uvs[0], GL_STATIC_DRAW);
 
-    GLfloat colors[TRI_COORDS]; // (r,g,b) <-- (x,y,z) 
-    i=0;
-    colors[i++] = 0.0f; colors[i++] = 1.0f; colors[i++] = 0.0f; 
-    colors[i++] = 0.0f; colors[i++] = 1.0f; colors[i++] = 0.0f; 
-    colors[i++] = 0.0f; colors[i++] = 1.0f; colors[i++] = 0.0f; 
-
-    colors[i++] = 0.0f; colors[i++] = 0.0f; colors[i++] = 1.0f; 
-    colors[i++] = 0.0f; colors[i++] = 0.0f; colors[i++] = 1.0f; 
-    colors[i++] = 0.0f; colors[i++] = 0.0f; colors[i++] = 1.0f; 
-
-    glGenBuffers(1, &colorBuffer[VBO_2TRIANGLES]); // b) color-buffer
-    glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[VBO_2TRIANGLES]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount[VBO_2TRIANGLES]*3, colors, GL_STATIC_DRAW);
-
-    #define UV_COORDS_PER_VERTEX 2
-    #define TRI_UV_COORDS VERTICES_PER_TRI*COORDS_PER_VERTEX*UV_COORDS_PER_VERTEX // 12 = 2 Triangles * 3 Vertices * 2 uv-Coords
-
-    GLfloat texCoords[TRI_UV_COORDS];
-    i=0;
-    texCoords[i++] = 0.0f; texCoords[i++] = 0.0f;
-    texCoords[i++] = 0.0f; texCoords[i++] = 1.0f;
-    texCoords[i++] = 1.0f; texCoords[i++] = 0.0f;
-
-    texCoords[i++] = 0.0f; texCoords[i++] = 0.0f;
-    texCoords[i++] = 0.0f; texCoords[i++] = 1.0f;
-    texCoords[i++] = 1.0f; texCoords[i++] = 0.0f; 
-
-    glGenBuffers(1, &uvBuffer[VBO_2TRIANGLES]); // c) texture-buffer
-    glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[VBO_2TRIANGLES]);
-    glBufferData(GL_ARRAY_BUFFER, TRI_UV_COORDS*sizeof(GLfloat), texCoords, GL_STATIC_DRAW);
-
-    return 0;
+    c_VAO fps;
+    fps.t_Shade = SHADER_TEXTURE;
+    fps.ui_idTexture = TEX_ARIALFONT;
+	fps.uiVertexCount = 6;
+	vVAOs.push_back(fps);
 }
 
-int proj::Render::CreateVBO_Scene()
+void proj::Render::Groundplane()
 {
-    SceneParam &rc_Param = m_Scene->m_SceneLoader;
+	std::vector<GLfloat> coords;
+    float fPlanewidth = 300.0f;
+// 3D
+    coords.push_back( fPlanewidth); coords.push_back( fPlanewidth); coords.push_back(-0.1f);
+    coords.push_back(-fPlanewidth); coords.push_back( fPlanewidth); coords.push_back(-0.1f); 
+    coords.push_back( fPlanewidth); coords.push_back(-fPlanewidth); coords.push_back(-0.1f); 
+
+    coords.push_back( fPlanewidth); coords.push_back(-fPlanewidth); coords.push_back(-0.1f); 
+    coords.push_back(-fPlanewidth); coords.push_back( fPlanewidth); coords.push_back(-0.1f); 
+    coords.push_back(-fPlanewidth); coords.push_back(-fPlanewidth); coords.push_back(-0.1f);
+
+	std::vector<GLfloat> cols;
+	cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
+    cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
+    cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
+
+    cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
+    cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
+    cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
+
+	// ---------------------------
+	// >>> now Push to OpenGL! >>>
+	// ---------------------------
+    unsigned int ui_idVBO = vVAOs.size();
+	glGenBuffers(1, &positionBuffer[ui_idVBO]);
+    glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[ui_idVBO]);
+    glBufferData(GL_ARRAY_BUFFER, 6*3*sizeof(GLfloat), &coords[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &colorBuffer[ui_idVBO]);
+    glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[ui_idVBO]);
+    glBufferData(GL_ARRAY_BUFFER, 6*3*sizeof(GLfloat), &cols[0], GL_STATIC_DRAW);
+
+    c_VAO plane;
+    plane.t_Shade = SHADER_COLOR_FLAT;
+	plane.uiVertexCount = 6;
+	vVAOs.push_back(plane);
+}
+
+// most simple VBO/VAO, just in case errors happen...
+void proj::Render::Triangles_to_VBO(Vec3f v3pos)
+{
+    unsigned int ui_idVBO = vVAOs.size();
+
+	// a) Object vertices + cols/texture
+	#define COORDS_PER_VERTEX 3
+    #define VERTICES_PER_TRI  3
+    #define TRIANGLES         2
+    #define TRI_COORDS        TRIANGLES*VERTICES_PER_TRI*COORDS_PER_VERTEX // 18 = 2 Triangles * 3 Vertices * 3 Coordinates
+
+	std::vector<GLfloat> coords;
+    coords.push_back(v3pos.x+ 0.6f); coords.push_back(v3pos.y+0.1f); coords.push_back(v3pos.z+0.0f);
+    coords.push_back(v3pos.x+ 0.9f); coords.push_back(v3pos.y+0.5f); coords.push_back(v3pos.z+0.0f); 
+    coords.push_back(v3pos.x+ 0.0f); coords.push_back(v3pos.y+0.7f); coords.push_back(v3pos.z+0.0f); 
+
+    coords.push_back(v3pos.x+-0.4f); coords.push_back(v3pos.y+0.1f); coords.push_back(v3pos.z+0.0f); 
+    coords.push_back(v3pos.x+ 0.4f); coords.push_back(v3pos.y+0.1f); coords.push_back(v3pos.z+0.0f); 
+    coords.push_back(v3pos.x+ 0.0f); coords.push_back(v3pos.y+0.7f); coords.push_back(v3pos.z+0.0f); 
+
+	std::vector<GLfloat> cols;
+	cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
+    cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
+    cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
+
+    cols.push_back(0.0f); cols.push_back(0.0f); cols.push_back(1.0f); 
+    cols.push_back(0.0f); cols.push_back(0.0f); cols.push_back(1.0f); 
+    cols.push_back(0.0f); cols.push_back(0.0f); cols.push_back(1.0f); 
+
+	// b) store VAO props for OpenGL-drawing loop (and later manipulation, e.g. position change)
+	c_VAO tri;
+//    tri.b_moving = TRUE;
+    tri.t_Shade = SHADER_COLOR_FLAT;
+	tri.uiVertexCount = TRIANGLES*VERTICES_PER_TRI;
+	vVAOs.push_back(tri);
+
+	// ---------------------------
+	// >>> now Push to OpenGL! >>>
+	// ---------------------------
+	glGenBuffers(1, &positionBuffer[ui_idVBO]); // a) position-buffer
+    glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[ui_idVBO]);
+    glBufferData(GL_ARRAY_BUFFER, TRI_COORDS*sizeof(GLfloat), &coords[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &colorBuffer[ui_idVBO]); // b) color-buffer
+    glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[ui_idVBO]);
+    glBufferData(GL_ARRAY_BUFFER, TRI_COORDS*sizeof(GLfloat), &cols[0], GL_STATIC_DRAW);
+
+	// uvbuffer = NULL, don't try to access it!
+	// ... after adding coords/cols, they can be forgotten
+}
+
+int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
+{
+    unsigned int ui_idVBO = vVAOs.size();
+	SceneParam &rc_Param = m_Scene->m_SceneLoader;
+
+    std::string aParts[3] = {"Marker Left","Marker Right","Road"};
 
     unsigned int iLine;
     unsigned int iMarker;
@@ -477,21 +350,22 @@ int proj::Render::CreateVBO_Scene()
 
     S_Point3D p0,p1,p2,p3;
 
-    vCount[1] = 0; // VBO_LEFT
-    vCount[2] = 0; // VBO_RIGHT
-    vCount[3] = 0; // VBO_ROAD
+    unsigned int vCount[3];
+    vCount[0] = 0; // VBO_LEFT
+    vCount[1] = 0; // VBO_RIGHT
+    vCount[2] = 0; // VBO_ROAD
     sz = (unsigned int)rc_Param.m_c_Markers.size(); // number of marker vectors (lines)
     for (iLine=0;iLine<sz;iLine++)
     {
-        const std::vector<S_MarkerPoint> &rc_Marker = rc_Param.m_c_Markers[iLine];
+		const std::vector<S_MarkerPoint> &rc_Marker = rc_Param.m_c_Markers[iLine];
         for (iMarker=0;iMarker<rc_Marker.size()-1;iMarker++) // no. of markersteps (typically > 500)
         {
-            if (rc_Marker[iMarker].b_Visible) vCount[1+iLine]+=6; // 2 triangles per Quad
+            if (rc_Marker[iMarker].b_Visible) vCount[iLine]+=6; // 2 triangles per Quad
         }
 
-        GLfloat* vertices  = new GLfloat[vCount[1+iLine]*3]; // Vertex.x/y/z
-        GLfloat* colors    = new GLfloat[vCount[1+iLine]*3]; // Color.r/g/b
-        GLfloat* texCoords = new GLfloat[vCount[1+iLine]*2]; // Texture.U/V
+        GLfloat* vertices  = new GLfloat[vCount[iLine]*3]; // Vertex.x/y/z
+        GLfloat* colors    = new GLfloat[vCount[iLine]*3]; // Color.r/g/b
+        GLfloat* texCoords = new GLfloat[vCount[iLine]*2]; // Texture.U/V
 
         int iV = 0;
         int iTx = 0;
@@ -503,7 +377,8 @@ int proj::Render::CreateVBO_Scene()
         float f_G = rc_Param.m_c_Colors[iLine].u_Green / 4095.0f;
         float f_B = rc_Param.m_c_Colors[iLine].u_Blue  / 4095.0f;
 
-        int textureID = rc_Param.m_TextureIDs[iLine];
+//        int textureID = rc_Param.m_TextureIDs[*p_idxVBO]; // nur die "Road" hat eine texture, Left+Right nicht
+
         float fTexStrip = 0.0f; // store strip of texture, if not full texture is mapped to triangle
         float fTexIncr = 0.1f; // 2do <-- aus der "Höhe" des triangles berechnen!
 
@@ -566,33 +441,53 @@ int proj::Render::CreateVBO_Scene()
             }
         }
 
-        // VBO, s. http://ogldev.atspace.co.uk/www/tutorial02/tutorial02.html
-        glGenBuffers(1, &positionBuffer[1+iLine]);
-        glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[1+iLine]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount[1+iLine]*3, vertices, GL_STATIC_DRAW);
+		// b) store VAO props for OpenGL-drawing loop (and later manipulation, e.g. position change)
+		c_VAO vao;
+        vao.Name = aParts[iLine];
+		if (iLine==2) // 2do --> in der Scene-description speichern
+		{
+            vao.t_Shade = SHADER_TEXTURE;
+			vao.ui_idTexture = TEX_ROADSURFACE;
+		}
+		else
+		{
+			vao.t_Shade = SHADER_COLOR_FLAT;
+		}
+		vao.uiVertexCount = vCount[iLine]*3;
+		vVAOs.push_back(vao);
 
-        glGenBuffers(1, &colorBuffer[1+iLine]);
-        glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[1+iLine]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount[1+iLine]*3, colors, GL_STATIC_DRAW);
+		// VBO, s. http://ogldev.atspace.co.uk/www/tutorial02/tutorial02.html
+        glGenBuffers(1, &positionBuffer[ui_idVBO]);
+        glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[ui_idVBO]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount[iLine]*3, vertices, GL_STATIC_DRAW);
 
-        glGenBuffers(1, &uvBuffer[1+iLine]);
-        glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[1+iLine]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount[1+iLine]*2, texCoords, GL_STATIC_DRAW);
+        glGenBuffers(1, &colorBuffer[ui_idVBO]);
+        glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[ui_idVBO]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount[iLine]*3, colors, GL_STATIC_DRAW);
+
+        glGenBuffers(1, &uvBuffer[ui_idVBO]);
+        glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[ui_idVBO]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount[iLine]*2, texCoords, GL_STATIC_DRAW);
 
         delete [] colors;
         delete [] vertices;
         delete [] texCoords;
+
+		// each part of the scene (pavement, left, right marker, ...) has 1 VBO
+		ui_idVBO++;
     }
 
     return 0;
 }
 
-// int proj::Render::CreateVBO_Scene_w_o_Texture_Wrap()
-
 /* === Move objects ===
     http://www.arcsynthesis.org/gltut/positioning/Tut03%20A%20Better%20Way.html  <-- 2015-12-12, fkt. leider nicht mehr
+    ist jetzt hier -->
+    https://paroj.github.io/gltut/
+    bzw. hier -->
+    http://alfonse.bitbucket.org/oldtut/
 */
-
+/*
 int proj::Render::DestroyScene_VBO()
 {
     glDeleteVertexArrays(2, &vertexArray[0]);
@@ -601,7 +496,7 @@ int proj::Render::DestroyScene_VBO()
 //    glDeleteBuffers(2, &uvBuffer[0]);
     return 0;
 }
-
+*/
 void proj::Render::get_xyz_Hack(int iT, GLfloat &x, GLfloat &y, GLfloat &z, GLfloat &xto, GLfloat &yto, GLfloat &zto)
 {
     SceneParam &rc_Param = m_Scene->m_SceneLoader;
@@ -620,117 +515,99 @@ void proj::Render::get_xyz_Hack(int iT, GLfloat &x, GLfloat &y, GLfloat &z, GLfl
 
 // rotate: https://www.opengl.org/discussion_boards/showthread.php/179290-Rotation-w-Rectangular-Pixels-(2D-VAO)
 
-void proj::Render::DrawVAOs()
+void proj::Render::DrawVAOs_NEU()
 {
-    float fXOffset = 2.0f, fYOffset = 2.0f, fZOffset = 1.0f;
-    glm::vec3 v3;
+    /*
+        Achtung, hier springt das Programm nochmal 'rein nach Drücken des Close Buttons,
+        dann sind aber die vVAO-Inhalte schon beliebig "dirty"!!
+        z.B. ist dann vVAOs[ui].b_moving = TRUE und die if Abfrage (s.u.) wird angesprungen
+    */
 
-    if (iWireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//    char buf[512];
+//    GLenum glErr;
+    glm::vec3 v3;
 
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-//    glUseProgram(program);
-    glUniform3f(offsetAttrib, fXOffset, fYOffset, fZOffset);
-    glBindVertexArray(vertexArray[VBO_2TRIANGLES]);
-    glDrawArrays(GL_TRIANGLES, 0, vCount[VBO_2TRIANGLES]); // 2 triangles
-//    glUseProgram(0);
-    glUniform3f(offsetAttrib, 0.0f, 0.0f, 0.0f);
+/*
+    glUseProgram(program_fps);
 
-    glBindVertexArray(vertexArray[VBO_LEFT]);
-    glDrawArrays(GL_TRIANGLES, 0, vCount[VBO_LEFT]); // lane marker Left
-    glBindVertexArray(vertexArray[VBO_RIGHT]);
-    glDrawArrays(GL_TRIANGLES, 0, vCount[VBO_RIGHT]); // lane marker Right
+    [...] funktioniert noch nicht, dass 2 Shader hintereinander aktiv sind:
+    der program_fps funktioniert nur (weisser Dreieck darstellen, wenn ich den "program" shader kommentiere
+*/
 
-    // http://ogldev.atspace.co.uk/www/tutorial16/tutorial16.html
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, Texture[TEX_ROADSURFACE]);
+    glUseProgram(program);
 
-	glUniform1i(col_texAttrib,1);
-    glBindVertexArray(vertexArray[VBO_ROAD]);
-    glDrawArrays(GL_TRIANGLES, 0, vCount[VBO_ROAD]); // road
-	glUniform1i(col_texAttrib,0);
+    // draw Scene + Objects
+	for (unsigned int ui=0; ui < vVAOs.size(); ui++) // start with 1 as 0 is fps-counter
+	{
+        bool bMoved = false; // workaround, removed later
 
-    glBindVertexArray(vertexArray[VBO_TRAFFICSIGNS]);
-    glDrawArrays(GL_TRIANGLES, 0, vCount[VBO_TRAFFICSIGNS]); // traffic signs
-
-    if (b_Guardrail)
-    {
-        glBindVertexArray(vertexArray[VBO_GUARDRAIL]);
-        glDrawArrays(GL_TRIANGLES, 0, vCount[VBO_GUARDRAIL]); // guardrails
-    }
-
-    // http://ogldev.atspace.co.uk/www/tutorial16/tutorial16.html
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, Texture[1]);
-
-    if (b_Curbstones)
-    {
-        glBindVertexArray(vertexArray[VBO_CURBSTONES]);
-        glDrawArrays(GL_TRIANGLES, 0, vCount[VBO_CURBSTONES]); // curbstones
-    }
-
-	v3 = m_Moving[1]->position; // <-- Bewegung muss in einer eigenen loop erfolgen, da OpenGl nur bei neu malen bewegt (ala GLUT-Idle)
-//    glUniform3f(offsetAttrib, v3.x, v3.y, v3.z);
-//ROTATE (only after offset)
-    glm::mat4 Model      = glm::mat4(1.0f);
-	// first translate
-	Model = glm::translate(Model,glm::vec3(v3.x,v3.y,v3.z));
-	// then rotate
-	// ! --> rotation is not "compatible" with offsetAttrib, that's why translation also done on Model matrix here
-	// s. http://stackoverflow.com/questions/9920624/glm-combine-rotation-and-translation
-//#define M_PI 3.14159265359
-	// Reihenfolge der Rotationen ist wichtig, s. http://gamedev.stackexchange.com/questions/73467/glm-rotating-combining-multiple-quaternions
-	glm::float32 f_VehRot_Z = -atan2(m_Moving[1]->direction[0],m_Moving[1]->direction[1]);
-	glm::float32 f_VehRot_Z_DEG = glm::degrees(f_VehRot_Z);
-	Model = glm::rotate(Model, f_VehRot_Z_DEG, glm::vec3(0.0f,0.0f,1.0f)); // where x, y, z is axis of rotation (e.g. 0 1 0)
-//	glm::float32 f_VehTilt_DEG = 20.0f*abs(f_VehRot_Z);
-//	Model = glm::rotate(Model, f_VehTilt_DEG, glm::vec3(0.0f,1.0f,0.0f)); // where x, y, z is axis of rotation (e.g. 0 1 0)
-	p_cam->changeModel(Model);
-//ROTATE
-	glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, Texture[TEX_CAR]);
-	glUniform1i(col_texAttrib,1);
-	glBindVertexArray(vertexArray[VBO_MOVING2]);
-    glDrawArrays(GL_TRIANGLES, 0, vCount[VBO_MOVING2]); // moving object2 (car)
-	glUniform1i(col_texAttrib,0);
-//    glUniform3f(offsetAttrib, 0.0f, 0.0f, 0.0f);
-	p_cam->resetModel();
-
-//    glDisableVertexAttribArray(0);
-//    glDisableVertexAttribArray(1);
-    if (iWireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    if (b_PNG) FBO_to_PPM();
-}
-
-//GLubyte pixels[fbo_height][fbo_width][3]; // too big for the stack
-GLubyte puxels[1000][600][3]; // too big for the stack
-void proj::Render::FBO_to_PPM() // write out as binary PPM (with lines in reverse order)
-{
-    glBindTexture(GL_TEXTURE_2D, color);//textureId[0]);
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, puxels);
-    glBindTexture(GL_TEXTURE_2D, 0); // <-?
-
-    std::ofstream myfile;
-    std::string filename;
-    filename = "d:\\glShoot_FBO.ppm";
-    myfile.open(filename.c_str());
-    myfile << "P6" << std::endl;
-    myfile << std::to_string((_ULonglong)fbo_width) << " " << std::to_string((_ULonglong)fbo_height) << std::endl; // "w h"
-//    myfile << "1000" << " " << "600" << std::endl; // "w h"
-    myfile << "255" << std::endl;
-    myfile.close();
-    myfile.open(filename.c_str(),std::ofstream::app | std::ofstream::binary); // binary-"trick" from: http://www.gamedev.net/topic/510801-render-to-memory/
-
-    for (int i = 0; i < fbo_height; i++)
-    {
-        for (int j = 0; j < fbo_width; j++)
+        if (
+            ((vVAOs[ui].vPos.x < -0.001f) || (vVAOs[ui].vPos.x > 0.001f)) ||
+            ((vVAOs[ui].vPos.y < -0.001f) || (vVAOs[ui].vPos.y > 0.001f)) ||
+            ((vVAOs[ui].vPos.z < -0.001f) || (vVAOs[ui].vPos.z > 0.001f))
+           )
         {
-            for (int k = 0; k < 3; k++)
-            {
-                myfile << puxels[(fbo_height-1)-i][j][k];
-            }
+            bMoved = true; // workaround, removed later
+            glm::mat4 Model = glm::mat4(1.0f);
+            // first translate
+            Model = glm::translate(Model,glm::vec3(vVAOs[ui].vPos.x,vVAOs[ui].vPos.y,vVAOs[ui].vPos.z));
+            p_cam->changeModel(Model);
         }
-    }
-    myfile.close();
+
+        if (vVAOs[ui].b_moving)
+        {
+            v3 = m_Moving[1]->position; // <-- Bewegung muss in einer eigenen loop erfolgen, da OpenGl nur bei neu malen bewegt (ala GLUT-Idle)
+            //    glUniform3f(offsetAttrib, v3.x, v3.y, v3.z);
+            //ROTATE (only after offset)
+            glm::mat4 Model = glm::mat4(1.0f);
+            // first translate
+            Model = glm::translate(Model,glm::vec3(v3.x,v3.y,v3.z));
+            // then rotate
+            // ! --> rotation is not "compatible" with offsetAttrib, that's why translation also done on Model matrix here
+            // s. http://stackoverflow.com/questions/9920624/glm-combine-rotation-and-translation
+            // Reihenfolge der Rotationen ist wichtig, s. http://gamedev.stackexchange.com/questions/73467/glm-rotating-combining-multiple-quaternions
+            glm::float32 f_VehRot_Z = -atan2(m_Moving[1]->direction[0],m_Moving[1]->direction[1]);
+            glm::float32 f_VehRot_Z_DEG = glm::degrees(f_VehRot_Z);
+            Model = glm::rotate(Model, f_VehRot_Z_DEG, glm::vec3(0.0f,0.0f,1.0f)); // where x, y, z is axis of rotation (e.g. 0 1 0)
+            //	glm::float32 f_VehTilt_DEG = 20.0f*abs(f_VehRot_Z);
+            //	Model = glm::rotate(Model, f_VehTilt_DEG, glm::vec3(0.0f,1.0f,0.0f)); // where x, y, z is axis of rotation (e.g. 0 1 0)
+            p_cam->changeModel(Model);
+        }
+
+        if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        if (vVAOs[ui].t_Shade == SHADER_TEXTURE)
+		{
+			glUniform1i(col_texAttrib,1); // shader into texture-branch
+
+            // http://ogldev.atspace.co.uk/www/tutorial16/tutorial16.html
+			glActiveTexture(GL_TEXTURE0);
+//			glBindTexture(GL_TEXTURE_2D, Texture[vVAOs[ui].ui_idTexture]);
+///			glBindTexture(GL_TEXTURE_2D, vGLTexture[vVAOs[ui].ui_idTexture]);
+			glBindTexture(GL_TEXTURE_2D, vGLTexture[vVAOs[ui].ui_idTexture-1]);
+            glUniform1i(SamplerAttrib,0);
+		}
+        else // vVAOs[ui].t_Shade == SHADER_COLOR_FLAT
+        {
+            glUniform1i(col_texAttrib,0); // shader into color-branch
+        }
+
+		glBindVertexArray(vVertexArray[ui]);
+
+		glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+																// it can be either positionbuffer, colorbuffer or uvbuffer
+																// if t_Shade == TEXTURE,
+																// then colorbuffer is NULL and vice versa!
+        
+        if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        
+        if (vVAOs[ui].b_moving || bMoved)
+        {
+            p_cam->resetModel();
+        }
+	} // for ...
+
+//    if (b_PNG) FBO_to_PPM();
 }

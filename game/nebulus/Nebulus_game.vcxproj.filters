@@ -1,17 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Quelldateien">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Headerdateien">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Ressourcendateien">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{9ec62896-1da1-4d45-b842-3e852e0db2f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="header\obj">
+      <UniqueIdentifier>{aaa31529-569e-48ed-93f9-e6854ec1bae3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header\import">
+      <UniqueIdentifier>{c05cfe00-94fa-4d56-b857-52195e3e6124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header\proj">
+      <UniqueIdentifier>{cbe3a94b-18ff-4e1d-8482-869567bab6df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header\render">
+      <UniqueIdentifier>{cf29e14f-01c1-4e0f-8a04-5bf8e77c7908}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -25,78 +40,99 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\engine\camera.hpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\img_bitmap.hpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>header\import</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\img_DDS.hpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>header\import</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engine\mdl_blender.hpp">
-      <Filter>Headerdateien</Filter>
+    <ClInclude Include="..\..\engine\mdl_wavefront.hpp">
+      <Filter>header\import</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\nebulus.h">
-      <Filter>Headerdateien</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\obj_Curbstone.hpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>header\obj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\obj_Guardrail.hpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>header\obj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\obj_Moving.hpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>header\obj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\proj.h">
-      <Filter>Headerdateien</Filter>
+      <Filter>header\proj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\proj_render.h">
-      <Filter>Headerdateien</Filter>
+      <Filter>header\proj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\proj_scene.h">
-      <Filter>Headerdateien</Filter>
+      <Filter>header\proj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\proj_scenebuilder.hpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>header\proj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\proj_sceneloader.h">
-      <Filter>Headerdateien</Filter>
+      <Filter>header\proj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\Resource.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\stdafx.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\targetver.h">
-      <Filter>Headerdateien</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\Vec3f.hxx">
-      <Filter>Headerdateien</Filter>
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\rnd_fbo.hpp">
+      <Filter>header\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\rnd_shaderman.hpp">
+      <Filter>header\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\obj_Groundplane.hpp">
+      <Filter>header\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\obj_Scene.hpp">
+      <Filter>header\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\obj_Tunnel.hpp">
+      <Filter>header\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\obj.hpp">
+      <Filter>header\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\inc_render.h">
+      <Filter>header\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\targetver.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\stdafx.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="nebulus.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\engine\obj_Trafficsign.hpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\engine\proj.cpp">
-      <Filter>Quelldateien</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\engine\proj_render.cpp">
-      <Filter>Quelldateien</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\engine\proj_scene.cpp">
-      <Filter>Quelldateien</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\engine\proj_sceneloader.cpp">
-      <Filter>Quelldateien</Filter>
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engine\obj_Trafficsign.hpp">
+      <Filter>header\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\stdafx.cpp">
+      <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
