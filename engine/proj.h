@@ -1,5 +1,6 @@
 #pragma once
 
+#include "types.h"
 #include "proj_render.h"
 #include "proj_m3uloader.hpp"
 #include "proj_scenebuilder.hpp"
@@ -49,6 +50,6 @@ namespace proj
 
     void LoadMoving();
 
-    int Load_Objs_to_VAOs();
+    int Load_Objs_to_VBOs();
   };
 }

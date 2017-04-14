@@ -67,7 +67,7 @@ namespace proj
 
           m_guardrail.nBufferStart = iObj++*3*3*4; // <-- iTriPerObj
           m_guardrail.Add(/*1,*/  glm::vec3((float)p0.rl_X,(float)p0.rl_Y,(float)p0.rl_Z),
-            glm::vec3((float)p3.rl_X,(float)p3.rl_Y,(float)p3.rl_Z), col);
+                                  glm::vec3((float)p3.rl_X,(float)p3.rl_Y,(float)p3.rl_Z), col);
         }
       }
 

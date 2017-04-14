@@ -51,9 +51,6 @@
     <ClInclude Include="..\..\engine\mdl_wavefront.hpp">
       <Filter>header\import</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engine\nebulus.h">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\engine\obj_Curbstone.hpp">
       <Filter>header\obj</Filter>
     </ClInclude>
@@ -77,9 +74,6 @@
     </ClInclude>
     <ClInclude Include="..\..\engine\proj_sceneloader.h">
       <Filter>header\proj</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\Resource.h">
-      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\Vec3f.hxx">
       <Filter>header</Filter>
@@ -109,6 +103,15 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\stdafx.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="nebulus.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="types.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

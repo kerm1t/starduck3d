@@ -56,10 +56,14 @@ namespace proj
     GLuint positionBuffer[VBOCOUNT];
     GLuint    colorBuffer[VBOCOUNT]; // either color or ...
     GLuint       uvBuffer[VBOCOUNT]; // texture
+//    GLuint ui_numVBOpos = 0;
+//    GLuint ui_numVBOtex = 0;
+//    GLuint ui_numVBOcol = 0;
 
     std::vector<c_VAO>  vVAOs;
     std::vector<GLuint> vVertexArray;    // stores VAO's: a) Position(x,y,z), b1) color OR b2) u,v-Texture
-    std::vector<GLuint> vPositionBuffer; // stores position
+
+//    std::vector<GLuint> vPositionBuffer; // stores position
 
     // =============
     Camera * p_cam;
@@ -86,7 +90,7 @@ namespace proj
 
     void get_xyz_Hack(int iT, float &x, float &y, float &z, float &xto, float &yto, float &zto);
 
-    void Bind_VAOs_NEU();
+	  void Bind_VBOs_to_VAOs();
     void DrawVAOs_NEU();
 
   private:

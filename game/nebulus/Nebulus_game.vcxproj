@@ -50,13 +50,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\lib\glew-1.10.0\include;..\..\lib\glm\glm;..\..\engine;..\..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\projects\VC\starduck3d_nOK\lib\glew-2.0.0\include;C:\Projekte\starduck3d_nOK\lib\glew-2.0.0\include;..\..\lib\glew-2.2.0\include;..\..\lib\glm\glm;..\..\engine;..\..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>OpenGL32.lib;GLu32.lib;glew32sd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\lib\glew-1.10.0_mixed\lib\Debug\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\projects\VC\starduck3d_nOK\lib\glew-2.0.0\lib\Debug\Win32;C:\Projekte\starduck3d_nOK\lib\glew-2.0.0\lib\Debug\Win32;..\..\lib\glew-2.2.0\lib\Debug\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -108,6 +108,7 @@
     <ClInclude Include="..\..\common\stdafx.h" />
     <ClInclude Include="..\..\common\targetver.h" />
     <ClInclude Include="..\..\engine\Vec3f.hxx" />
+    <ClInclude Include="types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="nebulus.cpp" />

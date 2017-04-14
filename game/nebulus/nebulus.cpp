@@ -32,6 +32,9 @@ proj::Proj m_proj;
 
 Camera m_cam;
 
+int nFrame = 50;
+int cntFrame = 0;
+
 int win_h,win_w;
 int mouse_x,mouse_y;
 
@@ -60,6 +63,29 @@ void RenderThread(void *args)
 {
   while (true)
   {
+    // check either only every x-th frame
+    // move smaller steps
+//    if (cntFrame > nFrame)
+    {
+      cntFrame = 0;
+      if (GetAsyncKeyState(VK_UP))
+      {
+        m_cam.MoveFwd();
+      }
+      if (GetAsyncKeyState(VK_DOWN))
+      {
+        m_cam.MoveBack();
+      }
+      if (GetAsyncKeyState(VK_LEFT))
+      {
+        m_cam.TurnLeft();
+      }
+      if (GetAsyncKeyState(VK_RIGHT))
+      {
+        m_cam.TurnRight();
+      }
+    }
+
     if (b_WM_resized)
     {
       m_proj.m_render.ReSizeGLScene(win_w,win_h);
@@ -73,21 +99,21 @@ void RenderThread(void *args)
       // Camera fixed to vehicle
       glm::vec3 vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
       glm::float32 fZtmp = m_cam.Pos[2];
-      m_cam.Pos = m_proj.m_moving[1].position - vVehDirNorm*12.0f;
+      m_cam.Pos    = m_proj.m_moving[1].position - vVehDirNorm*12.0f;
       m_cam.Pos[2] = fZtmp;
-      m_cam.At = m_proj.m_moving[1].position;
+      m_cam.At     = m_proj.m_moving[1].position;
     }
     else
     {
       // Camera user controlled
       //			m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
 
-      m_cam.changeAspect(win_w,win_h);
+      m_cam.change_Aspect(win_w,win_h);
       // mouse-move camera
       m_cam.Look_with_Mouse(glm::vec2(mouse_x, mouse_y));
     }
 
-    m_cam.updateView(); // View = Pos,At,Norm
+    m_cam.update_View(); // View = Pos,At,Norm
 
     m_proj.DoIt(); // render code
   }
@@ -133,7 +159,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   m_proj.m_render.height = win_h;
   hDC = m_proj.m_render.GL_attach_to_DC(hWnd); // <== NeHe    
 
-  //    glewExperimental = GL_TRUE; // <-- Nutzen?
+  glewExperimental = GL_TRUE; // <-- Nutzen?
   glewInit(); // <-- takes a little time
 
   m_proj.Init();	// <-- Texture erst nach glewInit() laden!!
@@ -143,7 +169,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   m_cam.p_MVPMatrixAttrib = &m_proj.m_render.MVPMatrixAttrib;
   //    m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
   m_cam.Pos[2] = 4.0f;
-  m_cam.changeAspect(win_w, win_h); // be sure that extrinsics (Pos,At) are filled here
+  m_cam.change_Aspect(win_w, win_h); // be sure that extrinsics (Pos,At) are filled here
   m_cam.init_MVP();
   m_proj.m_render.p_cam = &m_cam;
 
@@ -314,7 +340,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case 87: // W
       //			m_proj.m_render.iWireframe = 1-m_proj.m_render.iWireframe;
       //            m_cam.Pos[0] += 1.0f;
-      m_cam.Move();
+      m_cam.MoveFwd();
+      break;
+    case 65: // A
+//      m_cam.MoveLeft();
+      m_cam.TurnLeft();
+      break;
+    case 83: // S
+      m_cam.MoveBack();
+      break;
+    case 68: // D
+//      m_cam.MoveRight();
+      m_cam.TurnRight();
       break;
     }
     break;

@@ -1,0 +1,4 @@
+26.3.2017
+- auf glew 2.0.0 umgestellt (von 1.1.0), da ich hoffte, mit dem RenderDoc kompatible zu werden
+  --> hat aber nicht geholfen
+- RenderDoc installiert, der kann den Context nicht loggen, da nicht kompatibel it OpenGL > 3.2

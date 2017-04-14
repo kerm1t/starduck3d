@@ -56,7 +56,6 @@ GLvoid proj::Render::ReSizeGLScene(GLsizei width, GLsizei height) // Resize And 
 HDC proj::Render::GL_attach_to_DC(HWND hWnd)
 { 
   GLuint PixelFormat;                     // Holds The Results After Searching For A Match
-  int bits = 8;
 
 #define ERR_HDC           0
 #define ERR_PIXELFORMAT   0
@@ -71,15 +70,15 @@ HDC proj::Render::GL_attach_to_DC(HWND hWnd)
     PFD_SUPPORT_OPENGL |                // Format Must Support OpenGL
     PFD_DOUBLEBUFFER,                   // Must Support Double Buffering
     PFD_TYPE_RGBA,                      // Request An RGBA Format
-    bits,                               // Select Our Color Depth
+    8, /*32*/                                // framebuffer Color Depth
     0, 0, 0, 0, 0, 0,                   // Color Bits Ignored
     0,                                  // No Alpha Buffer
     0,                                  // Shift Bit Ignored
     0,                                  // No Accumulation Buffer
     0, 0, 0, 0,                         // Accumulation Bits Ignored
     16,                                 // 16Bit Z-Buffer (Depth Buffer)
-    0,                                  // No Stencil Buffer
-    0,                                  // No Auxiliary Buffer
+    0,                                  // No (number of) bits for Stencil Buffer
+    0,                                  // No bits for Auxiliary Buffer
     PFD_MAIN_PLANE,                     // Main Drawing Layer
     0,                                  // Reserved
     0, 0, 0                             // Layer Masks Ignored
@@ -127,6 +126,7 @@ HDC proj::Render::GL_attach_to_DC(HWND hWnd)
   */
 
   if (!(hRC=wglCreateContext(hDC))) // Are We Able To Get A Rendering Context?
+//  if (!(hRC=wglCreateContextAttribsARB(HDC hDC, HGLRC hshareContext, const int *attribList);
   {
     MessageBox(NULL,"Can't Create A GL Rendering Context.","ERROR",MB_OK|MB_ICONEXCLAMATION);
     return ERR_CONTEXT;
@@ -152,7 +152,7 @@ void proj::Render::Init_Textures()
 vertex buffers can hold any information: position, color, uv-coordinates
 VAO's only exist from OpengL >=
 */
-void proj::Render::Bind_VAOs_NEU() // s. http://www.arcsynthesis.org/gltut/Positioning/Tutorial%2005.html
+void proj::Render::Bind_VBOs_to_VAOs() // s. http://www.arcsynthesis.org/gltut/Positioning/Tutorial%2005.html
 {
   GLuint gi;
   for (unsigned int iVAO = 0; iVAO < vVAOs.size(); iVAO++)
@@ -180,7 +180,7 @@ void proj::Render::Bind_VAOs_NEU() // s. http://www.arcsynthesis.org/gltut/Posit
     if (vVAOs[iVAO].t_Shade == SHADER_COLOR_FLAT) // flat (number of elements per Vertex = 3)
     {    
       glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[iVAO]);
-      glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+      glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // aeltere OpenGL-Version: glColorPointer
       glEnableVertexAttribArray(colAttrib); // s. http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_03
     }
     else if (vVAOs[iVAO].t_Shade == SHADER_TEXTURE) // texture (number of elements per Vertex = 2)
@@ -241,6 +241,7 @@ void proj::Render::FPS()
 
   c_VAO fps;
   fps.t_Shade = SHADER_TEXTURE;
+  fps.Name = "FPS";
   fps.ui_idTexture = TEX_ARIALFONT;
   fps.uiVertexCount = 6;
   vVAOs.push_back(fps);
@@ -282,6 +283,7 @@ void proj::Render::Groundplane()
 
   c_VAO plane;
   plane.t_Shade = SHADER_COLOR_FLAT;
+  plane.Name = "plane";
   plane.uiVertexCount = 6;
   vVAOs.push_back(plane);
 }
@@ -538,6 +540,8 @@ void proj::Render::DrawVAOs_NEU()
 
   glUseProgram(program);
 
+  GLenum err = GL_NO_ERROR;
+
   // draw Scene + Objects
   for (unsigned int ui=0; ui < vVAOs.size(); ui++) // start with 1 as 0 is fps-counter
   {
@@ -553,7 +557,7 @@ void proj::Render::DrawVAOs_NEU()
       glm::mat4 Model = glm::mat4(1.0f);
       // first translate
       Model = glm::translate(Model,glm::vec3(vVAOs[ui].vPos.x,vVAOs[ui].vPos.y,vVAOs[ui].vPos.z));
-      p_cam->changeModel(Model);
+      p_cam->change_Model(Model);
     }
 
     if (vVAOs[ui].b_moving)
@@ -573,7 +577,7 @@ void proj::Render::DrawVAOs_NEU()
       Model = glm::rotate(Model, f_VehRot_Z_DEG, glm::vec3(0.0f,0.0f,1.0f)); // where x, y, z is axis of rotation (e.g. 0 1 0)
       //	glm::float32 f_VehTilt_DEG = 20.0f*abs(f_VehRot_Z);
       //	Model = glm::rotate(Model, f_VehTilt_DEG, glm::vec3(0.0f,1.0f,0.0f)); // where x, y, z is axis of rotation (e.g. 0 1 0)
-      p_cam->changeModel(Model);
+      p_cam->change_Model(Model);
     }
 
     if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -584,28 +588,34 @@ void proj::Render::DrawVAOs_NEU()
 
       // http://ogldev.atspace.co.uk/www/tutorial16/tutorial16.html
       glActiveTexture(GL_TEXTURE0);
-      //			glBindTexture(GL_TEXTURE_2D, Texture[vVAOs[ui].ui_idTexture]);
-      ///			glBindTexture(GL_TEXTURE_2D, vGLTexture[vVAOs[ui].ui_idTexture]);
-      glBindTexture(GL_TEXTURE_2D, vGLTexture[vVAOs[ui].ui_idTexture-1]);
+      glBindTexture(GL_TEXTURE_2D, vGLTexture[vVAOs[ui].ui_idTexture-1]); // -1 !!
       glUniform1i(SamplerAttrib,0);
     }
     else // vVAOs[ui].t_Shade == SHADER_COLOR_FLAT
     {
       glUniform1i(col_texAttrib,0); // shader into color-branch
+//      glBindVertexArray(vVertexArray[ui]); // <--- NVidia: hier Problem, wenn ui = 13 (beim ersten colorierten + texturierten Objekt!!)
+//      glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
     }
 
-    glBindVertexArray(vVertexArray[ui]);
+    err = glGetError();
+    glBindVertexArray(vVertexArray[ui]); // <--- NVidia: hier Problem, wenn ui = 13 (beim ersten colorierten + texturierten Objekt!!)
+    
+    /*
+    wenn's hier crasht, dann ist der Fehler vermutlich vorher beim buffern passiert und
+    glGetError hätte etwas melden sollen!!
+    */
 
     glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
-    // it can be either positionbuffer, colorbuffer or uvbuffer
-    // if t_Shade == TEXTURE,
-    // then colorbuffer is NULL and vice versa!
+                                                            //     it can be either positionbuffer, colorbuffer or uvbuffer
+                                                            //     if t_Shade == TEXTURE,
+                                                            //     then colorbuffer is NULL and vice versa!
 
     if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     if (vVAOs[ui].b_moving || bMoved)
     {
-      p_cam->resetModel();
+      p_cam->reset_Model();
     }
   } // for ...
 

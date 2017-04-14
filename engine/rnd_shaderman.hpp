@@ -32,6 +32,8 @@ public:
   // s. http://open.gl/drawing
   void InitShaders()
   {
+    GLenum err = glGetError();
+
     char buffer[512];
     // "GLSL" starts -->
 
@@ -105,18 +107,21 @@ public:
     glShaderSource(vertexShader, 1, vertexShaderSource, 0);
     glCompileShader(vertexShader);
     glGetShaderInfoLog(vertexShader, 512, NULL, buffer); // <-- debug, kann man sich schoen im debugger ansehen!!
-
+    err = glGetError(); 
+    
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, fragmentShaderSource, 0); // set array of strings as source code
     glCompileShader(fragmentShader); // compile
     glGetShaderInfoLog(fragmentShader, 512, NULL, buffer); // <-- debug
+    err = glGetError();
 
     program = glCreateProgram(); // create empty program object
     glAttachShader(program, vertexShader); // attach shader
     glAttachShader(program, fragmentShader); // attach shader
     glLinkProgram(program); // link
     //    glUseProgram(program); // install ... and use in the further runtime ...
-
+    glUseProgram(program); // start here, otherwise --> http://stackoverflow.com/questions/8688171/android-opengl20-error-on-command-gluniformmatrix4fv 
+    err = glGetError();
 
     // Shader for FPS
     GLuint vshaderFPS = glCreateShader(GL_VERTEX_SHADER);
@@ -131,14 +136,16 @@ public:
     glAttachShader(program_fps, vshaderFPS); // attach shader
     glAttachShader(program_fps, fshaderFPS); // attach shader
     glLinkProgram(program_fps); // link
+    err = glGetError();
 
     memset(buffer,0,512);
     sprintf(buffer,"%s",gluErrorString(glGetError()));
 
     // attribs (fix)
-    posAttribFPS    = glGetAttribLocation(program_fps, "vp_clipspace"); // vertex position
-    texAttribFPS    = glGetAttribLocation(program_fps, "vertexUV");
-    SamplerAttribFPS= glGetUniformLocation(program, "myTexSampler");
+//    posAttribFPS    = glGetAttribLocation(program_fps, "vp_clipspace"); // vertex position
+//    texAttribFPS    = glGetAttribLocation(program_fps, "vertexUV");
+//    SamplerAttribFPS= glGetUniformLocation(program, "myTexSampler");
+    err = glGetError();
 
     memset(buffer,0,512);
     sprintf(buffer,"%s",gluErrorString(glGetError()));
@@ -147,11 +154,13 @@ public:
     posAttrib       = glGetAttribLocation(program, "position");
     colAttrib       = glGetAttribLocation(program, "color");
     texAttrib       = glGetAttribLocation(program, "vertexUV");
+    err = glGetError();
     // uniforms
     offsetAttrib    = glGetUniformLocation(program, "offset");       // object movement
     MVPMatrixAttrib = glGetUniformLocation(program, "MVPMatrix");    // camera movement
     SamplerAttrib   = glGetUniformLocation(program, "myTexSampler");
     col_texAttrib   = glGetUniformLocation(program, "col_tex");
+    err = glGetError();
 
     // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
     glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
@@ -166,6 +175,7 @@ public:
     // Our ModelViewProjection : multiplication of our 3 matrices
     glm::mat4 MVPMatrix  = Projection * View * Model; // Remember, matrix multiplication is the other way around
     glUniformMatrix4fv(MVPMatrixAttrib, 1, GL_FALSE, &MVPMatrix[0][0]); // load matrix into shader
+    err = glGetError();
 
     //    glActiveTexture(GL_TEXTURE0);
     // Set our "myTextureSampler" sampler to user Texture Unit 0

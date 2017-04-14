@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../common/types.h"
+
 #include "Vec3f.hxx"
 #include "math.h"
 
@@ -37,11 +39,17 @@ namespace proj
   public:
     std::string Name;
     tShading t_Shade;
-    unsigned int ui_idTexture;    // TextureID
+
+/*    uint16 idVBO_pos;		// OpenGL VBO
+    uint16 idVBO_tex;
+    uint16 idVBO_col;
+*/
+    uint16 ui_idTexture;    // TextureID
+
     bool b_doDraw;
     bool b_Wireframe;
     Vec3f vPos;
-    unsigned int uiVertexCount;
+    uint16 uiVertexCount;
     bool b_moving;
 
     c_VAO::c_VAO()
@@ -53,6 +61,7 @@ namespace proj
       b_moving = false;
     }
   };
+
   /*    
   class c_Texture
   {

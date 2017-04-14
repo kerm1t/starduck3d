@@ -91,32 +91,57 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     }
 
     // vertices,
-    // textures --> OpenGL
-    void BuffersToOpenGL(Vec3f vPos = Vec3f(0.0f,0.0f,0.0f))
+    // texture-uv's, colors --> OpenGL
+    void Obj_To_VBO(Vec3f vPos = Vec3f(0.0f,0.0f,0.0f))
     {
+      GLenum err = GL_NO_ERROR;
+      
       unsigned int ui_idVBO = p_render->vVAOs.size();
-      for (unsigned int ui=0; ui < v_parts.size(); ui++)
+
+      // 2do: einmal glGenBuffers mit Anzahl vert + uv + col aufrufen
+      //     oder 1mal für vert,
+      //          1mal für uv's,
+      //          1mal für col
+      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
       {
-        glGenBuffers(1, &p_render->positionBuffer[ui_idVBO+ui]);
-        glBindBuffer(GL_ARRAY_BUFFER, p_render->positionBuffer[ui_idVBO+ui]);
+//        p_render->vVAOs[ui].idVBO_pos = (GLuint)p_render->ui_numVBOpos;
+        err = glGetError();
+        glGenBuffers(1, &p_render->positionBuffer[ui_idVBO + ui]);
+        err = glGetError();
+        glBindBuffer(GL_ARRAY_BUFFER, p_render->positionBuffer[ui_idVBO + ui]);
+        err = glGetError();
         glBufferData(GL_ARRAY_BUFFER, v_parts[ui].vertices.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW); // init data storage
+        err = glGetError();
         if (v_parts[ui].b_textured)
         {
+//          p_render->vVAOs[ui].idVBO_tex = (GLuint)p_render->ui_numVBOtex;
           glGenBuffers(1, &p_render->uvBuffer[ui_idVBO+ui]);
           glBindBuffer(GL_ARRAY_BUFFER, p_render->uvBuffer[ui_idVBO+ui]);
           glBufferData(GL_ARRAY_BUFFER, v_parts[ui].uvs.size()*sizeof(glm::vec2), &(v_parts[ui].uvs[0]), GL_STATIC_DRAW);
+          err = glGetError();
+//          p_render->ui_numVBOtex++;
         }
         else
         {
+//          p_render->vVAOs[ui].idVBO_col = (GLuint)p_render->ui_numVBOcol;
           // Hack!! hier sollten tatsächlich die Farben 'rein
           glGenBuffers(1, &p_render->colorBuffer[ui_idVBO+ui]);
           glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO+ui]);
           glBufferData(GL_ARRAY_BUFFER, v_parts[ui].uvs.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW);
+//          p_render->ui_numVBOcol++;
+        }
+//        p_render->ui_numVBOpos++;
+
+//        assert(err != glGetError());
+        if ((err = glGetError()) != GL_NO_ERROR)
+        {
+          //Process/log the error.
+          ui = 1;
         }
       }
 
       // --> die infos erstmal am Objekt speichern !?
-      for (unsigned int ui=0; ui < v_parts.size(); ui++)
+      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
       {
         proj::c_VAO vao;
         vao.Name = v_parts[ui].name;
@@ -139,6 +164,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         vao.vPos = vPos;
         p_render->vVAOs.push_back(vao);
       }
+
     }
   };
 }

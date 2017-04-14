@@ -13,14 +13,14 @@ proj::Proj::Proj()
 
 int proj::Proj::Init()
 {
-  m_render.Init(); // kann auch später aufgerufen werden...
+  m_render.Init(); // InitGL + Initshaders, kann auch später aufgerufen werden...
 
   // load geometry data (textures loaded within)
   // a) fill in all pos, color, uv infos into arrays
-  Load_Objs_to_VAOs();
+  Load_Objs_to_VBOs();
 
   // b) bind to VAO's
-  m_render.Bind_VAOs_NEU(); // now hand over VBO's to VAO's
+  m_render.Bind_VBOs_to_VAOs(); // now hand over VBO's to VAO's
 
   vTrajPosprev = glm::vec3(0.0f,0.0f,0.0f);
 
@@ -50,15 +50,15 @@ void proj::Proj::LoadMoving() // e.g. cars
   m_render.vVAOs.push_back(vao);
 }
 
-int proj::Proj::Load_Objs_to_VAOs() // load individual objects to different V{A|B}O's to be able to manipulate 'em later
+int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|B}O's to be able to manipulate 'em later
 {
   proj::c_VAO vao;
   CBMPLoader ldrBMP;
-
-  //    m_render.FPS(); // <-- wenn ich das ins VAO fülle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
-  //     beim LoadObjects(s.u.) call
-  //    m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("D:\\__OpenGL_files\\arial_font.bmp"));
-
+/*
+  m_render.FPS(); // <-- wenn ich das ins VAO fülle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
+                  //     beim LoadObjects(s.u.) call
+  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("D:\\__OpenGL_files\\arial_font.bmp"));
+*/
   m_render.Groundplane();
 
   // DUMMY
@@ -81,9 +81,9 @@ int proj::Proj::Load_Objs_to_VAOs() // load individual objects to different V{A|
   vao = m_scenebuilder.LoadGuardrails(); // "align" to road
   m_render.vVAOs.push_back(vao);
 
-  //    m_scenebuilder.m_curbstone.p_Render = &m_render;
-  //    vao = m_scenebuilder.LoadCurbstones(); // "align" to road
-  //    m_render.vVAOs.push_back(vao);
+//  m_scenebuilder.m_curbstone.p_Render = &m_render;
+//  vao = m_scenebuilder.LoadCurbstones(); // "align" to road
+//  m_render.vVAOs.push_back(vao);
 
   m_scenebuilder.m_tunnel.p_Render = &m_render;
   vao = m_scenebuilder.LoadTunnel(); // "align" to road
@@ -98,27 +98,28 @@ int proj::Proj::Load_Objs_to_VAOs() // load individual objects to different V{A|
   // iv) Load VAOs for Moving objects
   //    m_render.m_Moving[0] = &m_moving[0]; // <-- movement applied to vertexshader(offset) while drawing/rendering
   m_render.m_Moving[1] = &m_moving[1];
-
+ 
+  /*  GLenum err = glGetError();
   obj::CObject car(&m_render);
   car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
   car.Load(0.04f); // scaled
-  car.BuffersToOpenGL(Vec3f(-5.0f,-1.0f,0.0f)); // <-- pos. funktioniert hier nicht
-
+  car.Obj_To_VBO(Vec3f(-5.0f,-1.0f,0.0f)); // <-- pos. funktioniert hier nicht
+  */
   obj::CObject car2(&m_render);
   car2.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep.obj";
   car2.Load(0.4f); // scaled
-  car2.BuffersToOpenGL(Vec3f(10.0f,3.0f,0.0f));
-  //    car2.BuffersToOpenGL(Vec3f(15.0f,3.0f,0.0f));
+  car2.Obj_To_VBO(Vec3f(10.0f, 3.0f, 0.0f));
+//  car2.BuffersToOpenGL(Vec3f(15.0f,3.0f,0.0f));
 
-  obj::CObject barrier1(&m_render);
+/*  obj::CObject barrier1(&m_render);
   barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
   barrier1.Load();
-  barrier1.BuffersToOpenGL();
+  barrier1.Obj_To_VBO();
   for (unsigned int ui=1;ui<5;ui++)
   {
-    barrier1.BuffersToOpenGL(Vec3f((float)ui*1.0f,0.0f,0.0f));
+    barrier1.Obj_To_VBO(Vec3f((float)ui*1.0f,0.0f,0.0f));
   }
-
+  */
   assert(m_render.vVAOs.size()<m_render.VBOCOUNT);
 
   return 0;
@@ -138,7 +139,7 @@ int proj::Proj::DoIt()
     m_moving[1].iTspeed++;
     if (m_moving[1].iTspeed >= 10)
     {
-      m_moving[1].iTspeed = 0;
+/*      m_moving[1].iTspeed = 0;
       if (m_moving[1].iT < m_scene.trajectory_len-2) m_moving[1].iT++; else m_moving[1].iT = 0;
       int iTx = m_moving[1].iT;
       glm::vec3 v3 = glm::vec3(m_scene.m_SceneLoader.m_c_Trajectory[iTx].s_Pos.rl_X,
@@ -148,7 +149,7 @@ int proj::Proj::DoIt()
       glm::vec3 vMove = v3-vTrajPosprev; // consider mouse controlled position change
       m_moving[1].Move(vMove);
       vTrajPosprev = v3;
-      /*
+*/      /*
       //	if (bCamStickToCar)
       //	{
       glm::vec3 vVehDirNorm = glm::normalize(m_moving[1].direction);

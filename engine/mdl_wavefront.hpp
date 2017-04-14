@@ -18,7 +18,7 @@
 // v  - Vertex (x,y,z)
 // vt - Texture vertex (x,y)
 // vn - Normal vertex (x,y,z)
-// usemtl CBRed
+// usemtl CBRed --> get "newmtl CBRed" from .mtl-file
 // f  - face (triangle) combines V,VT,VN indices
 //                               V,VN (not textured)
 //                               V,VT (e.g. normals in extra bumpmap)

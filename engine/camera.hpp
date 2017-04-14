@@ -8,12 +8,15 @@
 #include "stdafx.h"
 #pragma once
 
+#include <math.h>
 #include "glm.hpp" // is there an _ext ??
 #include <gtc/matrix_transform.hpp>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <gl\gl.h>    // Header File For The OpenGL32 Library
 #include <gl\glu.h>   // Header File For The GLu32 Library
+
+//#define DEGTORAD ()
 
 class Camera
 {
@@ -38,7 +41,7 @@ public:
   glm::mat4 Projection; // change @ init
   glm::mat4 projectionSave;
   glm::mat4 View;       // camera move
-  glm::mat4 Model;	  // e.g. object rotate / translate	
+  glm::mat4 Model;      // e.g. object rotate / translate	
 
   GLuint * p_MVPMatrixAttrib;
   // ====----
@@ -50,23 +53,33 @@ public:
   glm::float32 zFar;		// e.g. 100.0f
 
   // View (extrinsics)
-  glm::vec3 Pos;          // eye - in glm-Sprech
-  glm::vec3 At;           // center (viewing "target")
-  glm::vec3 Norm;         // up
-  glm::vec3 Dir;          // viewing direction
+  glm::vec3 Pos;        // eye - in glm-Sprech
+  glm::vec3 At;         // center (viewing "target")
+  glm::vec3 Norm;       // up
+  glm::vec3 Dir;        // viewing direction
+  glm::vec3 DirMouse;   // 
+
+  glm::float32 mouselook_DEG, mouselook_RAD; // e.g. 90.0f
 
   Camera()
   {
     fovy_DEG =  60.0f;
-    fovy_RAD = fovy_DEG * 3.14159f/180.0f;
+    fovy_RAD = fovy_DEG * 3.14159f/180.0f; // 2do, DEGTORAD, math.pi
     aspect   =   4.0f / 3.0f;
     zNear    =   1.0f;
     zFar     = 100.0f;
 
-    Norm = glm::vec3(0.0f,0.0f,1.0f);
+    mouselook_DEG = 180.0f;
+    mouselook_RAD = mouselook_DEG * 3.14159f/180.0f;
+
+    Dir[0] =  sin(0.0f);
+    Dir[1] =  1.0f;
+    Dir[2] = -sin(0.0f);
+
+    Norm = glm::vec3(0.0f,0.0f,1.0f); // z = up
   }
 
-  void changeAspect(int _width, int _height)
+  void change_Aspect(int _width, int _height)
   {
     width  = _width;
     height = _height;
@@ -96,12 +109,8 @@ public:
   }
 
   //	void updateView(glm::vec3 _Pos, glm::vec3 _At, glm::vec3 _Norm)
-  void updateView()
+  void update_View()
   {
-    //		Pos  = _Pos;
-    //		At   = _At;
-    //		Norm = _Norm;
-
     View = glm::lookAt(
       glm::vec3( Pos[0], Pos[1], Pos[2]), // Camera is at (x,y,z), in World Space
       glm::vec3(  At[0],  At[1],  At[2]), // and looks at ...
@@ -115,12 +124,12 @@ public:
   void View(Pos,At,Norm);
   void Model(matrix);
   */
-  void changeModel(glm::mat4 _Model)
+  void change_Model(glm::mat4 _Model)
   {
     Model = _Model;
     uploadMVP();
   }
-  void resetModel()
+  void reset_Model()
   {
     Model = glm::mat4(1.0f);
     uploadMVP();
@@ -129,63 +138,68 @@ public:
   void FollowObj()
   {
   }
-  /*
-  void Move_by_Mouse(glm::vec2 mouse)
+
+  void MoveFwd()
   {
-  float x, y, z;
-  float xto, yto, zto;
-
-  float w_half = width / 2.0f;
-  float h_half = height/2.0f;
-  float m_x = (mouse.x-w_half) / w_half;// * PI; // [0..1] 1 = 180deg = PI
-  float m_z = (mouse.y-h_half) / h_half;      // Mouse-y = z-Achse
-
-  // get position within scene
-  //		m_proj.m_render.get_xyz_Hack(iT,x,y,z,xto,yto,zto);
-  x = 0.0f;
-  y = 0.0f;
-  z = 1.34f;
-
-  xto  = sin(m_x * fovy_RAD) * 1.0f;
-  yto  = y + 1.0f;
-  zto  = z - sin(m_z * fovy_RAD/aspect) * 1.0f;
-  Pos  = glm::vec3(x, y, z);               // Camera is at (x,y,z), in World Space
-  At = glm::vec3(xto, yto, zto); // and looks at ...
-  Norm = glm::vec3(0, 0, 1);  // Head is up <-- change on Oculus!
-  }
-  */	
-  void Move()
-  {
+#define VELO_FIRST  25.0f;
+#define VELO_SECOND 12.0f;
     // in "Dir" Richtung weiterbewegen
-    Pos += Dir * 1.0f;
+    Pos += DirMouse * 1.0f /VELO_FIRST; // /50 war zu langsam
+  }
+  void MoveLeft()
+  {
+    glm::vec3 ortho = glm::vec3(0,0,1);
+    glm::vec3 dirortho = glm::cross(DirMouse,ortho);
+    Pos -= dirortho;
+  }
+  void MoveBack()
+  {
+#define VELO_BACK   50.0f;
+    Pos -= DirMouse * 1.0f /VELO_BACK;
+  }
+  void MoveRight()
+  {
+    glm::vec3 ortho = glm::vec3(0,0,1);
+    glm::vec3 dirortho = glm::cross(DirMouse,ortho);
+    Pos += dirortho;
+  }
+  void TurnLeft() // keep position
+  {
+    // 90 deg. left
+//    glm::vec3 ortho = glm::vec3(0,0,1);
+//    Dir = glm::cross(Dir,ortho);
+    // 
+    float thetaRAD = -5.0f * 3.14159f/180.0f  /20.0f; // /50 war zu langsam
+    Dir[0] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD);
+    Dir[1] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD);
+  }
+  void TurnRight() // keep position
+  {
+//    glm::vec3 ortho = glm::vec3(0,0,-1);
+//    Dir = glm::cross(Dir,ortho);
+    float thetaRAD = 5.0f * 3.14159f/180.0f  /20.0f; // /50 war zu langsam
+    Dir[0] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD);
+    Dir[1] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD);
   }
 
   void Look_with_Mouse(glm::vec2 mouse)
   {
-    //		float x, y, z;
-    //		float xto, yto, zto;
-
-    float w_half = width / 2.0f;
-    float h_half = height/2.0f;
-    float m_x = (mouse.x-w_half) / w_half;// * PI; // [0..1] 1 = 180deg = PI
-    float m_z = (mouse.y-h_half) / h_half;      // Mouse-y = z-Achse
-
-    // get position within scene
-    //		m_proj.m_render.get_xyz_Hack(iT,x,y,z,xto,yto,zto);
-    //		x = 0.0f;
-    //		y = 0.0f;
-    //		z = 1.34f;
-    /////        float turnangle = 120.0f*3.14/180.0f;
-
-    //		xto  = Pos[0] + sin(m_x * fovy_RAD) * 1.0f;
-    //		yto  = Pos[1] + 1.0f;
-    //		zto  = Pos[2] - sin(m_z * fovy_RAD/aspect) * 1.0f;
-    Dir[0] =  sin(m_x * fovy_RAD) * 1.0f;
+    float w_half = width  / 2.0f;
+    float h_half = height / 2.0f;
+    float m_x = (mouse.x-w_half) / w_half;
+    float m_z = (mouse.y-h_half) / h_half;
+/*
+    Dir[0] =  sin(m_x * mouselook_RAD);
     Dir[1] =  1.0f;
-    Dir[2] = -sin(m_z * fovy_RAD/aspect) * 1.0f;
-    //		Pos  = glm::vec3(x, y, z);               // Camera is at (x,y,z), in World Space
-    //		At = glm::vec3(xto, yto, zto); // and looks at ...
-    At = Pos + Dir;
+    Dir[2] = -sin(m_z * mouselook_RAD/aspect);
+*/
+    float thetaRAD = m_x * mouselook_RAD;
+    DirMouse[1] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD); // DirM...[1] ?
+    DirMouse[0] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD); // DirM...[0] ?
+    DirMouse[2] = -sin(m_z * mouselook_RAD/aspect);
+
+//    At = Pos + Dir;
+    At = Pos + DirMouse;
     Norm = glm::vec3(0, 0, 1);  // Head is up <-- change on Oculus!
   }
 
