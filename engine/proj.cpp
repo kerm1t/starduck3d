@@ -54,11 +54,11 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 {
   proj::c_VAO vao;
   CBMPLoader ldrBMP;
-/*
+
   m_render.FPS(); // <-- wenn ich das ins VAO fülle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
                   //     beim LoadObjects(s.u.) call
   m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("D:\\__OpenGL_files\\arial_font.bmp"));
-*/
+
   m_render.Groundplane();
 
   // DUMMY

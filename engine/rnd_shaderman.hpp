@@ -22,12 +22,18 @@ public:
   GLuint colAttrib;
   GLuint texAttrib; // uv
 
-  // uniform
+  // uniform (Shader1)
   GLuint SamplerAttribFPS; // Shader #2 !!!
   GLuint offsetAttrib; // <-- for object-movement
   GLuint MVPMatrixAttrib;
   GLuint SamplerAttrib; // sampler2D
   GLuint col_texAttrib; // 0=col,1=tex
+
+  // uniforms **Shader2**
+//  GLuint uni_OvlID;
+  GLuint ovl_attr_pos;
+  GLuint ovl_attr_tex;
+  GLuint ovl_uni_ID;
 
   // s. http://open.gl/drawing
   void InitShaders()
@@ -38,25 +44,46 @@ public:
     // "GLSL" starts -->
 
     /* vertex shader : output always to "homogeneous clip space", i.e. (-1:1, -1:1, -1:1, -1:1) */
+/*    const GLchar * vshd_src_FPS[] = {
+      "#version 330 core\n" // 410 not supported by SONY OpenGL driver
+      "in vec2 vp_clipspace;\n" // vp = vertexposition
+      "in vec2 vertexUV;\n"
+      "out vec2 UV;\n"
+      "void main()\n"
+      "{\n"
+	// Output position of the vertex, in clip space
+	// map [0..800][0..600] to [-1..1][-1..1]
+      "    vec2 vp_homogeneousspace = vp_clipspace - vec2(400,300);\n" // [0..800][0..600] -> [-400..400][-300..300]
+      "    vp_homogeneousspace /= vec2(400,300);\n"
+      "    gl_Position =  vec4(vp_homogeneousspace,0,1);\n"
+      "    UV = vertexUV;\n"
+      "}"
+    };
+*/
+/*
+  4 coord.systems: Object, World, View, Clip
+  ==========================================
+  Object --> Model Matrix --> World
+  World --> View matrix --> View
+  View --> Projection Matrix (w. implicit homogeneous divide) --> Clip
+*/
+    /* vertex shader : output always to "homogeneous clip space", i.e. (-1:1, -1:1, -1:1, -1:1) */
     const GLchar * vshd_src_FPS[] = {
       "#version 330 core\n" // 410 not supported by SONY OpenGL driver
       "in vec2 vp_clipspace;\n"
       "out vec2 UV;\n"
       "void main()\n"
       "{\n"
-      //        "    UV = (vp+1.0) * 0.5;\n"
+      "    UV = (vp_clipspace+1.0) * 0.5;\n"
       "    gl_Position = vec4(vp_clipspace.x, vp_clipspace.y, 0.0, 1.0);\n"
-      //        "    gl_Position.xy *= 0.5;\n"
-      //        "    vec2 vp_hom = vp_clipspace - vec2(400,300);\n"
-      //        "    vp_hom /= vec2(400,300);\n"
-      //        "    gl_Position = vec4(vp_hom, 0.0, 1.0);\n"
-      "    UV = vp_clipspace;\n"
+      "    gl_Position.xy *= 0.5;\n"
       "}"
     };
     const GLchar * fshd_src_FPS[] = {
       "#version 330 core\n"
       "in vec2 UV;\n"
-      "out vec4 color ;\n"
+      "out vec3 color;\n"
+      "uniform sampler2D myTexSampler;\n"
       "void main()\n"
       "{\n"
       "    color = texture(myTexSampler, UV).rgb;\n" // texture2D ist deprecated
@@ -70,8 +97,10 @@ public:
       "uniform mat4 MVPMatrix;\n"
       "in vec3 position;\n"
       "uniform vec3 offset;\n"  // <-- for object-movement = uniform!!
+// textured
       "in vec2 vertexUV;\n"
       "out vec2 UV;\n"
+// colored
       "in vec3 color;\n"
       "out vec3 fragColor;\n"
       "void main()\n"
@@ -88,7 +117,7 @@ public:
       "#version 330 core\n"
       "in vec2 UV;\n"
       "uniform sampler2D myTexSampler;\n" // <-- hier hatte ich das Semikolon vergessen
-      "uniform int col_tex;\n" // 0 = color, 1 = texture
+      "uniform int col_tex;\n"            // 0 = color, 1 = texture
       "in vec3 fragColor;\n"
       "out vec3 outColor;\n"              // <-- texture
       //        "out vec4 outColor;\n"              // <-- color
@@ -107,12 +136,14 @@ public:
     glShaderSource(vertexShader, 1, vertexShaderSource, 0);
     glCompileShader(vertexShader);
     glGetShaderInfoLog(vertexShader, 512, NULL, buffer); // <-- debug, kann man sich schoen im debugger ansehen!!
+// 2do: check that buffer = "No errors."
     err = glGetError(); 
     
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, fragmentShaderSource, 0); // set array of strings as source code
     glCompileShader(fragmentShader); // compile
     glGetShaderInfoLog(fragmentShader, 512, NULL, buffer); // <-- debug
+// 2do: check that buffer = "No errors."
     err = glGetError();
 
     program = glCreateProgram(); // create empty program object
@@ -128,15 +159,22 @@ public:
     glShaderSource(vshaderFPS, 1, vshd_src_FPS, 0);
     glCompileShader(vshaderFPS);
     glGetShaderInfoLog(vshaderFPS, 512, NULL, buffer); // <-- debug, kann man sich schoen im debugger ansehen!!
+// 2do: check that buffer = "No errors."
     GLuint fshaderFPS = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fshaderFPS, 1, fshd_src_FPS, 0); // set array of strings as source code
     glCompileShader(fshaderFPS); // compile
     glGetShaderInfoLog(fshaderFPS, 512, NULL, buffer); // <-- debug
+// 2do: check that buffer = "No errors."
     program_fps = glCreateProgram(); // create empty program object
     glAttachShader(program_fps, vshaderFPS); // attach shader
     glAttachShader(program_fps, fshaderFPS); // attach shader
     glLinkProgram(program_fps); // link
     err = glGetError();
+    glUseProgram(program_fps);
+    ovl_attr_pos = glGetAttribLocation(program_fps, "vp_clipspace");
+//    ovl_attr_col = glGetAttribLocation(program_fps, "color");
+    ovl_attr_tex = glGetAttribLocation(program_fps, "vertexUV"); // UV geht auch
+    ovl_uni_ID   = glGetUniformLocation(program_fps,"myTexSampler");
 
     memset(buffer,0,512);
     sprintf(buffer,"%s",gluErrorString(glGetError()));
@@ -155,7 +193,7 @@ public:
     colAttrib       = glGetAttribLocation(program, "color");
     texAttrib       = glGetAttribLocation(program, "vertexUV");
     err = glGetError();
-    // uniforms
+    // uniforms, 2do: die Variablen sollen nicht ...Attrib, sondern ...Uniform heissen!!
     offsetAttrib    = glGetUniformLocation(program, "offset");       // object movement
     MVPMatrixAttrib = glGetUniformLocation(program, "MVPMatrix");    // camera movement
     SamplerAttrib   = glGetUniformLocation(program, "myTexSampler");
@@ -177,9 +215,9 @@ public:
     glUniformMatrix4fv(MVPMatrixAttrib, 1, GL_FALSE, &MVPMatrix[0][0]); // load matrix into shader
     err = glGetError();
 
-    //    glActiveTexture(GL_TEXTURE0);
+//    glActiveTexture(GL_TEXTURE0);
     // Set our "myTextureSampler" sampler to user Texture Unit 0
-    //    glBindTexture(GL_TEXTURE_2D, Texture[1]);
-    //    glUniform1i(SamplerAttrib, 0);
+//    glBindTexture(GL_TEXTURE_2D, Texture[1]);
+//    glUniform1i(SamplerAttrib, 0);
   }
 };

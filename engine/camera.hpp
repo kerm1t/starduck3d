@@ -72,9 +72,13 @@ public:
     mouselook_DEG = 180.0f;
     mouselook_RAD = mouselook_DEG * 3.14159f/180.0f;
 
-    Dir[0] =  sin(0.0f);
-    Dir[1] =  1.0f;
-    Dir[2] = -sin(0.0f);
+    Pos[0] = 0.0f;
+    Pos[1] = 0.0f;
+    Pos[2] = 1.34f;
+
+    Dir[0] = 1.0f;
+    Dir[1] = 1.0f;
+    Dir[2] = 0.0f;
 
     Norm = glm::vec3(0.0f,0.0f,1.0f); // z = up
   }
@@ -84,7 +88,7 @@ public:
     width  = _width;
     height = _height;
     aspect = glm::float32(_width)/glm::float32(_height);
-    //		updatePos(); // <-- 2do: hier nur die projeciton updaten und dann die MVP neu erzeugen und zur Graka hochladen
+    //		updatePos(); // <-- 2do: hier nur die projection updaten und dann die MVP neu erzeugen und zur Graka hochladen
   }
 
   void init_MVP()
@@ -162,6 +166,20 @@ public:
     glm::vec3 ortho = glm::vec3(0,0,1);
     glm::vec3 dirortho = glm::cross(DirMouse,ortho);
     Pos += dirortho;
+  }
+  void StrafeLeft() // move position
+  {
+    // 90 deg. left
+    glm::vec3 ortho = glm::vec3(0,0,1);
+    glm::vec3 dirTMP = glm::cross(DirMouse,ortho);
+    Pos -= dirTMP;
+  }
+  void StrafeRight() // move position
+  {
+    // 90 deg. left
+    glm::vec3 ortho = glm::vec3(0,0,1);
+    glm::vec3 dirTMP = glm::cross(DirMouse,ortho);
+    Pos += dirTMP;
   }
   void TurnLeft() // keep position
   {

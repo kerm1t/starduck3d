@@ -1,3 +1,6 @@
+14.4.2017
+- Kamera-Handling, move, turn, mit Maus. Auch steuern und beschleunigen (Abfrage mehrerer Keys gleichzeitig möglich)
+
 26.3.2017
 - auf glew 2.0.0 umgestellt (von 1.1.0), da ich hoffte, mit dem RenderDoc kompatible zu werden
   --> hat aber nicht geholfen

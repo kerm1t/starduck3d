@@ -1,0 +1,6 @@
+21.4.
+2ter Shader zeigt keine Bitmap an, nach Debuggen wird klar: Fehler 1282 beim glActiveTexture im Render::DrawVAOs_NEU().
+Der Shader_fps zeigt keinen Fehler an.
+Insgesamt scheint der Intel-Grafikchip im SONY Laptop deutlich toleranter als die NVidia 970 zu sein :-)
+nächste Frage: wie kann ich den ersten Shader ausschalten
+

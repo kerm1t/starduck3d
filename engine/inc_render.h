@@ -17,13 +17,13 @@ namespace proj
   // ========
   // Textures
   // ========
-#define TEX_ARIALFONT    0
-#define TEX_ROADSURFACE  1
-#define TEX_TRAFFICSIGN  2
-#define TEX_CAR          3 // <-- this is actually the body
-#define TEX_CAR_WINDOWS  4
-#define TEX_CAR_TIRE     5
-#define TEX_BARRIER      6
+#define TEX_ARIALFONT    1 // war vorher 0, da gab's einen Fehler!!
+#define TEX_ROADSURFACE  2
+#define TEX_TRAFFICSIGN  3
+#define TEX_CAR          4 // <-- this is actually the body
+#define TEX_CAR_WINDOWS  5
+#define TEX_CAR_TIRE     6
+#define TEX_BARRIER      7
   static const unsigned int TEXCOUNT = 7;
 
   enum tShading {SHADER_COLOR_FLAT, SHADER_TEXTURE};
