@@ -40,9 +40,10 @@ int proj::Render::Init()
   // schneidet "zu viel" weg -->    glEnable(GL_CULL_FACE);
 
   InitShader1(); // <-- wenn ich das auskommentiere, dann erscheint ein weisses Rechteck oben rechts !?
-  InitShader2();
-//  Initial_MVP_Upload(); // --> s.nebulus.cpp, RenderThread(), m_cam.update_View()
+  InitShader2(); // Splash screen
 
+  b_splash_screen = true;
+    
   return 0;
 }
 
@@ -568,7 +569,9 @@ void proj::Render::DrawVAOs_NEU()
   GLenum err = GL_NO_ERROR;
 
   // draw Scene + Objects
-  for (unsigned int ui=0; ui < vVAOs.size(); ui++) // start with 1 as 0 is fps-counter
+  unsigned int ui_start = 1;
+  if (b_splash_screen) ui_start = 0;
+  for (unsigned int ui = ui_start; ui < vVAOs.size(); ui++) // start with 1 as 0 is fps-counter
   {
     if (ui == 0)
       glUseProgram(program_fps);

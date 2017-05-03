@@ -65,6 +65,8 @@ namespace proj
 
 //    std::vector<GLuint> vPositionBuffer; // stores position
 
+    bool b_splash_screen;
+
     // =============
     Camera * p_cam;
 

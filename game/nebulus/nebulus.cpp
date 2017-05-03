@@ -299,6 +299,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_KEYDOWN:
     switch (wParam)
     {
+    case 32: // Space
+      m_proj.m_render.b_splash_screen = !m_proj.m_render.b_splash_screen;
+      break;
     case 37: // ARROW-LEFT
       if (bCamStickToTrack)
       {

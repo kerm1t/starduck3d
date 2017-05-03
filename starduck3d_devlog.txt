@@ -7,6 +7,8 @@ Folgendes geht ins "Leere":
       printf("Image could not be opened\n");
       return 0;
     }
+- Anton's Idee: mit dem Auto fahren (2do)
+- Idee -> Errorhandler-Klasse, die sowohl auf Konsole, als auch in OpenGL-Console ausgeben kann (2do)
 
 1.5.
 in welcher Version weiterarbeiten, Nvidia oder Intel GraKa?
