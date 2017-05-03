@@ -48,7 +48,7 @@ namespace proj
   private:
     /* ===== FUNCTIONS ===== */
 
-    void LoadMoving();
+//    void LoadMoving();
 
     int Load_Objs_to_VBOs();
   };

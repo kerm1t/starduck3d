@@ -27,6 +27,7 @@ public:
 
     // Open the file
     FILE * file = fopen(imagepath,"rb");
+    assert(file);
     if (!file)
     {
       printf("Image could not be opened\n");
@@ -76,7 +77,6 @@ public:
 
     // Give the image to OpenGL
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);   // hier gibt es Schwierigkeiten mit .bmp,
-
 
     delete data;
 

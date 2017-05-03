@@ -71,8 +71,8 @@ namespace proj
     proj::Scene * m_Scene;
 
     obj::Moving * m_Moving[2]; // Pointer to Moving objects, as their moving coord's are applied while drawing/rendering
-    //		obj::CObjParts * p_car;
-    //		obj::CObjParts * p_car2;
+//    obj::CObjParts * p_car;
+//    obj::CObjParts * p_car2;
 
     Render();
     int Init();
@@ -86,11 +86,11 @@ namespace proj
     void FPS();
     void Triangles_to_VBO(Vec3f v3pos); // most simple VBO/VAO, just in case errors happen...
     int Scene_to_VBO();//uint * p_idxVBO);
-    //        int DestroyScene_VBO();
+//    int DestroyScene_VBO();
 
     void get_xyz_Hack(int iT, float &x, float &y, float &z, float &xto, float &yto, float &zto);
 
-	  void Bind_VBOs_to_VAOs();
+    void Bind_VBOs_to_VAOs();
     void DrawVAOs_NEU();
 
   private:

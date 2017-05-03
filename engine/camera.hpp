@@ -8,7 +8,7 @@
 #include "stdafx.h"
 #pragma once
 
-#include <math.h>
+//#include <math.h>
 #include "glm.hpp" // is there an _ext ??
 #include <gtc/matrix_transform.hpp>
 #define GLEW_STATIC
@@ -26,7 +26,7 @@ private:
     glm::mat4 MVPMatrix  = Projection * View * Model; // Remember, matrix multiplication is the other way around
     // ----------------------------------------------------------------------
     // Hier gibt's einen Fehler beim Umschalten auf die AMD Radeon GraKa --->
-    glUniformMatrix4fv(*p_MVPMatrixAttrib, 1, GL_FALSE, &MVPMatrix[0][0]); // load matrix into shader
+    glUniformMatrix4fv(*p_unif_MVPMatrix, 1, GL_FALSE, &MVPMatrix[0][0]); // load matrix into shader
     // <--- Hier gibt's einen Fehler beim Umschalten auf die AMD Radeon GraKa
     // ----------------------------------------------------------------------
   }
@@ -43,7 +43,7 @@ public:
   glm::mat4 View;       // camera move
   glm::mat4 Model;      // e.g. object rotate / translate	
 
-  GLuint * p_MVPMatrixAttrib;
+  GLuint * p_unif_MVPMatrix;
   // ====----
 
   // Projection (intrinsics)
@@ -88,7 +88,7 @@ public:
     width  = _width;
     height = _height;
     aspect = glm::float32(_width)/glm::float32(_height);
-    //		updatePos(); // <-- 2do: hier nur die projection updaten und dann die MVP neu erzeugen und zur Graka hochladen
+//    updatePos(); // <-- 2do: hier nur die projection updaten und dann die MVP neu erzeugen und zur Graka hochladen
   }
 
   void init_MVP()
@@ -123,11 +123,6 @@ public:
     uploadMVP();
   }
 
-  /*
-  void Projection(fovy, aspect, zNear, zFar);
-  void View(Pos,At,Norm);
-  void Model(matrix);
-  */
   void change_Model(glm::mat4 _Model)
   {
     Model = _Model;
@@ -169,14 +164,12 @@ public:
   }
   void StrafeLeft() // move position
   {
-    // 90 deg. left
     glm::vec3 ortho = glm::vec3(0,0,1);
     glm::vec3 dirTMP = glm::cross(DirMouse,ortho);
     Pos -= dirTMP;
   }
   void StrafeRight() // move position
   {
-    // 90 deg. left
     glm::vec3 ortho = glm::vec3(0,0,1);
     glm::vec3 dirTMP = glm::cross(DirMouse,ortho);
     Pos += dirTMP;
@@ -184,17 +177,12 @@ public:
   void TurnLeft() // keep position
   {
     // 90 deg. left
-//    glm::vec3 ortho = glm::vec3(0,0,1);
-//    Dir = glm::cross(Dir,ortho);
-    // 
     float thetaRAD = -5.0f * 3.14159f/180.0f  /20.0f; // /50 war zu langsam
     Dir[0] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD);
     Dir[1] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD);
   }
   void TurnRight() // keep position
   {
-//    glm::vec3 ortho = glm::vec3(0,0,-1);
-//    Dir = glm::cross(Dir,ortho);
     float thetaRAD = 5.0f * 3.14159f/180.0f  /20.0f; // /50 war zu langsam
     Dir[0] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD);
     Dir[1] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD);
@@ -206,17 +194,13 @@ public:
     float h_half = height / 2.0f;
     float m_x = (mouse.x-w_half) / w_half;
     float m_z = (mouse.y-h_half) / h_half;
-/*
-    Dir[0] =  sin(m_x * mouselook_RAD);
-    Dir[1] =  1.0f;
-    Dir[2] = -sin(m_z * mouselook_RAD/aspect);
-*/
+    
+    // DirMouse anstatt Dir benutzen!
     float thetaRAD = m_x * mouselook_RAD;
     DirMouse[1] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD); // DirM...[1] ?
     DirMouse[0] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD); // DirM...[0] ?
     DirMouse[2] = -sin(m_z * mouselook_RAD/aspect);
 
-//    At = Pos + Dir;
     At = Pos + DirMouse;
     Norm = glm::vec3(0, 0, 1);  // Head is up <-- change on Oculus!
   }

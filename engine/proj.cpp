@@ -27,7 +27,7 @@ int proj::Proj::Init()
   return 0;
 }
 
-void proj::Proj::LoadMoving() // e.g. cars
+/*void proj::Proj::LoadMoving() // e.g. cars
 {
   Vec3f p = Vec3f(2.0f,1.0f,0.0f);
   Vec3f d = Vec3f(3.0f,1.0f,0.0f);
@@ -49,6 +49,7 @@ void proj::Proj::LoadMoving() // e.g. cars
   vao.t_Shade = SHADER_COLOR_FLAT;
   m_render.vVAOs.push_back(vao);
 }
+*/
 
 int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|B}O's to be able to manipulate 'em later
 {
@@ -57,7 +58,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
   m_render.FPS(); // <-- wenn ich das ins VAO fülle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
                   //     beim LoadObjects(s.u.) call
-  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("D:\\__OpenGL_files\\arial_font.bmp"));
+//  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("D:\\__OpenGL_files\\arial_font.bmp")); <-- 2do: errorhandler + log visualisieren
+  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\arial_font.bmp"));
 
   m_render.Groundplane();
 

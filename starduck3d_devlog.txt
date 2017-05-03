@@ -1,3 +1,19 @@
+3.5.
+06:31, wie sich soeben herausstellte, war der 1282 "NVidia"-bug ein simpler "kann Textur-file nicht laden" Fehler.
+Was lernen wir daraus? wir brauchen dringend ein gutes Fehlerhandling + Visualierung
+Folgendes geht ins "Leere":
+    if (!file)
+    {
+      printf("Image could not be opened\n");
+      return 0;
+    }
+
+1.5.
+in welcher Version weiterarbeiten, Nvidia oder Intel GraKa?
+Erstmal hier auf Nvidia aufräumen
+2do: zweiten Shader wieder ausschalten, um überhaupt die Szene wieder zu sehen
+
+
 21.4.
 2ter Shader zeigt keine Bitmap an, nach Debuggen wird klar: Fehler 1282 beim glActiveTexture im Render::DrawVAOs_NEU().
 Der Shader_fps zeigt keinen Fehler an.

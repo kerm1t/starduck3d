@@ -17,16 +17,16 @@ static stb_fontchar fontdata[STB_SOMEFONT_NUM_CHARS];
 // VBO tutorial: http://www.ozone3d.net/tutorials/opengl_vbo.php
 // using multiple vs. using 1 large VBO: https://www.opengl.org/discussion_boards/showthread.php/176365-Working-with-multiple-VBO-s
 
-proj::Render::Render()
+proj::Render::Render() // constructor
 {
   hRC=NULL;                           // Permanent Rendering Context
   hDC=NULL;                           // Private GDI Device Context
-  //    hWnd=NULL;                          // Holds Our Window Handle
+//  hWnd=NULL;                          // Holds Our Window Handle
 
-  static unsigned char fontpixels[STB_SOMEFONT_BITMAP_HEIGHT][STB_SOMEFONT_BITMAP_WIDTH];
-  STB_SOMEFONT_CREATE(fontdata, fontpixels, STB_SOMEFONT_BITMAP_HEIGHT);
+//  static unsigned char fontpixels[STB_SOMEFONT_BITMAP_HEIGHT][STB_SOMEFONT_BITMAP_WIDTH];
+//  STB_SOMEFONT_CREATE(fontdata, fontpixels, STB_SOMEFONT_BITMAP_HEIGHT);
 
-  Init_Textures();
+//  Init_Textures();
 }
 
 int proj::Render::Init()
@@ -39,7 +39,9 @@ int proj::Render::Init()
   glEnable(GL_DEPTH_TEST); // <-- !
   // schneidet "zu viel" weg -->    glEnable(GL_CULL_FACE);
 
-  InitShaders(); // <-- wenn ich das auskommentiere, dann erscheint ein weisses Rechteck oben rechts !?
+  InitShader1(); // <-- wenn ich das auskommentiere, dann erscheint ein weisses Rechteck oben rechts !?
+  InitShader2();
+//  Initial_MVP_Upload(); // --> s.nebulus.cpp, RenderThread(), m_cam.update_View()
 
   return 0;
 }
@@ -140,14 +142,14 @@ HDC proj::Render::GL_attach_to_DC(HWND hWnd)
   ReSizeGLScene(width, height); // Set Up Our Perspective GL Screen
   return hDC;
 }
-
+/*
 void proj::Render::Init_Textures()
 {
   // s. proj.Init() ...
   //    aTextures[0].fXWorld = 5.0f; // [m]
   //    aTextures[0].fYWorld = 5.0f; // [m]
 }
-
+*/
 /* Bind vertex buffers to VAO's
 vertex buffers can hold any information: position, color, uv-coordinates
 VAO's only exist from OpengL >=
@@ -162,28 +164,28 @@ void proj::Render::Bind_VBOs_to_VAOs() // s. http://www.arcsynthesis.org/gltut/P
   }
   glGenVertexArrays(vVAOs.size(), &vVertexArray[0]);
 
-  /*
-  ===== 2d-VBO's (FPS shader) =====
-  */
+  // ===== 2d-VBO's (FPS shader) =====
+
   unsigned int iVAO = 0;
   glBindVertexArray(vVertexArray[iVAO]);  // select/bind array and
-  // attach a)  position and
+  // attach a) position and
   //        b) texture/uv-buffers
   glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[iVAO]);
-  glVertexAttribPointer(ovl_attr_pos, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // wichtig, hier das richtige Attrib (nicht 0 oder 1) zu übergeben!
-  glEnableVertexAttribArray(ovl_attr_pos);
+  glVertexAttribPointer(sh2_attr_pos, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // wichtig, hier das richtige Attrib (nicht 0 oder 1) zu übergeben!
+  glEnableVertexAttribArray(sh2_attr_pos);
   err = glGetError();
 
   glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[iVAO]); // u,v-texture-coords
-  glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-  glEnableVertexAttribArray(texAttrib);
+  glVertexAttribPointer(sh2_attr_tex, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // texAttrib
+  glEnableVertexAttribArray(sh2_attr_tex);
   err = glGetError();
 
   glBindVertexArray(0); // Unbind
   err = glGetError();
 
 
-  // 3d-VBO's (regular shader, i.e. Scene + Objects)
+  // ===== 3d-VBO's (regular shader, i.e. Scene + Objects) =====
+
   for (unsigned int iVAO = 1; iVAO < vVAOs.size(); iVAO++) // <-- start with 1, as 0 is for FPS-coords
   {
     glBindVertexArray(vVertexArray[iVAO]);  // select/bind array and
@@ -191,20 +193,20 @@ void proj::Render::Bind_VBOs_to_VAOs() // s. http://www.arcsynthesis.org/gltut/P
     //        b1) col or
     //        b2) texture/uv-buffers
     glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[iVAO]);
-    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // wichtig, hier das richtige Attrib (nicht 0 oder 1) zu übergeben!
-    glEnableVertexAttribArray(posAttrib);
+    glVertexAttribPointer(sh1_attr_pos, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // wichtig, hier das richtige Attrib (nicht 0 oder 1) zu übergeben!
+    glEnableVertexAttribArray(sh1_attr_pos);
 
     if (vVAOs[iVAO].t_Shade == SHADER_COLOR_FLAT) // flat (number of elements per Vertex = 3)
     {    
       glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[iVAO]);
-      glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // aeltere OpenGL-Version: glColorPointer
-      glEnableVertexAttribArray(colAttrib); // s. http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_03
+      glVertexAttribPointer(sh1_attr_col, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // aeltere OpenGL-Version: glColorPointer
+      glEnableVertexAttribArray(sh1_attr_col); // s. http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_03
     }
     else if (vVAOs[iVAO].t_Shade == SHADER_TEXTURE) // texture (number of elements per Vertex = 2)
     {
       glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[iVAO]); // u,v-texture-coords
-      glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-      glEnableVertexAttribArray(texAttrib);
+      glVertexAttribPointer(sh1_attr_tex, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+      glEnableVertexAttribArray(sh1_attr_tex);
     }
     glBindVertexArray(0); // Unbind
   }
@@ -212,16 +214,19 @@ void proj::Render::Bind_VBOs_to_VAOs() // s. http://www.arcsynthesis.org/gltut/P
 
 void proj::Render::FPS()
 {
+//#define FPS_3D
   std::vector<GLfloat> coords;
   // 3D
-/*  coords.push_back( 0.0f); coords.push_back(0.0f); coords.push_back(0.5f);
+#ifdef FPS_3D
+  coords.push_back( 0.0f); coords.push_back(0.0f); coords.push_back(0.5f);
   coords.push_back( 0.0f); coords.push_back(2.0f); coords.push_back(0.5f); 
   coords.push_back( 6.0f); coords.push_back(0.0f); coords.push_back(0.5f); 
 
   coords.push_back( 6.0f); coords.push_back(0.0f); coords.push_back(0.5f); 
   coords.push_back( 6.0f); coords.push_back(2.0f); coords.push_back(0.5f); 
   coords.push_back( 0.0f); coords.push_back(2.0f); coords.push_back(0.5f);
-*/  // 2D
+#else
+  // 2D
   //
   //         +-------+-------+ (1,1)
   //         |       |       |
@@ -234,7 +239,8 @@ void proj::Render::FPS()
   coords.push_back(-1.0f); coords.push_back( 1.0f);
   coords.push_back( 1.0f); coords.push_back(-1.0f);
   coords.push_back( 1.0f); coords.push_back( 1.0f);
-  
+#endif
+
   std::vector<GLfloat> uvs;
   uvs.push_back( 0.0f); uvs.push_back(0.0f);
   uvs.push_back( 0.0f); uvs.push_back(1.0f);
@@ -249,8 +255,11 @@ void proj::Render::FPS()
   unsigned int ui_idVBO = vVAOs.size();
   glGenBuffers(1, &positionBuffer[ui_idVBO]);
   glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[ui_idVBO]);
-//  glBufferData(GL_ARRAY_BUFFER, 6*3*sizeof(GLfloat), &coords[0], GL_STATIC_DRAW);
+#ifdef FPS_3D
+  glBufferData(GL_ARRAY_BUFFER, 6*3*sizeof(GLfloat), &coords[0], GL_STATIC_DRAW);
+#else
   glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(GLfloat), &coords[0], GL_STATIC_DRAW); // 2D
+#endif
 
   glGenBuffers(1, &uvBuffer[ui_idVBO]);
   glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[ui_idVBO]);
@@ -559,7 +568,7 @@ void proj::Render::DrawVAOs_NEU()
   GLenum err = GL_NO_ERROR;
 
   // draw Scene + Objects
-  for (unsigned int ui=1; ui < vVAOs.size(); ui++) // start with 1 as 0 is fps-counter
+  for (unsigned int ui=0; ui < vVAOs.size(); ui++) // start with 1 as 0 is fps-counter
   {
     if (ui == 0)
       glUseProgram(program_fps);
@@ -605,36 +614,41 @@ void proj::Render::DrawVAOs_NEU()
 
     if (vVAOs[ui].t_Shade == SHADER_TEXTURE)
     {
-      glUniform1i(col_texAttrib,1); // shader into texture-branch
+      glUniform1i(sh1_unif_col_tex, 1); // shader into texture-branch
 
       // http://ogldev.atspace.co.uk/www/tutorial16/tutorial16.html
       glActiveTexture(GL_TEXTURE0);
       err = glGetError();
-      glBindTexture(GL_TEXTURE_2D, vGLTexture[vVAOs[ui].ui_idTexture - 1]); // TEXTURE_ID shall be > 0 !     (-1!!)
+// ----------------------
+// Fehler 1282 auf NVidia
+// Ideen: rendern im Wireframe - hilft nicht --> konnte die Textur nicht geladen werden?
+// ----------------------
+
+      glBindTexture(GL_TEXTURE_2D, vGLTexture[vVAOs[ui].ui_idTexture-1]); // TEXTURE_ID shall be > 0 !     (-1!!)
       err = glGetError();
+      
       if (ui == 0) // hack!!
-        glUniform1i(ovl_uni_ID,0); // hack!!
+        glUniform1i(sh2_unif_ID, 0); // hack!!
       else
-        glUniform1i(SamplerAttrib,0);
+        glUniform1i(sh1_unif_sampler, 0);
     }
     else // vVAOs[ui].t_Shade == SHADER_COLOR_FLAT
     {
-      glUniform1i(col_texAttrib,0); // shader into color-branch
-//      glBindVertexArray(vVertexArray[ui]); // <--- NVidia: hier Problem, wenn ui = 13 (beim ersten colorierten + texturierten Objekt!!)
-//      glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+      glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
     }
-
     err = glGetError();
+    
     glBindVertexArray(vVertexArray[ui]); // <--- NVidia: hier Problem, wenn ui = 13 (beim ersten colorierten + texturierten Objekt!!)
     
     if (ui==0)
     {
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//      glEnable(GL_BLEND);
+//      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
+
     /*
-    wenn's hier crasht, dann ist der Fehler vermutlich vorher beim buffern passiert und
-    glGetError hätte etwas melden sollen!!
+      wenn's hier crasht, dann ist der Fehler vermutlich vorher beim buffern passiert und
+      glGetError hätte etwas melden sollen!!
     */
 
     glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
@@ -644,7 +658,7 @@ void proj::Render::DrawVAOs_NEU()
 
     if (ui==0)
     {
-      glDisable(GL_BLEND);
+//      glDisable(GL_BLEND);
     }
     if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

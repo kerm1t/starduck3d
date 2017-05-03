@@ -32,9 +32,6 @@ proj::Proj m_proj;
 
 Camera m_cam;
 
-//int nFrame = 50;
-//int cntFrame = 0;
-
 int win_h,win_w;
 int mouse_x,mouse_y;
 
@@ -63,27 +60,21 @@ void RenderThread(void *args)
 {
   while (true)
   {
-    // check either only every x-th frame
-    // move smaller steps
-//    if (cntFrame > nFrame)
+    if (GetAsyncKeyState(VK_UP))
     {
-//      cntFrame = 0;
-      if (GetAsyncKeyState(VK_UP))
-      {
-        m_cam.MoveFwd();
-      }
-      if (GetAsyncKeyState(VK_DOWN))
-      {
-        m_cam.MoveBack();
-      }
-      if (GetAsyncKeyState(VK_LEFT))
-      {
-        m_cam.TurnLeft();
-      }
-      if (GetAsyncKeyState(VK_RIGHT))
-      {
-        m_cam.TurnRight();
-      }
+      m_cam.MoveFwd();
+    }
+    if (GetAsyncKeyState(VK_DOWN))
+    {
+      m_cam.MoveBack();
+    }
+    if (GetAsyncKeyState(VK_LEFT))
+    {
+      m_cam.TurnLeft();
+    }
+    if (GetAsyncKeyState(VK_RIGHT))
+    {
+      m_cam.TurnRight();
     }
 
     if (b_WM_resized)
@@ -106,7 +97,7 @@ void RenderThread(void *args)
     else
     {
       // Camera user controlled
-      //m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
+//      m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
 
       m_cam.change_Aspect(win_w,win_h);
       // mouse-move camera
@@ -163,14 +154,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   glewInit(); // <-- takes a little time
 
   m_proj.Init();	// <-- Texture erst nach glewInit() laden!!
-  // a) data loading + b) data description c) render.Init()
+                  // a) data loading + b) data description c) render.Init()
 
   // erst hier...
-  m_cam.p_MVPMatrixAttrib = &m_proj.m_render.MVPMatrixAttrib;
-  //    m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
-//  m_cam.Pos[2] = 4.0f;
+  m_cam.p_unif_MVPMatrix = &m_proj.m_render.sh1_unif_MVPMatrix;
   m_cam.change_Aspect(win_w, win_h); // be sure that extrinsics (Pos,At) are filled here
-//  m_cam.init_MVP();
+  m_cam.init_MVP(); // ! :-)
   m_proj.m_render.p_cam = &m_cam;
 
   hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GLSHOOT));
@@ -338,12 +327,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       m_proj.bPause = !(m_proj.bPause);
       break;
     case 87: // W
-      //			m_proj.m_render.iWireframe = 1-m_proj.m_render.iWireframe;
-      //            m_cam.Pos[0] += 1.0f;
+//      m_proj.m_render.iWireframe = 1-m_proj.m_render.iWireframe;
       m_cam.MoveFwd();
       break;
     case 65: // A
-//      m_cam.MoveLeft();
       m_cam.TurnLeft();
       m_cam.StrafeLeft();
       break;
@@ -351,8 +338,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       m_cam.MoveBack();
       break;
     case 68: // D
-//      m_cam.MoveRight();
-//      m_cam.TurnRight();
       m_cam.StrafeRight();
       break;
     }
