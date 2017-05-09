@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "proj.h"
 
+//#define GLM_FORCE_RADIANS // perspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
 #include "glm.hpp"
 
 #include "Vec3f.hxx"
@@ -79,13 +80,16 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_scenebuilder.p_render = &m_render;
   m_scenebuilder.p_scene = &m_scene;
 
+#define GUARDRAIL
+#ifdef GUARDRAIL
   m_scenebuilder.m_guardrail.p_Render = &m_render;
   vao = m_scenebuilder.LoadGuardrails(); // "align" to road
   m_render.vVAOs.push_back(vao);
-
-//  m_scenebuilder.m_curbstone.p_Render = &m_render;
-//  vao = m_scenebuilder.LoadCurbstones(); // "align" to road
-//  m_render.vVAOs.push_back(vao);
+#else
+  m_scenebuilder.m_curbstone.p_Render = &m_render;
+  vao = m_scenebuilder.LoadCurbstones(); // "align" to road
+  m_render.vVAOs.push_back(vao);
+#endif
 
   m_scenebuilder.m_tunnel.p_Render = &m_render;
   vao = m_scenebuilder.LoadTunnel(); // "align" to road
@@ -101,19 +105,18 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   //    m_render.m_Moving[0] = &m_moving[0]; // <-- movement applied to vertexshader(offset) while drawing/rendering
   m_render.m_Moving[1] = &m_moving[1];
  
-  /*  GLenum err = glGetError();
-  obj::CObject car(&m_render);
-  car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
-  car.Load(0.04f); // scaled
-  car.Obj_To_VBO(Vec3f(-5.0f,-1.0f,0.0f)); // <-- pos. funktioniert hier nicht
-  */
+//  GLenum err = glGetError();
+//  obj::CObject car(&m_render);
+//  car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
+//  car.Load(0.04f); // scaled
+//  car.Obj_To_VBO(Vec3f(-5.0f,-1.0f,0.0f)); // <-- pos. funktioniert hier nicht
+
   obj::CObject car2(&m_render);
   car2.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep.obj";
   car2.Load(0.4f); // scaled
   car2.Obj_To_VBO(Vec3f(10.0f, 3.0f, 0.0f));
-//  car2.BuffersToOpenGL(Vec3f(15.0f,3.0f,0.0f));
 
-/*  obj::CObject barrier1(&m_render);
+  obj::CObject barrier1(&m_render);
   barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
   barrier1.Load();
   barrier1.Obj_To_VBO();
@@ -121,7 +124,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   {
     barrier1.Obj_To_VBO(Vec3f((float)ui*1.0f,0.0f,0.0f));
   }
-  */
+///  m_render.Triangles_to_VBO(Vec3f(0.0f, 0.0f, 0.0f));
+
   assert(m_render.vVAOs.size()<m_render.VBOCOUNT);
 
   return 0;

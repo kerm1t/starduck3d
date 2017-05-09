@@ -8,6 +8,7 @@
 #include "stdafx.h"
 #pragma once
 
+//#define GLM_FORCE_RADIANS // 2do, replace all deg. by rad.!!
 #include "glm.hpp"
 
 #include "obj_Guardrail.hpp" // <-- remove

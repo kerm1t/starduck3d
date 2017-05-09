@@ -17,6 +17,7 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 #include <GL/glew.h>
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
+//#define GLM_FORCE_RADIANS // 2do, replace all deg. by rad.!!, then remove this line
 #include "glm.hpp"
 #include "math.h"
 
@@ -29,14 +30,14 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx    
 
-  class CBaseObject
+  class CObject_Base
   {
   public:
     proj::Render * p_render;
   };
 
   // 2do: richtiges naming verwenden ui_XXX, ...
-  class CObject : CBaseObject // with parts!
+  class CObject : CObject_Base // with parts!
   {
   public:
     // load .obj
@@ -81,7 +82,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       {
         if (v_parts[ui].b_textured)
         {
-          //                    GLuint idGLTexture;
+//          GLuint idGLTexture;
           assert(sObjectDirectory.compare("")!=0);
           std::string sTextureFullpath = sObjectDirectory + "\\" + v_parts[ui].s_Texture;
           v_parts[ui].idGLTexture = ldrBMP.loadBMP_custom(sTextureFullpath.c_str());
@@ -102,8 +103,18 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       //     oder 1mal für vert,
       //          1mal für uv's,
       //          1mal für col
-      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
+//      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
+      unsigned int max;
+      max = v_parts.size();
+//      if (max > 3) max = 3;
+      for (unsigned int ui = 0; ui < max; ui++)
       {
+        if (!v_parts[ui].b_textured) continue;
+// ---------------------------------------------------------------------------------
+// 2017-05-07
+// Problem, nur auf Nvidia: es können keine "gemischten" Objekte gerendert werden,
+//                          also solche, die sowohl Textur, als auch Farbe enthalten
+// ---------------------------------------------------------------------------------
 //        p_render->vVAOs[ui].idVBO_pos = (GLuint)p_render->ui_numVBOpos;
         err = glGetError();
         glGenBuffers(1, &p_render->positionBuffer[ui_idVBO + ui]);
@@ -141,8 +152,10 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       }
 
       // --> die infos erstmal am Objekt speichern !?
-      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
+//      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
+      for (unsigned int ui = 0; ui < max; ui++)
       {
+        if (!v_parts[ui].b_textured) continue;
         proj::c_VAO vao;
         vao.Name = v_parts[ui].name;
         if (v_parts[ui].b_textured)

@@ -9,6 +9,7 @@
 #pragma once
 
 //#include <math.h>
+//#define GLM_FORCE_RADIANS // 2do, replace all deg. by rad.!!, then remove this line
 #include "glm.hpp" // is there an _ext ??
 #include <gtc/matrix_transform.hpp>
 #define GLEW_STATIC

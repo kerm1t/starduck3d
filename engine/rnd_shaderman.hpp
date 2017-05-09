@@ -3,6 +3,7 @@
 
 #include <stdio.h> // <-- sprintf
 #include "inc_render.h"
+//#define GLM_FORCE_RADIANS // 2do, replace all deg. by rad.!!
 #include "glm.hpp"
 #include <gtc/matrix_transform.hpp>
 
@@ -163,12 +164,14 @@ public:
     glShaderSource(vshaderFPS, 1, vshd_src_FPS, 0);
     glCompileShader(vshaderFPS);
     glGetShaderInfoLog(vshaderFPS, 512, NULL, buffer); // <-- debug, kann man sich schoen im debugger ansehen!!
-// 2do: check that buffer = "No errors."
+    err = glGetError();
+    // 2do: check that buffer = "No errors."
     GLuint fshaderFPS = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fshaderFPS, 1, fshd_src_FPS, 0); // set array of strings as source code
     glCompileShader(fshaderFPS); // compile
     glGetShaderInfoLog(fshaderFPS, 512, NULL, buffer); // <-- debug
-// 2do: check that buffer = "No errors."
+    err = glGetError();
+    // 2do: check that buffer = "No errors."
     program_fps = glCreateProgram(); // create empty program object
     glAttachShader(program_fps, vshaderFPS); // attach shader
     glAttachShader(program_fps, fshaderFPS); // attach shader
@@ -179,7 +182,9 @@ public:
 
     // attribs
     sh2_attr_pos = glGetAttribLocation(program_fps, "vp_clipspace");
+    err = glGetError();
     sh2_attr_tex = glGetAttribLocation(program_fps, "vertexUV");     // UV geht auch
+    err = glGetError();
     sh2_unif_ID = glGetUniformLocation(program_fps, "myTexSampler");
     err = glGetError();
   }

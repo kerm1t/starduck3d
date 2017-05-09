@@ -37,7 +37,7 @@
 #include <GL/glew.h>
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
-//#define GLM_FORCE_RADIANS <-- strange!
+//#define GLM_FORCE_RADIANS // 2do, replace all deg. by rad.!!, then remove this line
 #include "glm.hpp"
 
 // blender model from:  http://www.tutorialsforblender3d.com/Models/index_Models.html
@@ -250,6 +250,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
       std::string line;
 
+      std::fill(temp_object, temp_object + 255, 0); // init with "0"
+      
       bool b_NewPart = false;
       while (file.good())
       {
@@ -274,6 +276,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         {
           if (b_NewPart == true)
           {
+            if (strlen(temp_object) == 0) strcpy(temp_object,mtllib); // Hack!
             AddPart(out_v_CParts,
               temp_object, temp_material, v_Mat,
               temp_vertices,

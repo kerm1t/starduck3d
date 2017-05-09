@@ -107,7 +107,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
       // --> die infos erstmal am Objekt speichern !?
       proj::c_VAO vao;
-      vao.t_Shade = proj::SHADER_COLOR_FLAT;
+      vao.Name          = "trafficsign";
+      vao.t_Shade       = proj::SHADER_COLOR_FLAT;
       vao.uiVertexCount = vCount;
 
       glGenBuffers(1, &positionBuffer[ui_idVBO]);

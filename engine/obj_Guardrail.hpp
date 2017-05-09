@@ -68,6 +68,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
       // --> die infos erstmal am Objekt speichern !?
       proj::c_VAO vao;
+      vao.Name          = "guardrail";
       vao.t_Shade       = proj::SHADER_COLOR_FLAT;
       vao.uiVertexCount = nVert;
       vao.vPos          = Vec3f(0.0f,0.0f,0.0f);

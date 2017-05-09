@@ -2,7 +2,7 @@
 #include "proj_render.h"
 
 #include "Vec3f.hxx"
-//#define GLM_FORCE_RADIANS <-- strange!
+//#define GLM_FORCE_RADIANS // <-- strange!
 #include "glm.hpp"
 #include <gtc/matrix_transform.hpp>
 
@@ -177,7 +177,9 @@ void proj::Render::Bind_VBOs_to_VAOs() // s. http://www.arcsynthesis.org/gltut/P
   err = glGetError();
 
   glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[iVAO]); // u,v-texture-coords
+  err = glGetError();
   glVertexAttribPointer(sh2_attr_tex, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // texAttrib
+  err = glGetError(); // Fehler 1281
   glEnableVertexAttribArray(sh2_attr_tex);
   err = glGetError();
 
@@ -207,6 +209,7 @@ void proj::Render::Bind_VBOs_to_VAOs() // s. http://www.arcsynthesis.org/gltut/P
     {
       glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[iVAO]); // u,v-texture-coords
       glVertexAttribPointer(sh1_attr_tex, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+      err = glGetError();
       glEnableVertexAttribArray(sh1_attr_tex);
     }
     glBindVertexArray(0); // Unbind
@@ -228,12 +231,12 @@ void proj::Render::FPS()
   coords.push_back( 0.0f); coords.push_back(2.0f); coords.push_back(0.5f);
 #else
   // 2D
-  //
   //         +-------+-------+ (1,1)
   //         |       |       |
   //         +-------+ (0,0) +
   //         |       |       |
-  // (-1,-1) +---------------+ 
+  // (-1,-1) +---------------+
+  //
   coords.push_back(-1.0f); coords.push_back(-1.0f);
   coords.push_back( 1.0f); coords.push_back(-1.0f);
   coords.push_back(-1.0f); coords.push_back( 1.0f);
@@ -337,7 +340,7 @@ void proj::Render::Triangles_to_VBO(Vec3f v3pos)
 
   std::vector<GLfloat> cols;
   cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
-  cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
+  cols.push_back(1.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
   cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
 
   cols.push_back(0.0f); cols.push_back(0.0f); cols.push_back(1.0f); 
@@ -346,7 +349,8 @@ void proj::Render::Triangles_to_VBO(Vec3f v3pos)
 
   // b) store VAO props for OpenGL-drawing loop (and later manipulation, e.g. position change)
   c_VAO tri;
-  //    tri.b_moving = TRUE;
+  tri.Name = "triangle";
+//  tri.b_moving = TRUE;
   tri.t_Shade = SHADER_COLOR_FLAT;
   tri.uiVertexCount = TRIANGLES*VERTICES_PER_TRI;
   vVAOs.push_back(tri);
@@ -626,7 +630,6 @@ void proj::Render::DrawVAOs_NEU()
 // Fehler 1282 auf NVidia
 // Ideen: rendern im Wireframe - hilft nicht --> konnte die Textur nicht geladen werden?
 // ----------------------
-
       glBindTexture(GL_TEXTURE_2D, vGLTexture[vVAOs[ui].ui_idTexture-1]); // TEXTURE_ID shall be > 0 !     (-1!!)
       err = glGetError();
       
@@ -655,7 +658,7 @@ void proj::Render::DrawVAOs_NEU()
     */
 
     glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
-                                                            //     it can be either positionbuffer, colorbuffer or uvbuffer
+    err = glGetError();                                     //     it can be either positionbuffer, colorbuffer or uvbuffer
                                                             //     if t_Shade == TEXTURE,
                                                             //     then colorbuffer is NULL and vice versa!
 
