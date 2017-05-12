@@ -30,14 +30,19 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx    
 
-  class CObject_Base
+  class CObject
   {
   public:
+    void Load(float, float, Vec3f);     // includes ToVBO, ToVAO
+    void LoadParts(float, float);       // load OBJ 'n texture
+    virtual void PartsToVBOs(Vec3f) = 0;     // parts to VBOs
+    virtual void PartsToVAOs(Vec3f) = 0;     // parts to VAOs
+
     proj::Render * p_render;
   };
 
   // 2do: richtiges naming verwenden ui_XXX, ...
-  class CObject : CObject_Base // with parts!
+  class CObjectWavefront : CObject // with parts!
   {
   public:
     // load .obj
@@ -54,14 +59,21 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     glm::vec3 position;
     // glm::vec3 direction; // position - prev.position
 
-    CObject(proj::Render * p_rnd)
+    CObjectWavefront(proj::Render * p_rnd)
     {     // <-- inline, sonst Linker error!
       position = glm::vec3(0.0f,0.0f,0.0f); // <--- ist das ok so ?
 
       p_render = p_rnd;
     };    // <-- inline
 
-    void Load(float fScale = 1.0f, float fZ = 0.0f) // load OBJ 'n texture
+    void Load(float fScale = 1.0f, float fZ = 0.0f, Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f)) // load OBJ 'n texture
+    {
+      LoadParts(fScale, fZ);
+      PartsToVBOs(vPos);
+      PartsToVAOs(vPos);
+    }
+
+    void LoadParts(float fScale = 1.0f, float fZ = 0.0f) // load OBJ 'n texture
     {
       CLoader_OBJ ldr;
       bool res = ldr.loadOBJParts(sObjectFullpath.c_str(), v_parts, fScale, fZ);
@@ -93,29 +105,29 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
     // vertices,
     // texture-uv's, colors --> OpenGL
-    void Obj_To_VBO(Vec3f vPos = Vec3f(0.0f,0.0f,0.0f))
+    void PartsToVBOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
     {
       GLenum err = GL_NO_ERROR;
-      
+
       unsigned int ui_idVBO = p_render->vVAOs.size();
 
       // 2do: einmal glGenBuffers mit Anzahl vert + uv + col aufrufen
       //     oder 1mal für vert,
       //          1mal für uv's,
       //          1mal für col
-//      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
+      //      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
       unsigned int max;
       max = v_parts.size();
 //      if (max > 3) max = 3;
       for (unsigned int ui = 0; ui < max; ui++)
       {
         if (!v_parts[ui].b_textured) continue;
-// ---------------------------------------------------------------------------------
-// 2017-05-07
-// Problem, nur auf Nvidia: es können keine "gemischten" Objekte gerendert werden,
-//                          also solche, die sowohl Textur, als auch Farbe enthalten
-// ---------------------------------------------------------------------------------
-//        p_render->vVAOs[ui].idVBO_pos = (GLuint)p_render->ui_numVBOpos;
+        // ---------------------------------------------------------------------------------
+        // 2017-05-07
+        // Problem, nur auf Nvidia: es können keine "gemischten" Objekte gerendert werden,
+        //                          also solche, die sowohl Textur, als auch Farbe enthalten
+        // ---------------------------------------------------------------------------------
+        //        p_render->vVAOs[ui].idVBO_pos = (GLuint)p_render->ui_numVBOpos;
         err = glGetError();
         glGenBuffers(1, &p_render->positionBuffer[ui_idVBO + ui]);
         err = glGetError();
@@ -125,34 +137,39 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         err = glGetError();
         if (v_parts[ui].b_textured)
         {
-//          p_render->vVAOs[ui].idVBO_tex = (GLuint)p_render->ui_numVBOtex;
-          glGenBuffers(1, &p_render->uvBuffer[ui_idVBO+ui]);
-          glBindBuffer(GL_ARRAY_BUFFER, p_render->uvBuffer[ui_idVBO+ui]);
+          //          p_render->vVAOs[ui].idVBO_tex = (GLuint)p_render->ui_numVBOtex;
+          glGenBuffers(1, &p_render->uvBuffer[ui_idVBO + ui]);
+          glBindBuffer(GL_ARRAY_BUFFER, p_render->uvBuffer[ui_idVBO + ui]);
           glBufferData(GL_ARRAY_BUFFER, v_parts[ui].uvs.size()*sizeof(glm::vec2), &(v_parts[ui].uvs[0]), GL_STATIC_DRAW);
           err = glGetError();
-//          p_render->ui_numVBOtex++;
+          //          p_render->ui_numVBOtex++;
         }
         else
         {
-//          p_render->vVAOs[ui].idVBO_col = (GLuint)p_render->ui_numVBOcol;
+          //          p_render->vVAOs[ui].idVBO_col = (GLuint)p_render->ui_numVBOcol;
           // Hack!! hier sollten tatsächlich die Farben 'rein
-          glGenBuffers(1, &p_render->colorBuffer[ui_idVBO+ui]);
-          glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO+ui]);
+          glGenBuffers(1, &p_render->colorBuffer[ui_idVBO + ui]);
+          glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO + ui]);
           glBufferData(GL_ARRAY_BUFFER, v_parts[ui].uvs.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW);
-//          p_render->ui_numVBOcol++;
+          //          p_render->ui_numVBOcol++;
         }
-//        p_render->ui_numVBOpos++;
+        //        p_render->ui_numVBOpos++;
 
-//        assert(err != glGetError());
+        //        assert(err != glGetError());
         if ((err = glGetError()) != GL_NO_ERROR)
         {
           //Process/log the error.
           ui = 1;
         }
       }
+    }
 
+    void PartsToVAOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
+    {
       // --> die infos erstmal am Objekt speichern !?
 //      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
+      unsigned int max;
+      max = v_parts.size();
       for (unsigned int ui = 0; ui < max; ui++)
       {
         if (!v_parts[ui].b_textured) continue;
@@ -180,4 +197,5 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
     }
   };
+
 }

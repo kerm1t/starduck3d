@@ -76,30 +76,35 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.Scene_to_VBO();
   m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\road_tex_256x256.bmp"));
 
+
+
   // ii) Load VAOs depending on scene
   m_scenebuilder.p_render = &m_render;
   m_scenebuilder.p_scene = &m_scene;
 
 #define GUARDRAIL
 #ifdef GUARDRAIL
-  m_scenebuilder.m_guardrail.p_Render = &m_render;
-  vao = m_scenebuilder.LoadGuardrails(); // "align" to road
+  vao = m_scenebuilder.CreateGuardrails(); // "align" to road
   m_render.vVAOs.push_back(vao);
 #else
-  m_scenebuilder.m_curbstone.p_Render = &m_render;
-  vao = m_scenebuilder.LoadCurbstones(); // "align" to road
+  vao = m_scenebuilder.CreateCurbstones(); // "align" to road
   m_render.vVAOs.push_back(vao);
 #endif
 
-  m_scenebuilder.m_tunnel.p_Render = &m_render;
-  vao = m_scenebuilder.LoadTunnel(); // "align" to road
+  vao = m_scenebuilder.CreateTunnel();     // "align" to road
   m_render.vVAOs.push_back(vao);
 
+
+
   // iii) Load individual VAO's
-  m_trafficsigns.positionBuffer = m_render.positionBuffer;
-  m_trafficsigns.colorBuffer    = m_render.colorBuffer;
+  m_trafficsigns.p_render = &m_render;
+
   vao = m_trafficsigns.Add(m_render.vVAOs,  12.5f,0.5f,0.0f,  1.0f,0.0f,0.0f);
   m_render.vVAOs.push_back(vao);
+  vao = m_trafficsigns.Add(m_render.vVAOs, -12.5f,0.5f,0.0f,  1.0f,0.0f,0.0f);
+  m_render.vVAOs.push_back(vao);
+
+
 
   // iv) Load VAOs for Moving objects
   //    m_render.m_Moving[0] = &m_moving[0]; // <-- movement applied to vertexshader(offset) while drawing/rendering
@@ -111,20 +116,23 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  car.Load(0.04f); // scaled
 //  car.Obj_To_VBO(Vec3f(-5.0f,-1.0f,0.0f)); // <-- pos. funktioniert hier nicht
 
-  obj::CObject car2(&m_render);
+  
+  obj::CObjectWavefront car2(&m_render);
   car2.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep.obj";
-  car2.Load(0.4f); // scaled
-  car2.Obj_To_VBO(Vec3f(10.0f, 3.0f, 0.0f));
+  car2.Load(0.4f, 0.0f, Vec3f(10.0f, 3.0f, 0.0f)); // scaled
 
-  obj::CObject barrier1(&m_render);
+
+  obj::CObjectWavefront barrier1(&m_render);
   barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
   barrier1.Load();
-  barrier1.Obj_To_VBO();
   for (unsigned int ui=1;ui<5;ui++)
   {
-    barrier1.Obj_To_VBO(Vec3f((float)ui*1.0f,0.0f,0.0f));
+    barrier1.PartsToVBOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
+    barrier1.PartsToVAOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
   }
-///  m_render.Triangles_to_VBO(Vec3f(0.0f, 0.0f, 0.0f));
+
+// test, ob Color-Obj nach Col/Tex-Mix-Objekt richtig dargestellt wird -> ja!
+  m_render.Triangles_to_VBO(Vec3f(0.0f, 0.0f, 0.0f));
 
   assert(m_render.vVAOs.size()<m_render.VBOCOUNT);
 

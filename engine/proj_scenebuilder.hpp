@@ -28,33 +28,20 @@ namespace proj
     obj::Guardrail   m_guardrail;
     obj::Curbstone   m_curbstone;
     obj::Tunnel      m_tunnel;
-    //        m_scene
-    //        m_guardrail
 
     SceneBuilder()
     {
     };
 
-    proj::c_VAO LoadGuardrails() // ... align to road-border
+    proj::c_VAO CreateGuardrails() // ... align to road-border
     {
       SceneParam &rc_Param = p_scene->m_SceneLoader;
 
-      //            m_guardrail.vCount         = p_render->vCount;
-      //            m_guardrail.vertexArray    = p_render->vertexArray;
-      m_guardrail.positionBuffer = p_render->positionBuffer;
-      m_guardrail.colorBuffer    = p_render->colorBuffer;
-      ////            m_guardrail.VBOindex = VBO_GUARDRAIL;
-      //    m_guardrail.Init(1);
-
-      //    int iV = 0;
-      //    unsigned int sz = (unsigned int)rc_Param.m_c_Markers.size(); // number of marker vectors (lines)
-      //    for (int iLine=0;iLine<sz;iLine++)
-      //    {
-      ////            if (rc_Param.m_c_Markers.size() < 3) return;
       int iLine = 2; // = Road
       const std::vector<S_MarkerPoint> &rc_Marker = rc_Param.m_c_Markers[iLine];
 
-      m_guardrail.Init(rc_Marker.size()*2);
+      m_guardrail.p_render = p_render;
+      m_guardrail.Init(rc_Marker.size() * 2);
 
       int iObj=0;
       for (unsigned int iMarker=0;iMarker<((unsigned int)rc_Marker.size()-1);iMarker++) // no. of markersteps (typically > 500)
@@ -87,32 +74,20 @@ namespace proj
         }
       }
 
-      //    }
-
-      //    m_guardrail.Add(1,  8.5,-0.5,0.0,  0.0,1.0,0.0);
-      return m_guardrail.Fini();
+      m_guardrail.ToVBO();
+      return m_guardrail.VAO();
     }
 
-    proj::c_VAO LoadCurbstones() // ... align to road border
+
+    proj::c_VAO CreateCurbstones() // ... align to road border
     {
       SceneParam &rc_Param = p_scene->m_SceneLoader;
 
-      //            m_curbstone.vCount         = p_render->vCount;
-      //            m_curbstone.vertexArray    = p_render->vertexArray;
-      m_curbstone.positionBuffer = p_render->positionBuffer;
-      m_curbstone.colorBuffer    = p_render->colorBuffer;
-      //            m_curbstone.VBOindex = VBO_CURBSTONES;
-      //    m_guardrail.Init(1);
-
-      //    int iV = 0;
-      //    unsigned int sz = (unsigned int)rc_Param.m_c_Markers.size(); // number of marker vectors (lines)
-      //    for (int iLine=0;iLine<sz;iLine++)
-      //    {
-      ////            if (rc_Param.m_c_Markers.size() < 3) return;
       int iLine = 2; // = Road
       const std::vector<S_MarkerPoint> &rc_Marker = rc_Param.m_c_Markers[iLine];
 
-      m_curbstone.Init(rc_Marker.size()*2); // 2 = L+R
+      m_curbstone.p_render = p_render;
+      m_curbstone.Init(rc_Marker.size() * 2); // 2 = L+R
 
       int iObj=0;
       // right side
@@ -152,19 +127,19 @@ namespace proj
         }
       }
 
-      return m_curbstone.Fini();
-    } // void LoadCurbStones
+      m_curbstone.ToVBO();
+      return m_curbstone.VAO();
+    }
 
-    proj::c_VAO LoadTunnel() // ... align to road border
+
+    proj::c_VAO CreateTunnel() // ... align to road border
     {
       SceneParam &rc_Param = p_scene->m_SceneLoader;
-
-      m_tunnel.positionBuffer = p_render->positionBuffer;
-      m_tunnel.colorBuffer    = p_render->colorBuffer;
 
       int iLine = 2; // = Road
       const std::vector<S_MarkerPoint> &rc_Marker = rc_Param.m_c_Markers[iLine];
 
+      m_tunnel.p_render = p_render;
       m_tunnel.Init(rc_Marker.size());
 
       int iObj=0;
@@ -189,8 +164,9 @@ namespace proj
         }
       }
 
-      return m_tunnel.Fini();
-    } // void LoadTunnel
+      m_tunnel.ToVBO();
+      return m_tunnel.VAO();
+    }
 
 
 

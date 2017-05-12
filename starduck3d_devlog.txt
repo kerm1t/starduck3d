@@ -1,3 +1,6 @@
+12.5.
+Objekte laden und kreieren aufgeräumt
+
 9.5.
 debugging-"Hilfen" (2do):
 - Texturen nur 1mal einlesen (z.B. Barriere)

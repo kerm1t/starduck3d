@@ -7,6 +7,7 @@
 
 #include "inc_render.h"
 #include <vector> // später proj::render übergeben und das hier entfernen
+#include "proj_render.h" // <-- warum brauche ich dasd hier, aber nicht inden anderen Obj-Create files (Tunnel, Guardrail,Curbstone etc.) 
 
 // holds all trafficsigns, so they can be switched on/off, added, deleted
 // traffic-signs are immobile
@@ -21,15 +22,11 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   class Trafficsign
   {
   public:
-    int Count;  // <-- Trafficsign count
-    //        int triCount; // <-- triangle count
-    int vCount;   // <-- vertex count
+    proj::Render * p_render;
 
-    ////        int VBOindex; // z.B. 3
-    //        (unsigned int)* vCount; // vertex count <-- 2do: triangle count
-    //        GLuint* vertexArray; // <-- irgendwie in const & oder so umschreiben
-    GLuint* positionBuffer;
-    GLuint* colorBuffer;
+    int Count;  // <-- Trafficsign count
+//    int triCount; // <-- triangle count
+    int vCount;   // <-- vertex count
 
     Trafficsign()
     {     // <-- inline, sonst Linker error!
@@ -111,12 +108,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       vao.t_Shade       = proj::SHADER_COLOR_FLAT;
       vao.uiVertexCount = vCount;
 
-      glGenBuffers(1, &positionBuffer[ui_idVBO]);
-      glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[ui_idVBO]);
+      glGenBuffers(1, &p_render->positionBuffer[ui_idVBO]);
+      glBindBuffer(GL_ARRAY_BUFFER, p_render->positionBuffer[ui_idVBO]);
       glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount*3, Vertices, GL_STATIC_DRAW); // init data storage
 
-      glGenBuffers(1, &colorBuffer[ui_idVBO]);
-      glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[ui_idVBO]);
+      glGenBuffers(1, &p_render->colorBuffer[ui_idVBO]);
+      glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO]);
       glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount*3, colors, GL_STATIC_DRAW);
 
       return vao;

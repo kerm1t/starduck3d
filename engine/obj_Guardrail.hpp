@@ -6,22 +6,23 @@
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
 #include "inc_render.h"
+#include "obj.hpp"
 
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx
 
   // 2do: richtiges naming verwenden ui_XXX, ...
-  class Guardrail
+  class Guardrail//: CObject
   {
   private:
     GLfloat* pf_Vertices;
     GLfloat* pf_Colors;
     unsigned int ui_idVBO;
-    int nVert;
+    int nVert; // <--- ?? wird unten benutzt, aber wozu: mehrere guardrails ?
     int nCol;
 
   public:
-    proj::Render * p_Render;
+    proj::Render * p_render;
     int Count;  // <-- Guardrail count
     //        int iNdx;
 
@@ -31,8 +32,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     //        int VBOindex; // z.B. 4
     //        (unsigned int)* vCount; // vertex count <-- 2do: triangle count
     //        GLuint* vertexArray; // <-- irgendwie in const & oder so umschreiben
-    GLuint* positionBuffer; // pointer auf den "globalen" pos.-buffer
-    GLuint* colorBuffer;
+//    GLuint* positionBuffer; // pointer auf den "globalen" pos.-buffer
+//    GLuint* colorBuffer;
 
     Guardrail()
     {     // <-- inline, sonst Linker error!
@@ -44,35 +45,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       //            iNdx = 0;
       //            nVert = 0;
       //            nCol = 0;
-      ui_idVBO = p_Render->vVAOs.size();
+      ui_idVBO = p_render->vVAOs.size();
 
       // 2016-07-28, 2do: indizes sharen, hier sind eigentlich nur 6 vertices erforderlich
       vCount = iCount*4*3; // 12 = 4 triangles, 3 vertices
       pf_Vertices = new GLfloat[vCount*3]; // vertex.x/y/z
       pf_Colors = new GLfloat[vCount*3]; // color.r/g/b
-    }
-
-    proj::c_VAO Fini()
-    {
-      // hier vCount statt nVert nutzen, da nVert li+re+...? beinhaltet (14400 statt 48xx) <-- klären!
-      glGenBuffers(1, &positionBuffer[ui_idVBO]); // = 3
-      glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[ui_idVBO]);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount*3, pf_Vertices, GL_STATIC_DRAW); // init data storage
-
-      glGenBuffers(1, &colorBuffer[ui_idVBO]); // = 3
-      glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[ui_idVBO]);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount*3, pf_Colors, GL_STATIC_DRAW);
-
-      delete [] pf_Colors;
-      delete [] pf_Vertices;
-
-      // --> die infos erstmal am Objekt speichern !?
-      proj::c_VAO vao;
-      vao.Name          = "guardrail";
-      vao.t_Shade       = proj::SHADER_COLOR_FLAT;
-      vao.uiVertexCount = nVert;
-      vao.vPos          = Vec3f(0.0f,0.0f,0.0f);
-      return vao;
     }
 
     void xyz_push_back(GLfloat * pf_V, glm::vec3 V)
@@ -136,7 +114,32 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       // funktioniert nicht, wenn ich iNdx hier setze -->           iNdx = i;
       // dann gibt es einen HEAP error
     }
-    //    private:
-  };
 
+    void ToVBO()
+    {
+      // hier vCount statt nVert nutzen, da nVert li+re+...? beinhaltet (14400 statt 48xx) <-- klären!
+      glGenBuffers(1, &p_render->positionBuffer[ui_idVBO]); // = 3
+      glBindBuffer(GL_ARRAY_BUFFER, p_render->positionBuffer[ui_idVBO]);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount * 3, pf_Vertices, GL_STATIC_DRAW); // init data storage
+
+      glGenBuffers(1, &p_render->colorBuffer[ui_idVBO]); // = 3
+      glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO]);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount * 3, pf_Colors, GL_STATIC_DRAW);
+
+      delete[] pf_Colors;
+      delete[] pf_Vertices;
+    }
+
+    proj::c_VAO VAO()
+    {
+      // --> die infos erstmal am Objekt speichern !?
+      proj::c_VAO vao;
+      vao.Name = "guardrail";
+      vao.t_Shade = proj::SHADER_COLOR_FLAT;
+      vao.uiVertexCount = nVert;
+      vao.vPos = Vec3f(0.0f, 0.0f, 0.0f);
+      return vao;
+    }
+
+  };
 }
