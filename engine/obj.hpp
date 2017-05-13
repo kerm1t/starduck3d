@@ -33,10 +33,10 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   class CObject
   {
   public:
-    void Load(float, float, Vec3f);     // includes ToVBO, ToVAO
-    void LoadParts(float, float);       // load OBJ 'n texture
-    virtual void PartsToVBOs(Vec3f) = 0;     // parts to VBOs
-    virtual void PartsToVAOs(Vec3f) = 0;     // parts to VAOs
+    void Load(float, float, Vec3f);        // includes ToVBO, ToVAO
+    void LoadParts(float, float);          // load OBJ 'n texture
+    virtual void PartsToVBOs(Vec3f) = 0;   // parts to VBOs
+    virtual void PartsToVAOs(Vec3f) = 0;   // parts to VAOs
 
     proj::Render * p_render;
   };
@@ -100,6 +100,10 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           v_parts[ui].idGLTexture = ldrBMP.loadBMP_custom(sTextureFullpath.c_str());
           p_render->vGLTexture.push_back(v_parts[ui].idGLTexture); // redundant!
         }
+        else
+        {
+          // Farbe --> VBO "on the fly" bauen, s. PartsToVBO()
+        }
       }
     }
 
@@ -115,13 +119,10 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       //     oder 1mal für vert,
       //          1mal für uv's,
       //          1mal für col
-      //      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
-      unsigned int max;
-      max = v_parts.size();
-//      if (max > 3) max = 3;
-      for (unsigned int ui = 0; ui < max; ui++)
+
+      uint16 nParts = v_parts.size();
+      for (uint16 ui = 0; ui < nParts; ui++)
       {
-        if (!v_parts[ui].b_textured) continue;
         // ---------------------------------------------------------------------------------
         // 2017-05-07
         // Problem, nur auf Nvidia: es können keine "gemischten" Objekte gerendert werden,
@@ -147,10 +148,18 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         else
         {
           //          p_render->vVAOs[ui].idVBO_col = (GLuint)p_render->ui_numVBOcol;
+          // ---------------------------------------------------------
+          // für Farben sind im .obj-file keine Einzelwerte angegeben,
+          // sondern nur der r,g,b-Wert
+          // also hier "on the fly" erstellen!
+          // ---------------------------------------------------------
+//          pf_Colors = new GLfloat[v_parts[ui].vertices.size()*sizeof(glm::vec3)]; // color.r/g/b
+
           // Hack!! hier sollten tatsächlich die Farben 'rein
           glGenBuffers(1, &p_render->colorBuffer[ui_idVBO + ui]);
           glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO + ui]);
-          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].uvs.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW);
+//          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].uvs.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW);
+          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].vertices.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW); // init data storage
           //          p_render->ui_numVBOcol++;
         }
         //        p_render->ui_numVBOpos++;
@@ -167,12 +176,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     void PartsToVAOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
     {
       // --> die infos erstmal am Objekt speichern !?
-//      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
-      unsigned int max;
-      max = v_parts.size();
-      for (unsigned int ui = 0; ui < max; ui++)
+      uint16 nParts = v_parts.size();
+      for (uint16 ui = 0; ui < nParts; ui++)
       {
-        if (!v_parts[ui].b_textured) continue;
         proj::c_VAO vao;
         vao.Name = v_parts[ui].name;
         if (v_parts[ui].b_textured)
