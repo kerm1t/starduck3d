@@ -277,47 +277,6 @@ void proj::Render::FPS()
   vVAOs.push_back(fps);
 }
 
-void proj::Render::Groundplane()
-{
-  std::vector<GLfloat> coords;
-  float fPlanewidth = 300.0f;
-  // 3D
-  coords.push_back( fPlanewidth); coords.push_back( fPlanewidth); coords.push_back(-0.1f);
-  coords.push_back(-fPlanewidth); coords.push_back( fPlanewidth); coords.push_back(-0.1f); 
-  coords.push_back( fPlanewidth); coords.push_back(-fPlanewidth); coords.push_back(-0.1f); 
-
-  coords.push_back( fPlanewidth); coords.push_back(-fPlanewidth); coords.push_back(-0.1f); 
-  coords.push_back(-fPlanewidth); coords.push_back( fPlanewidth); coords.push_back(-0.1f); 
-  coords.push_back(-fPlanewidth); coords.push_back(-fPlanewidth); coords.push_back(-0.1f);
-
-  std::vector<GLfloat> cols;
-  cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
-  cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
-  cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
-
-  cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
-  cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
-  cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
-
-  // ---------------------------
-  // >>> now Push to OpenGL! >>>
-  // ---------------------------
-  unsigned int ui_idVBO = vVAOs.size();
-  glGenBuffers(1, &positionBuffer[ui_idVBO]);
-  glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[ui_idVBO]);
-  glBufferData(GL_ARRAY_BUFFER, 6*3*sizeof(GLfloat), &coords[0], GL_STATIC_DRAW);
-
-  glGenBuffers(1, &colorBuffer[ui_idVBO]);
-  glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[ui_idVBO]);
-  glBufferData(GL_ARRAY_BUFFER, 6*3*sizeof(GLfloat), &cols[0], GL_STATIC_DRAW);
-
-  c_VAO plane;
-  plane.t_Shade = SHADER_COLOR_FLAT;
-  plane.Name = "plane";
-  plane.uiVertexCount = 6;
-  vVAOs.push_back(plane);
-}
-
 // most simple VBO/VAO, just in case errors happen...
 void proj::Render::Triangles_to_VBO(Vec3f v3pos)
 {

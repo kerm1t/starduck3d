@@ -8,6 +8,7 @@
 #include "obj_Trafficsign.hpp" // <-- move to proj (or even scene) later
 #include "obj_Moving.hpp"
 #include "obj.hpp"
+#include "obj_Groundplane.hpp"
 
 namespace proj
 {
@@ -23,6 +24,8 @@ namespace proj
     /* ===== Variables ===== */
 
     proj::M3uLoader m_m3u; // to load a series of scenes
+
+    Groundplane m_groundplane;
 
     proj::Scene m_scene;
 

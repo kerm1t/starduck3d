@@ -43,7 +43,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       // 2016-07-28, 2do: indizes sharen, hier sind eigentlich nur 6 vertices erforderlich
       vCount = iCount*4*3; // 12 = 4 triangles, 3 vertices
       pf_Vertices = new GLfloat[vCount*3]; // vertex.x/y/z
-      pf_Colors = new GLfloat[vCount*3]; // color.r/g/b
+      pf_Colors   = new GLfloat[vCount*3]; // color.r/g/b
     }
 
     void xyz_push_back(GLfloat * pf_V, glm::vec3 V)

@@ -1,3 +1,7 @@
+13.5.
+eeeeeeeeeeendlich den Textur+Color bug für Wavefront (.obj) Objekte gelöst!
+da hätte ich nur nach dem String "hack" suchen brauchen: Texturcoord (2 floats) in colorbuffer (erwartet 3 floats) geschrieben
+
 12.5.
 Objekte laden und kreieren aufgeräumt
 

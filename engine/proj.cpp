@@ -62,13 +62,18 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("D:\\__OpenGL_files\\arial_font.bmp")); <-- 2do: errorhandler + log visualisieren
   m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\arial_font.bmp"));
 
-  m_render.Groundplane();
 
   // DUMMY
   m_render.Triangles_to_VBO(Vec3f( 0.0f,0.0f,0.0f));
   m_render.Triangles_to_VBO(Vec3f( 9.0f,3.0f,0.5f));
   m_render.Triangles_to_VBO(Vec3f(12.0f,6.0f,0.5f));
   m_render.Triangles_to_VBO(Vec3f(14.0f,6.0f,0.5f));
+  
+
+  m_groundplane.p_render = &m_render;
+  vao = m_groundplane.Create();
+  m_render.vVAOs.push_back(vao);
+
 
   // i) Load Scene VAOs
   m_scene.Load();
@@ -104,22 +109,23 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   vao = m_trafficsigns.Add(m_render.vVAOs, -12.5f,0.5f,0.0f,  1.0f,0.0f,0.0f);
   m_render.vVAOs.push_back(vao);
 
-
+  
 
   // iv) Load VAOs for Moving objects
   //    m_render.m_Moving[0] = &m_moving[0]; // <-- movement applied to vertexshader(offset) while drawing/rendering
   m_render.m_Moving[1] = &m_moving[1];
  
-//  GLenum err = glGetError();
-//  obj::CObject car(&m_render);
-//  car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
-//  car.Load(0.04f); // scaled
-//  car.Obj_To_VBO(Vec3f(-5.0f,-1.0f,0.0f)); // <-- pos. funktioniert hier nicht
-
+  GLenum err = glGetError();
+  obj::CObjectWavefront car(&m_render);
+  car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
+  car.Load(0.04f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
   
+
+
   obj::CObjectWavefront car2(&m_render);
   car2.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep.obj";
   car2.Load(0.4f, 0.0f, Vec3f(10.0f, 3.0f, 0.0f)); // scaled
+
 
 
   obj::CObjectWavefront barrier1(&m_render);
@@ -131,8 +137,6 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
     barrier1.PartsToVAOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
   }
 
-// test, ob Color-Obj nach Col/Tex-Mix-Objekt richtig dargestellt wird -> ja!
-  m_render.Triangles_to_VBO(Vec3f(0.0f, 0.0f, 0.0f));
 
   assert(m_render.vVAOs.size()<m_render.VBOCOUNT);
 

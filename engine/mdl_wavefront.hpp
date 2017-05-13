@@ -58,37 +58,37 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     // read the model -->
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec2> uvs;
-    std::vector<glm::vec3> normals; // Won't be used at the moment. (for bumpmaps??)
+    std::vector<glm::vec3> normals; // won't be used at the moment. (for bumpmaps??)
   };
 
   class CMaterial
   {
   public:
     std::string s_Material;
-    float       Ns;  // exponent, focus of the specular highlight
-    glm::vec3   Ka;  // Ka r g b  -  ambient reflectivity
-    glm::vec3   Kd;  // Kd r g b  -  diffuse reflectivity
-    glm::vec3   Ks;  // Ks r g b  - specular reflectivity
-    glm::vec3   Ke;  // ?? (not in Paul Bourke's description)
-    float       Ni;  // optical density [0.001 - 10]
-    float       d;   // dissolve factor 1.0f = fully opaque 
+    float       Ns;     // exponent, focus of the specular highlight
+    glm::vec3   Ka;     //  ambient reflectivity (rgb)
+    glm::vec3   Kd;     //  diffuse reflectivity (rgb) <-- use this in the first place
+    glm::vec3   Ks;     // specular reflectivity (rgb)
+    glm::vec3   Ke;     // ? (not in Paul Bourke's description)
+    float       Ni;     // optical density [0.001 - 10]
+    float       d;      // dissolve factor 1.0f = fully opaque 
     int         illum;  // illumination model
     /*
-    0   Color on and Ambient off
-    1   Color on and Ambient on
-    2   Highlight on
-    3   Reflection on and Ray trace on
-    4   Transparency: Glass on
-    Reflection: Ray trace on
-    5   Reflection: Fresnel on and Ray trace on
-    6   Transparency: Refraction on
-    Reflection: Fresnel off and Ray trace on
-    7   Transparency: Refraction on
-    Reflection: Fresnel on and Ray trace on
-    8   Reflection on and Ray trace off
-    9   Transparency: Glass on
-    Reflection: Ray trace off
-    10	Casts shadows onto invisible surfaces
+        0   Color on and Ambient off
+        1   Color on and Ambient on
+        2   Highlight on
+        3   Reflection on and Ray trace on
+        4   Transparency: Glass on
+            Reflection: Ray trace on
+        5   Reflection: Fresnel on and Ray trace on
+        6   Transparency: Refraction on
+            Reflection: Fresnel off and Ray trace on
+        7   Transparency: Refraction on
+            Reflection: Fresnel on and Ray trace on
+        8   Reflection on and Ray trace off
+        9   Transparency: Glass on
+            Reflection: Ray trace off
+        10	Casts shadows onto invisible surfaces
     */
     std::string map_Kd; // texture's filename
 
