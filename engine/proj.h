@@ -30,11 +30,13 @@ namespace proj
     proj::Scene m_scene;
 
     obj::Trafficsign m_trafficsigns;
+// wo ist guardrail etc. ??
 
     proj::SceneBuilder m_scenebuilder; // <-- add to the scene: Guardrails / Curbstones
 
     // moving
     obj::Moving m_moving[2];
+//    obj::CObject car[2];
 
     std::vector <obj::CObject> vObjects;
 

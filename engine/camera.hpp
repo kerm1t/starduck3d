@@ -16,6 +16,7 @@
 #include <GL/glew.h>
 #include <gl\gl.h>    // Header File For The OpenGL32 Library
 #include <gl\glu.h>   // Header File For The GLu32 Library
+//#include "obj.hpp"
 
 //#define DEGTORAD ()
 
@@ -62,6 +63,9 @@ public:
 
   glm::float32 mouselook_DEG, mouselook_RAD; // e.g. 90.0f
 
+  bool bStickToObject;
+//  obj::CObject& obj;
+
   Camera()
   {
     fovy_DEG =  60.0f;
@@ -82,6 +86,7 @@ public:
     Dir[2] = 0.0f;
 
     Norm = glm::vec3(0.0f,0.0f,1.0f); // z = up
+    bStickToObject = false;
   }
 
   void change_Aspect(int _width, int _height)

@@ -53,7 +53,7 @@ int proj::Proj::Init()
 */
 
 int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|B}O's to be able to manipulate 'em later
-{
+{ 
   proj::c_VAO vao;
   CBMPLoader ldrBMP;
 
@@ -112,14 +112,14 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   
 
   // iv) Load VAOs for Moving objects
-  //    m_render.m_Moving[0] = &m_moving[0]; // <-- movement applied to vertexshader(offset) while drawing/rendering
-  m_render.m_Moving[1] = &m_moving[1];
+//  m_render.m_Moving[0] = &m_moving[0]; // <-- movement applied to vertexshader(offset) while drawing/rendering
+//  m_render.m_Moving[1] = &m_moving[1];
  
   GLenum err = glGetError();
   obj::CObjectWavefront car(&m_render);
   car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
   car.Load(0.04f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
-  
+//  vObjects.push_back(car);
 
 
   obj::CObjectWavefront car2(&m_render);
@@ -150,34 +150,33 @@ int proj::Proj::DoIt()
   // only f. fixed pipeline --> glTranslatef(0, 0, -2.9f);
 
   // objects' movement --> has to be done in an own loop / !?thread!?
-  if (!bPause)
+  if (!bPause) // key [p] pressed
   {
-    //       m_moving[0].MoveTo(glm::vec3(3.0f,1.0f,0.0f)); // <-- 2do, kann ins Init()
-    //        m_moving[1].Move(glm::vec3(0.005f,0.0f,0.0f));
+    m_moving[0].MoveTo(glm::vec3(3.0f,1.0f,0.0f)); // <-- 2do, kann ins Init()
+//    m_moving[1].Move(glm::vec3(0.005f,0.0f,0.0f));
     m_moving[1].iTspeed++;
-    if (m_moving[1].iTspeed >= 10)
-    {
-/*      m_moving[1].iTspeed = 0;
+//    if (m_moving[1].iTspeed >= 10)
+//    {
+      m_moving[1].iTspeed = 0;
       if (m_moving[1].iT < m_scene.trajectory_len-2) m_moving[1].iT++; else m_moving[1].iT = 0;
       int iTx = m_moving[1].iT;
       glm::vec3 v3 = glm::vec3(m_scene.m_SceneLoader.m_c_Trajectory[iTx].s_Pos.rl_X,
-        m_scene.m_SceneLoader.m_c_Trajectory[iTx].s_Pos.rl_Y,
-        0.0f);
+                               m_scene.m_SceneLoader.m_c_Trajectory[iTx].s_Pos.rl_Y,
+                               0.0f);
       //			m_moving[1].MoveTo(v3);
       glm::vec3 vMove = v3-vTrajPosprev; // consider mouse controlled position change
       m_moving[1].Move(vMove);
       vTrajPosprev = v3;
-*/      /*
-      //	if (bCamStickToCar)
-      //	{
-      glm::vec3 vVehDirNorm = glm::normalize(m_moving[1].direction);
-      glm::float32 fZtmp = m_render.p_cam->Pos[2];
-      m_render.p_cam->Pos = m_moving[1].position - vVehDirNorm*12.0f;
-      m_render.p_cam->Pos[2] = fZtmp;
-      m_render.p_cam->At = m_moving[1].position;
-      //	}
-      */	
-    }
+
+      if (m_render.p_cam->bStickToObject)
+      {
+        glm::vec3 vVehDirNorm  = glm::normalize(m_moving[1].direction);
+        glm::float32 fZtmp     = m_render.p_cam->Pos[2];
+        m_render.p_cam->Pos    = m_moving[1].position - vVehDirNorm*12.0f;
+        m_render.p_cam->Pos[2] = fZtmp;
+        m_render.p_cam->At     = m_moving[1].position;
+    	}
+//    }
   }
 
   m_render.DrawVAOs_NEU();          // Draw The Scene
