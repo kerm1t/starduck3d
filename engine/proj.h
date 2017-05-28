@@ -1,14 +1,15 @@
 #pragma once
 
-#include "types.h"
+
+#include "obj.hpp"
+#include "obj_Trafficsign.hpp" // <-- move to proj (or even scene) later
+#include "obj_Moving.hpp"
+#include "obj_Groundplane.hpp"
+
+
 #include "proj_render.h"
 #include "proj_m3uloader.hpp"
 #include "proj_scenebuilder.hpp"
-
-#include "obj_Trafficsign.hpp" // <-- move to proj (or even scene) later
-#include "obj_Moving.hpp"
-#include "obj.hpp"
-#include "obj_Groundplane.hpp"
 
 namespace proj
 {

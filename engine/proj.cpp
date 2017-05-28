@@ -1,12 +1,11 @@
+
 #include "stdafx.h"
+
 #include "proj.h"
 
-//#define GLM_FORCE_RADIANS // perspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
-#include "glm.hpp"
-
-#include "Vec3f.hxx"
-
-#include "img_bitmap.hpp"
+//#include "glm.hpp"
+//#include "Vec3f.hxx"
+//#include "img_bitmap.hpp"
 
 proj::Proj::Proj()
 {
@@ -116,25 +115,25 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  m_render.m_Moving[1] = &m_moving[1];
  
   GLenum err = glGetError();
-  obj::CObjectWavefront car(&m_render);
+  obj::CObjectWavefront car;//(&m_render);
   car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
   car.Load(0.04f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
 //  vObjects.push_back(car);
 
 
-  obj::CObjectWavefront car2(&m_render);
+  obj::CObjectWavefront car2;//(&m_render);
   car2.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep.obj";
   car2.Load(0.4f, 0.0f, Vec3f(10.0f, 3.0f, 0.0f)); // scaled
 
 
 
-  obj::CObjectWavefront barrier1(&m_render);
+  obj::CObjectWavefront barrier1;//(&m_render);
   barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
   barrier1.Load();
   for (unsigned int ui=1;ui<5;ui++)
   {
-    barrier1.PartsToVBOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
-    barrier1.PartsToVAOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
+//    barrier1.PartsToVBOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
+//    barrier1.PartsToVAOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
   }
 
 

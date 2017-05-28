@@ -30,8 +30,11 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 #include <fstream>
 #include <algorithm>    // For std::remove()
+
+#include <vector>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -39,6 +42,7 @@
 
 //#define GLM_FORCE_RADIANS // 2do, replace all deg. by rad.!!, then remove this line
 #include "glm.hpp"
+#include "../common/types.h"
 
 // blender model from:  http://www.tutorialsforblender3d.com/Models/index_Models.html
 
@@ -112,7 +116,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   public:
     bool loadMaterials(const char * path, std::vector <CMaterial> & out_v_CMaterials)
     {
-      uint nMaterialsRead = 0;
+      uint16 nMaterialsRead = 0;
       CMaterial material;
       char buf[255];
 
@@ -230,8 +234,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
     bool loadOBJParts(const char * path, std::vector <CPart> & out_v_CParts, float fScale = 1.0f, float fZ = 0.0f) // this has to be inside a class,
     {																		                                                                           // otherwise it shouldn't be in a .hpp!!
-      uint nPartsRead = 0;
-      uint nPartsWritten = 0;
+      uint16 nPartsRead = 0;
+      uint16 nPartsWritten = 0;
 
       printf("Loading OBJ file %s...\n", path);
 

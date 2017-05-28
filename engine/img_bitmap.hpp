@@ -11,6 +11,8 @@
 #include <GL/glew.h>
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
+#include <stdio.h>
+
 class CBMPLoader
 {
 public:

@@ -13,6 +13,8 @@
 #include <GL/glew.h>
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
+#include <stdio.h>
+
 #include <MMSystem.h>
 // s. http://www.gamedev.net/topic/342580-dds-fileformat/
 #define FOURCC_DXT1  MAKEFOURCC('D', 'X', 'T', '1')
@@ -24,7 +26,7 @@ GLuint loadDDS(const char * imagepath)
   unsigned char header[124];
 
   // Open the file
-  FILE * fp = fopen(imagepath, "rb");
+  FILE * fp = fopen(imagepath, "rb"); // 2do: durch C++ Funktionen (ifstream) ersetzen, s. mdl_wavefront
   if (fp == NULL)
     return 0;
 

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "proj_render.h"
 
 #include "Vec3f.hxx"

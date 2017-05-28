@@ -5,7 +5,7 @@
 #include <GL/glew.h>
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
-#include "inc_render.h"
+//#include "inc_render.h"
 #include <vector> // später proj::render übergeben und das hier entfernen
 #include "proj_render.h" // <-- warum brauche ich dasd hier, aber nicht inden anderen Obj-Create files (Tunnel, Guardrail,Curbstone etc.) 
 

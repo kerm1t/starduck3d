@@ -5,8 +5,8 @@
 #include <GL/glew.h>
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
-#include "inc_render.h"
-#include "obj.hpp"
+//#include "inc_render.h"
+//#include "obj.hpp"
 
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx

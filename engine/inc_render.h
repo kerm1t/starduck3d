@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "../common/types.h"
 
 #include "Vec3f.hxx"
@@ -10,7 +12,7 @@
 #include <gl\gl.h>    // Header File For The OpenGL32 Library
 #include <gl\glu.h>   // Header File For The GLu32 Library
 
-#include <string>
+//#include "obj.hpp"
 
 namespace proj
 {
@@ -34,7 +36,7 @@ namespace proj
   VAO (>=OGL3.0): bundle multiple VBO's for easier handling, don't need to bind ... them each
   ... really good tut: http://www.arcsynthesis.org/gltut/Positioning/Tutorial%2005.html
   */
-  class c_VAO
+  class c_VAO //: public obj::CObject
   {
   public:
     std::string Name;
@@ -55,10 +57,10 @@ namespace proj
     c_VAO::c_VAO()
     {
       ui_idTexture = 0;
-      b_doDraw = true;
-      b_Wireframe = false;
-      vPos = Vec3f(0.0f,0.0f,0.0f);
-      b_moving = false;
+      b_doDraw     = true;
+      b_Wireframe  = false;
+      vPos         = Vec3f(0.0f,0.0f,0.0f);
+      b_moving     = false;
     }
   };
 

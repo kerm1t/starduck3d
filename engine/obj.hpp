@@ -1,13 +1,21 @@
 /*
 
-Generic class for 3d-Objects consisting of parts (C) Anigators
+Generic class for 3d-Objects consisting of parts (C) anigators
 
+2017-05-27, VAO structure is parallel, VAO relates to a) simple object
+                                                      b) part of ObjectLoaded
+            moving is done on VAO
+            later there should be dynamic (re)loading of objects,
+            also independence from OpenGL (--> Vulcan) etc.
+            for now we keep it simple
+2017-05-25, CObject <- CObjectParts <- CAbstr_ObjectLoaded <- CObjectWavefront
 2016-03-25, start of development
 
 - shall be easy importable with OBJ file-structure
 
 Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-use-stl-or-not
-
+           Twitter:   Fabien Sanglard? @fabynou (28 Sep 2016)
+                      "More Boost this, STL that. Small ns overhead ultimately turn into µs and then ms."
 */
 
 #include "stdafx.h"
@@ -21,9 +29,9 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 #include "glm.hpp"
 #include "math.h"
 
-#include "vtf_typedef.h"
+#include "Vec3f.hxx"
 
-#include "proj_render.h"     // besser: proj_ext...
+//#include "proj_render.h"     // besser: proj_ext...
 #include "mdl_wavefront.hpp" // load model
 #include "img_bitmap.hpp"    // load texture
 
@@ -35,21 +43,31 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   class CObject
   {
   public:
+    bool bHasParts;
     glm::vec3 position;
 //    glm::vec3 direction; // position - prev.position
     
-    proj::Render * p_render;
+//    proj::Render * p_render;
+    CObject()
+    {
+      bHasParts = false;
+    }
   };
 
 
 
-  class CObjectParts : public CObject // def.: private, dann Variablen nicht zugänglich
+  class CObjectParts : public CObject // ist per default private, dann Variablen nicht zugänglich
   {
   public:
     // parts --> move them? e.g. wheels
     std::vector <CPart> v_parts;
 
-    void PartsToVBOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
+    CObjectParts()
+    {
+      bHasParts = true;
+    }
+
+/*    void PartsToVBOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
     {
       GLenum err = GL_NO_ERROR;
 
@@ -141,6 +159,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         p_render->vVAOs.push_back(vao);
       }
     }
+    */
   }; // class CObjectParts
 
 
@@ -161,18 +180,18 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   class CObjectWavefront : public CAbstr_ObjectLoaded
   {
   public:
-    CObjectWavefront(proj::Render * p_rnd)
+    CObjectWavefront()//proj::Render * p_rnd)
     {     // <-- inline, sonst Linker error!
       position = glm::vec3(0.0f,0.0f,0.0f); // <--- ist das ok so ?
 
-      p_render = p_rnd;
+//      p_render = p_rnd;
     };    // <-- inline
 
     void Load(float fScale = 1.0f, float fZ = 0.0f, Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f)) // load OBJ 'n texture
     {
       LoadParts(fScale, fZ);
-      PartsToVBOs(vPos);
-      PartsToVAOs(vPos);
+//      PartsToVBOs(vPos);
+//      PartsToVAOs(vPos);
     }
 
     void LoadParts(float fScale = 1.0f, float fZ = 0.0f) // load OBJ 'n texture
@@ -200,7 +219,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           assert(sObjectDirectory.compare("")!=0);
           std::string sTextureFullpath = sObjectDirectory + "\\" + v_parts[ui].s_Texture;
           v_parts[ui].idGLTexture = ldrBMP.loadBMP_custom(sTextureFullpath.c_str());
-          p_render->vGLTexture.push_back(v_parts[ui].idGLTexture); // redundant!
+//          p_render->vGLTexture.push_back(v_parts[ui].idGLTexture); // redundant!
         }
         else
         {

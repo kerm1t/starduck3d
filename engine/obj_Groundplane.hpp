@@ -2,14 +2,14 @@
 #include "stdafx.h"
 #pragma once
 
-#include "inc_render.h"
+//#include "inc_render.h"
 
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <gl\gl.h>    // Header File For The OpenGL32 Library
 #include <gl\glu.h>   // Header File For The GLu32 Library
 
-#include "proj_render.h" // <-- warum brauche ich dasd hier, aber nicht inden anderen Obj-Create files (Tunnel, Guardrail,Curbstone etc.) 
+//#include "proj_render.h" // <-- warum brauche ich dasd hier, aber nicht inden anderen Obj-Create files (Tunnel, Guardrail,Curbstone etc.) 
 
 class Groundplane
 {    
