@@ -1,5 +1,8 @@
 **/Debug
 **/Debug/**
+**/Release
+**/Release/**
+
 *.sdf
 *.suo
 /ipch/**

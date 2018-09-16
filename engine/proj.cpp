@@ -118,7 +118,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   obj::CObjectWavefront car;//(&m_render);
   car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
   car.Load(0.04f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
-//  vObjects.push_back(car);
+  vObjects.push_back(car);
 
 
   obj::CObjectWavefront car2;//(&m_render);
