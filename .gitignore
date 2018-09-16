@@ -1,10 +1,4 @@
 build/
-**/build
-**/build/**
-**/Debug
-**/Debug/**
-**/Release
-**/Release/**
 
 *.sdf
 *.suo
