@@ -90,7 +90,7 @@ public:
     glGetShaderInfoLog(vertexShader, 512, NULL, buffer); // <-- debug, kann man sich schoen im debugger ansehen!!
     err = glGetError();
     // 2do: check that buffer = "No errors."
-//    assert(strlen(buffer)==0);
+// comment out on SONY    assert(strlen(buffer)==0);
 
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, fragmentShaderSource, 0); // set array of strings as source code
@@ -98,7 +98,7 @@ public:
     glGetShaderInfoLog(fragmentShader, 512, NULL, buffer); // <-- debug
     err = glGetError();
     // 2do: check that buffer = "No errors."
-//    assert(strlen(buffer)==0);
+// comment out on SONY   assert(strlen(buffer)==0);
 
     program = glCreateProgram(); // create empty program object
     glAttachShader(program, vertexShader); // attach shader

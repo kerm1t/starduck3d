@@ -26,7 +26,7 @@ namespace proj
 
     proj::M3uLoader m_m3u; // to load a series of scenes
 
-    Groundplane m_groundplane;
+    obj::Groundplane m_groundplane;
 
     proj::Scene m_scene;
 

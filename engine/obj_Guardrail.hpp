@@ -5,47 +5,18 @@
 #include <GL/glew.h>
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
-//#include "inc_render.h"
-//#include "obj.hpp"
+#include "obj.hpp"
 
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx
 
-  // 2do: richtiges naming verwenden ui_XXX, ...
-  class Guardrail//: CObject
+  class Guardrail: public CGL_Object
   {
   private:
     GLfloat* pf_Vertices;
     GLfloat* pf_Colors;
-    unsigned int ui_idVBO;
     int nVert; // <--- ?? wird unten benutzt, aber wozu: mehrere guardrails ?
     int nCol;
-
-  public:
-    proj::Render * p_render;
-    int Count;  // <-- Guardrail count
-    //        int iNdx;
-
-    int vCount; // #vertices
-    int nBufferStart;
-
-    Guardrail()
-    {     // <-- inline, sonst Linker error!
-    };    // <-- inline
-
-    void Init(int iCount)
-    {
-      Count = iCount;
-      //            iNdx = 0;
-      //            nVert = 0;
-      //            nCol = 0;
-      ui_idVBO = p_render->vVAOs.size();
-
-      // 2016-07-28, 2do: indizes sharen, hier sind eigentlich nur 6 vertices erforderlich
-      vCount = iCount*4*3; // 12 = 4 triangles, 3 vertices
-      pf_Vertices = new GLfloat[vCount*3]; // vertex.x/y/z
-      pf_Colors   = new GLfloat[vCount*3]; // color.r/g/b
-    }
 
     void xyz_push_back(GLfloat * pf_V, glm::vec3 V)
     {
@@ -59,6 +30,26 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       pf_C[nCol++] = C.g;
       pf_C[nCol++] = C.b;
     }
+
+  public:
+    uint16 count;         // <-- Guardrail count
+    uint32 vCount;        // #vertices
+    uint32 nBufferStart;  // for multiple Add's
+
+    Guardrail()
+    {     // <-- inline, sonst Linker error!
+    };    // <-- inline
+
+    void Init(int iCount)
+    {
+      count = iCount;
+
+      // 2016-07-28, 2do: indizes sharen, hier sind eigentlich nur 6 vertices erforderlich
+      vCount = iCount*4*3; // 12 = 4 triangles, 3 vertices
+      pf_Vertices = new GLfloat[vCount*3]; // vertex.x/y/z
+      pf_Colors   = new GLfloat[vCount*3]; // color.r/g/b
+    }
+
     void Add(glm::vec3 vo, glm::vec3 hi, Vec3f col)
     {
       GLfloat height1 = 0.6f;
@@ -66,7 +57,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       GLfloat width   = 0.5f;
 
       nVert = nBufferStart; // x * 482x
-      nCol = nBufferStart;
+      nCol  = nBufferStart;
 
       glm::vec3 voo1 = glm::vec3(vo.x,vo.y,vo.z + height1); // vorne oben
       glm::vec3 hio1 = glm::vec3(hi.x,hi.y,hi.z + height1); // hinten oben
@@ -109,17 +100,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       // dann gibt es einen HEAP error
     }
 
-    void ToVBO()
+    void _ToVBO()
     {
-      // hier vCount statt nVert nutzen, da nVert li+re+...? beinhaltet (14400 statt 48xx) <-- klären!
-      glGenBuffers(1, &p_render->positionBuffer[ui_idVBO]); // = 3
-      glBindBuffer(GL_ARRAY_BUFFER, p_render->positionBuffer[ui_idVBO]);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount * 3, pf_Vertices, GL_STATIC_DRAW); // init data storage
-
-      glGenBuffers(1, &p_render->colorBuffer[ui_idVBO]); // = 3
-      glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO]);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount * 3, pf_Colors, GL_STATIC_DRAW);
-
+      ToVBO(vCount, pf_Vertices, pf_Colors);
       delete[] pf_Colors;
       delete[] pf_Vertices;
     }

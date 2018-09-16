@@ -59,7 +59,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.FPS(); // <-- wenn ich das ins VAO fülle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
                   //     beim LoadObjects(s.u.) call
 //  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("D:\\__OpenGL_files\\arial_font.bmp")); <-- 2do: errorhandler + log visualisieren
-  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\arial_font.bmp"));
+///  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\arial_font.bmp"));
+  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp"));
 
 
   // DUMMY
@@ -115,25 +116,29 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  m_render.m_Moving[1] = &m_moving[1];
  
   GLenum err = glGetError();
-  obj::CObjectWavefront car;//(&m_render);
+  obj::CGL_ObjectWavefront car(&m_render);
   car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
   car.Load(0.04f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
-  vObjects.push_back(car);
+//  car.sObjectFullpath = "..\\data\\conference_room\\conference.obj";
+//  car.Load(0.003f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
+//  vObjects.push_back(car);
 
 
-  obj::CObjectWavefront car2;//(&m_render);
-  car2.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep.obj";
-  car2.Load(0.4f, 0.0f, Vec3f(10.0f, 3.0f, 0.0f)); // scaled
+  obj::CGL_ObjectWavefront car2(&m_render);
+//  car2.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep.obj";
+//  car2.Load(0.4f, 0.0f, Vec3f(10.0f, 3.0f, 0.0f)); // scaled
+  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
+  car2.Load(1.0f, 0.0f, Vec3f(10.0f, 3.0f, 1.1f)); // scaled
 
 
 
-  obj::CObjectWavefront barrier1;//(&m_render);
+  obj::CGL_ObjectWavefront barrier1(&m_render);
   barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
   barrier1.Load();
   for (unsigned int ui=1;ui<5;ui++)
   {
-//    barrier1.PartsToVBOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
-//    barrier1.PartsToVAOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
+    barrier1.PartsToVBOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
+    barrier1.PartsToVAOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
   }
 
 

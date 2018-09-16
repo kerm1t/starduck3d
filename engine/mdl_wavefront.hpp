@@ -58,11 +58,15 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     std::string            s_Texture;  // deprecated, to be replaced by material
     GLuint                 idGLTexture; 
     std::string            s_Material;
-    CMaterial            * p_Mat;
+//    CMaterial            * p_Mat;
+    glm::vec3              Ka;
+    glm::vec3              Kd;
+    glm::vec3              Ks;
     // read the model -->
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec2> uvs;
     std::vector<glm::vec3> normals; // won't be used at the moment. (for bumpmaps??)
+    std::vector<glm::vec3> cols; // ... if not textured
   };
 
   class CMaterial
@@ -146,17 +150,23 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           sscanf(line.c_str(), "Ns %f\n", &fNs);
           material.Ns = fNs;
         }
-        else if (line.compare(0,2,"Ka") == 0)
+        else if (line.compare(0,2,"Ka") == 0) // ambient ?
         {
           glm::vec3 Ka;
           sscanf(line.c_str(), "Ka %f %f %f\n", &Ka.x, &Ka.y, &Ka.z);
           material.Ka = Ka;
         }
-        else if (line.compare(0,2,"Kd") == 0)
+        else if (line.compare(0,2,"Kd") == 0) // diffuse ?
         {
           glm::vec3 Kd;
           sscanf(line.c_str(), "Kd %f %f %f\n", &Kd.x, &Kd.y, &Kd.z);
           material.Kd = Kd;
+        }
+        else if (line.compare(0,2,"Ks") == 0) // specular ?
+        {
+          glm::vec3 Ks;
+          sscanf(line.c_str(), "Ks %f %f %f\n", &Ks.x, &Ks.y, &Ks.z);
+          material.Ks = Ks;
         }
         else if (line.compare(0,2,"Ni") == 0)
         {
@@ -205,6 +215,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       {
         if (part.s_Material.compare(v_Mat[i].s_Material) == 0)
         {
+          part.Ka = v_Mat[i].Ka;
+          part.Kd = v_Mat[i].Kd;
+          part.Ks = v_Mat[i].Ks;
           part.s_Texture = v_Mat[i].map_Kd;
         }
       }
@@ -222,9 +235,16 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           glm::vec2 uv = temp_uvs[uvIndex-1];
           part.uvs.push_back(uv);
         }
-        unsigned int normalIndex = normalIndices[i];
-        glm::vec3 normal = temp_normals[normalIndex-1];
-        part.normals.push_back(normal);
+        else
+        {
+          part.cols.push_back(part.Kd); // ...try... (Ks, Kd, how to combine??)
+        }
+        if (temp_normals.size() > 0) // 2017-07-24, hack
+        {
+          unsigned int normalIndex = normalIndices[i];
+          glm::vec3 normal = temp_normals[normalIndex-1];
+          part.normals.push_back(normal);
+        }
       }
       vertexIndices.clear(); // check parts' size with & without
       uvIndices.clear();     // check parts' size with & without
@@ -232,6 +252,13 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       out_v_CParts.push_back(part);
     }
 
+    /*
+      Load .obj:
+      ----------
+      ... contains mtllib "xxxx.mtl" --> Load .mtl (should be at start of .obj-file)
+      ... load "parts"
+      provide parts with appropriate Material (set pointer)
+    */
     bool loadOBJParts(const char * path, std::vector <CPart> & out_v_CParts, float fScale = 1.0f, float fZ = 0.0f) // this has to be inside a class,
     {																		                                                                           // otherwise it shouldn't be in a .hpp!!
       uint16 nPartsRead = 0;
@@ -262,7 +289,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         std::getline(file,line);
         if (line == "") continue;
 
-        if (line.compare(0,6,"mtllib") == 0)
+        if (line[0] == '#') // comment
+        {
+          OutputDebugString(_T(line.c_str()));
+          OutputDebugString(_T("\n"));
+        }
+        else if (line.compare(0, 6, "mtllib") == 0)
         {
           std::string s_path = path;
           std::string s_dir;
@@ -274,6 +306,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           sscanf(line.c_str(), "mtllib %s\n", &mtllib);
           char buf[255];
           sprintf(buf,"%s\\%s",s_dir.c_str(),mtllib);
+          // -------------------
+          // Load Materials File
+          // -------------------
           loadMaterials(buf, v_Mat);
         }
         else if (line.compare(0,2,"v ") == 0)
@@ -369,7 +404,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
             }
             else
             {
-              // b) 4 indices * v (only vertices, e.g. ...)
+              // c) 4 indices * v (only vertices, e.g. ...)
               int matches = sscanf(line.c_str(), "f %d %d %d %d\n", &v[0],&v[1],&v[2],&v[3]);
               if (matches == 4)
               {
@@ -382,7 +417,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               }
               else
               {
-                // c) 3 indices v/vt/vn
+                // d) 3 indices v/vt/vn
                 int matches = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d\n", &v[0],&vt[0],&vn[0],&v[1],&vt[1],&vn[1],&v[2],&vt[2],&vn[2]);
                 if (matches == 9)
                 {
@@ -398,7 +433,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
                 }
                 else
                 {
-                  // d) 3 indices v//vn (not textured)
+                  // e) 3 indices v//vn (not textured)
                   int matches = sscanf(line.c_str(), "f %d//%d %d//%d %d//%d\n", &v[0],&vn[0],&v[1],&vn[1],&v[2],&vn[2]);
                   if (matches == 6)
                   {
@@ -411,7 +446,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
                   }
                   else
                   {
-                    // e) 3 indices v/vt, no normals
+                    // f) 3 indices v/vt, no normals
                     int matches = sscanf(line.c_str(), "f %d/%d %d/%d %d/%d\n", &v[0],&vt[0],&v[1],&vt[1],&v[2],&vt[2]);
                     if (matches == 6)
                     {
@@ -424,9 +459,20 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
                     }
                     else
                     {
-//                      printf("File can't be read by our simple parser : ( Try exporting with other options\n");
-                      assert(false);
-                      return false;
+                      // g) 3 indices * v (only vertices, e.g. ...)
+                      int matches = sscanf(line.c_str(), "f %d %d %d\n", &v[0], &v[1], &v[2]);
+                      if (matches == 3)
+                      {
+                        vertexIndices.push_back(v[0]);
+                        vertexIndices.push_back(v[1]);
+                        vertexIndices.push_back(v[2]);
+                      }
+                      else
+                      {
+                        // printf("File can't be read by our simple parser : ( Try exporting with other options\n");
+                        assert(false);
+                        return false;
+                      }
                     }
                   }
                 }

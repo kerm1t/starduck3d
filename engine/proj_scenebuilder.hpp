@@ -74,7 +74,7 @@ namespace proj
         }
       }
 
-      m_guardrail.ToVBO();
+      m_guardrail._ToVBO();
       return m_guardrail.VAO();
     }
 
@@ -140,7 +140,7 @@ namespace proj
       const std::vector<S_MarkerPoint> &rc_Marker = rc_Param.m_c_Markers[iLine];
 
       m_tunnel.p_render = p_render;
-      m_tunnel.Init(rc_Marker.size());
+      m_tunnel.Init(rc_Marker.size()); // Achtung --> zu viele Elemente initialisiert!!
 
       int iObj=0;
       for (unsigned int iMarker=50;iMarker<75;iMarker++) // no. of markersteps (typically > 500)
@@ -164,7 +164,7 @@ namespace proj
         }
       }
 
-      m_tunnel.ToVBO();
+      m_tunnel._ToVBO();
       return m_tunnel.VAO();
     }
 

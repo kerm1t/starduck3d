@@ -31,7 +31,8 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 
 #include "Vec3f.hxx"
 
-//#include "proj_render.h"     // besser: proj_ext...
+#include "proj_render.h"     // besser: proj_ext...
+
 #include "mdl_wavefront.hpp" // load model
 #include "img_bitmap.hpp"    // load texture
 
@@ -47,7 +48,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     glm::vec3 position;
 //    glm::vec3 direction; // position - prev.position
     
-//    proj::Render * p_render;
     CObject()
     {
       bHasParts = false;
@@ -55,19 +55,42 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   };
 
 
+  // from here objects are interwoven with OpenGL (-> VBO / VAO)
 
-  class CObjectParts : public CObject // ist per default private, dann Variablen nicht zugänglich
+  class CGL_Object : public CObject
+  {
+  public:
+    proj::Render * p_render;
+
+    void ToVBO(uint32 vCount, const GLvoid * p_coords, const GLvoid * p_colors)
+    {
+      assert(vCount > 0);
+      // ---------------------------
+      // >>> now Push to OpenGL! >>>
+      // ---------------------------
+      unsigned int ui_idVBO = p_render->vVAOs.size();
+      glGenBuffers(1, &p_render->positionBuffer[ui_idVBO]); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+      glBindBuffer(GL_ARRAY_BUFFER, p_render->positionBuffer[ui_idVBO]);
+      glBufferData(GL_ARRAY_BUFFER, vCount * 3 * sizeof(GLfloat), p_coords, GL_STATIC_DRAW);
+
+      glGenBuffers(1, &p_render->colorBuffer[ui_idVBO]);
+      glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO]);
+      glBufferData(GL_ARRAY_BUFFER, vCount * 3 * sizeof(GLfloat), p_colors, GL_STATIC_DRAW);
+    }
+  };
+
+  class CGL_ObjectParts : public CGL_Object // ist per default private, dann Variablen nicht zugänglich
   {
   public:
     // parts --> move them? e.g. wheels
     std::vector <CPart> v_parts;
 
-    CObjectParts()
+    CGL_ObjectParts()
     {
       bHasParts = true;
     }
 
-/*    void PartsToVBOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
+    void PartsToVBOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
     {
       GLenum err = GL_NO_ERROR;
 
@@ -116,8 +139,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           // Hack!! hier sollten tatsächlich die Farben 'rein
           glGenBuffers(1, &p_render->colorBuffer[ui_idVBO + ui]);
           glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO + ui]);
-          //          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].uvs.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW);
-          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].vertices.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW); // init data storage
+//          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].vertices.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW); // init data storage
+          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].cols.size()*sizeof(glm::vec3), &(v_parts[ui].cols[0]), GL_STATIC_DRAW); // init data storage
           //          p_render->ui_numVBOcol++;
         }
         //        p_render->ui_numVBOpos++;
@@ -159,12 +182,11 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         p_render->vVAOs.push_back(vao);
       }
     }
-    */
   }; // class CObjectParts
 
 
 
-  class CAbstr_ObjectLoaded : public CObjectParts
+  class CGL_Abstr_ObjectLoaded : public CGL_ObjectParts
   {
   public:
     // load .obj
@@ -177,21 +199,21 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
 
 
-  class CObjectWavefront : public CAbstr_ObjectLoaded
+  class CGL_ObjectWavefront : public CGL_Abstr_ObjectLoaded
   {
   public:
-    CObjectWavefront()//proj::Render * p_rnd)
+    CGL_ObjectWavefront(proj::Render * p_rnd)
     {     // <-- inline, sonst Linker error!
       position = glm::vec3(0.0f,0.0f,0.0f); // <--- ist das ok so ?
 
-//      p_render = p_rnd;
+      p_render = p_rnd;
     };    // <-- inline
 
     void Load(float fScale = 1.0f, float fZ = 0.0f, Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f)) // load OBJ 'n texture
     {
       LoadParts(fScale, fZ);
-//      PartsToVBOs(vPos);
-//      PartsToVAOs(vPos);
+      PartsToVBOs(vPos);
+      PartsToVAOs(vPos);
     }
 
     void LoadParts(float fScale = 1.0f, float fZ = 0.0f) // load OBJ 'n texture
@@ -219,7 +241,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           assert(sObjectDirectory.compare("")!=0);
           std::string sTextureFullpath = sObjectDirectory + "\\" + v_parts[ui].s_Texture;
           v_parts[ui].idGLTexture = ldrBMP.loadBMP_custom(sTextureFullpath.c_str());
-//          p_render->vGLTexture.push_back(v_parts[ui].idGLTexture); // redundant!
+          p_render->vGLTexture.push_back(v_parts[ui].idGLTexture); // redundant!
         }
         else
         {

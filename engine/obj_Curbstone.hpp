@@ -20,6 +20,19 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     int nVert;
     int nCol;
 
+    void xyz_push_back(GLfloat * pf_V, glm::vec3 V)
+    {
+      pf_V[nVert++] = V.x;
+      pf_V[nVert++] = V.y;
+      pf_V[nVert++] = V.z;
+    }
+    void rgb_push_back(GLfloat * pf_C, glm::vec3 C)
+    {
+      pf_C[nCol++] = C.r;
+      pf_C[nCol++] = C.g;
+      pf_C[nCol++] = C.b;
+    }
+
   public:
     proj::Render * p_render;
     int Count;  // <-- Guardrail count
@@ -46,18 +59,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       pf_Colors   = new GLfloat[vCount*3]; // color.r/g/b
     }
 
-    void xyz_push_back(GLfloat * pf_V, glm::vec3 V)
-    {
-      pf_V[nVert++] = V.x;
-      pf_V[nVert++] = V.y;
-      pf_V[nVert++] = V.z;
-    }
-    void rgb_push_back(GLfloat * pf_C, glm::vec3 C)
-    {
-      pf_C[nCol++] = C.r;
-      pf_C[nCol++] = C.g;
-      pf_C[nCol++] = C.b;
-    }
     void Add(glm::vec3 vo, glm::vec3 hi, Vec3f col)
     {
       GLfloat height = 0.25f;
