@@ -1,0 +1,34 @@
+2018-09-16
+
+- ImGUI integrieren
+
+2018-09-15
+- cameramode: fly
+              drive / run 
+- Objekte anlegen, ohne render Parameter!
+- Auto schattieren (von Anna)
+- python Generator hier 'rein bringen
+
+
+13.5.'17
+
+- auf dem Mac
+- komplexere Strecke bauen
+- mehr Buggyboy Elemente einbauen
+----
+- Geschwindigkeit auf Framesync (NVidia??) anpassen, da unterschiedl.
+  Bewegungsgeschw. auf Intel (SONY) + NVidia (PC)
+- einen nebulus zylinder kreien
+- nebulus anlegen
+- nebulus game --> ist eigentlich virtualroad
++ von obj --> Guardrail + Wavefront ableiten !!
+  - p_render aus Objekt raus
+  - VAO von Obj ableiten
+  - Kamera im Fahrzeug platzieren
+  - Fahrzeug bewegen
+- neuer shader: Editor (Objekte picken und platzieren)
+- neuer shader: FPS anzeige
+- schönes bmp für splash screen (<-- Name!) "Sahara Scurry" (gewusel in der Sahara)
+- textur nur 1mal laden, Beispiel: barrier.bmp
+
++ textur oder color für parts, nicht wie bisher für Objekte (war schon so, hatte nur zu lange nicht in den src geschaut ;-)

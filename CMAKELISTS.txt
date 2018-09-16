@@ -1,0 +1,56 @@
+# 2018-09-16 Cmake projekt erstellt, comiliert und linkt jetzt.
+# aber das Problem: es ist ein Windows executable
+# ... etwas später: Problem gelöst .rc musste hinzugefügt werden, das seinerseits .ico lädt
+
+cmake_minimum_required (VERSION 3.6)
+
+project (starduck)
+
+##find_package(GLEW REQUIRED)
+##if (GLEW_FOUND)
+##    include_directories(${GLEW_INCLUDE_DIRS})
+##    link_libraries(${GLEW_LIBRARIES})
+##endif()
+
+link_directories(lib/glew-2.0.0/lib/Debug/Win32)
+
+#target_include_directories(starduck PRIVATE
+include_directories(src/common
+    src/engine
+    lib/glew-2.0.0/include
+    lib/glm/glm)
+
+#set_source_files_properties(src/nebulus.ico src/small.ico src/nebulus.rc PROPERTIES LANGUAGE RC)
+#set_source_files_properties(src/nebulus.rc PROPERTIES LANGUAGE RC)
+	
+add_executable(starduck WIN32
+    src/game/virtualroad/virtualroad.cpp
+    # created previously
+    src/game/virtualroad/resource.h
+    # now the engine
+    src/engine/camera.hpp
+    src/engine/img_bitmap.hpp
+    src/engine/img_DDS.hpp
+    src/engine/mdl_OBJ.hpp
+    src/engine/obj.hpp
+    src/engine/obj_curbstone.hpp
+    src/engine/obj_groundplane.hpp
+    src/engine/obj_guardrail.hpp
+    src/engine/obj_moving.hpp
+    src/engine/obj_scene.hpp
+    src/engine/obj_trafficsign.hpp
+    src/engine/obj_tunnel.hpp
+    src/engine/proj.cpp
+    src/engine/proj_m3uloader.hpp
+    src/engine/proj_render.cpp
+    src/engine/proj_scene.cpp
+    src/engine/proj_scenebuilder.hpp
+    src/engine/proj_sceneloader.cpp
+    src/engine/rnd_fbo.hpp
+    src/engine/rnd_shaderman.hpp
+	src/nebulus.rc)
+
+target_link_libraries(starduck OpenGL32.lib GLu32.lib glew32sd)
+
+#find_library(GLEW_LIB glew HINTS lib/glew-2.0.0/lib/Debug/Win32/glew32sd)
+#target_link_libraries(starduck PUBLIC ${GLEW_LIB})
