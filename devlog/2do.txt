@@ -1,10 +1,13 @@
+2018-09-19
++ nicht Mausposition, sondern Mausbewegung nutzen für Drehung
+
 2018-09-16
 
 - ImGUI integrieren
 
 2018-09-15
 - cameramode: fly
-              drive / run 
+         (+)  drive / run 
 - Objekte anlegen, ohne render Parameter!
 - Auto schattieren (von Anna)
 - python Generator hier 'rein bringen

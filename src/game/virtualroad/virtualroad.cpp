@@ -143,6 +143,27 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   mouse_x = (int)(win_w/2.0f); // init
   mouse_y = (int)(win_h/2.0f);
 
+
+
+  // ---------------- register mouse ----------------
+  // s. https://docs.microsoft.com/en-us/windows/desktop/dxtecharts/taking-advantage-of-high-dpi-mouse-movement
+#ifndef HID_USAGE_PAGE_GENERIC
+#define HID_USAGE_PAGE_GENERIC         ((USHORT) 0x01)
+#endif
+#ifndef HID_USAGE_GENERIC_MOUSE
+#define HID_USAGE_GENERIC_MOUSE        ((USHORT) 0x02)
+#endif
+
+  RAWINPUTDEVICE Rid[1];
+  Rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
+  Rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
+  Rid[0].dwFlags = RIDEV_INPUTSINK;
+  Rid[0].hwndTarget = hWnd;
+  RegisterRawInputDevices(Rid, 1, sizeof(Rid[0]));
+  // ---------------- register mouse ----------------
+
+
+
   m_proj.m_scene.c_Scene = "..\\data\\virtualroad\\editor.scene";
   m_proj.m_scene.c_Cfg = "..\\data\\virtualroad\\editor.cfg";
 
@@ -267,6 +288,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
   switch (message)
   {
+    // ----------------------------------------------------------------------------
+    // problem: we need relative mouse movement, that's why we utilize WM_INUT here
+    // s. https://docs.microsoft.com/en-us/windows/desktop/dxtecharts/taking-advantage-of-high-dpi-mouse-movement
+    // good explaination here:
+    // s. https://gamedev.stackexchange.com/questions/52976/exclusive-mouse-movement-with-wm-input
+    // there is DirectX / DirectInput, but that requires additional "weapons" we don't want to use here
+    // ----------------------------------------------------------------------------
+  case WM_INPUT:
+  {
+    UINT dwSize = 40;
+    static BYTE lpb[40];
+    GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
+    RAWINPUT* raw = (RAWINPUT*)lpb;
+    if (raw->header.dwType == RIM_TYPEMOUSE)
+    {
+      int xPosRelative = raw->data.mouse.lLastX;
+      int yPosRelative = raw->data.mouse.lLastY;
+      mouse_x += xPosRelative;
+      mouse_y += yPosRelative;
+    }
+    break;
+  }
   case WM_MOUSEWHEEL: // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645617(v=vs.85).aspx
     zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
     if (zDelta > 0) m_cam.Pos.z += 0.5; else m_cam.Pos.z -= 0.5; 
@@ -275,8 +318,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645616(v=vs.85).aspx
     pt_x = GET_X_LPARAM(lParam); // LOWORD u. HIWORD fkt. nicht bei mehreren Monitoren!
     pt_y = GET_Y_LPARAM(lParam);
-    mouse_x = pt_x;
-    mouse_y = pt_y;
+//    mouse_x = pt_x;
+//    mouse_y = pt_y;
     break;
   case WM_COMMAND:
     wmId    = LOWORD(wParam);
