@@ -3,6 +3,10 @@
 
 #include "proj.h"
 
+#include <imgui.h>
+#include "imgui_impl_win32.h"
+#include "imgui_impl_opengl3.h"
+
 //#include "glm.hpp"
 //#include "Vec3f.hxx"
 //#include "img_bitmap.hpp"
@@ -184,6 +188,22 @@ int proj::Proj::DoIt()
   }
 
   m_render.DrawVAOs_NEU();          // Draw The Scene
+
+
+  // --------- IMGUI ---------
+  ImGui_ImplWin32_NewFrame();
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui::NewFrame();
+
+  ImGui::Begin("Papa:");
+  ImGui::Text("Hallo Anton.");
+  int i_processing_step;
+  ImGui::RadioButton("none", &i_processing_step, 0);
+  ImGui::End();
+  ImGui::Render();
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  // --------- IMGUI ---------
+
 
   SwapBuffers(m_render.hDC);    // Swap Buffers (Double Buffering)
 

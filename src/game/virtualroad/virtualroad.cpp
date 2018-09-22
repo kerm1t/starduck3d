@@ -3,6 +3,11 @@
 
 #include "stdafx.h"
 #include "virtualroad.h"
+
+#include <imgui.h>
+#include "imgui_impl_win32.h"
+#include "imgui_impl_opengl3.h"
+
 #include <windows.h>                            // Header File For Windows
 #include <windowsx.h>                           // GET_X_LPARAM, GET_Y_LPARAM
 
@@ -42,6 +47,7 @@ static float framesPerSecond = 0.0f;            // This will store our fps
 static float lastTime = 0.0f;                   // This will hold the time from the last frame
 
 bool b_WM_resized = false;
+bool b_program_stopped = false;
 
 void CalculateFrameRate()
 {
@@ -58,8 +64,13 @@ void CalculateFrameRate()
 // s. http://stackoverflow.com/questions/9833852/opengl-game-loop-multithreading
 void RenderThread(void *args)
 {
-  while (true)
+  while ((true) && (!b_program_stopped)) // do not interfere with freeing of ressources (Imgui, ...)
   {
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.KeysDown[65] == true) // A
+    {
+      std::cout << "A pressed" << std::endl;
+    }
     if (GetAsyncKeyState(VK_UP))
     {
       m_cam.MoveFwd();
@@ -109,6 +120,13 @@ void RenderThread(void *args)
     m_proj.DoIt(); // render code
   }
   _endthread();
+
+  if (b_program_stopped)
+  {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+  }
 }
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -143,6 +161,13 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   mouse_x = (int)(win_w/2.0f); // init
   mouse_y = (int)(win_h/2.0f);
 
+
+  // Application init
+
+
+  ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO();
+  ImGui_ImplWin32_Init(hWnd);
 
 
   // ---------------- register mouse ----------------
@@ -200,6 +225,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
     // --> Projection moved to RenderThread, otherwise no autonomous object-movement possible
   }
+
+  b_program_stopped = true; // === Program stopped ===> clean up ... (s. Renderthread)
 
   return (int) msg.wParam;
 }

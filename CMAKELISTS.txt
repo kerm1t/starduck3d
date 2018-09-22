@@ -20,7 +20,9 @@ link_directories(lib/${glew}/lib/Debug/Win32)
 include_directories(src/common
     src/engine
     lib/${glew}/include
-    lib/glm/glm)
+    lib/glm/glm
+    lib/imgui
+    lib/imgui/examples)
 
 #set_source_files_properties(src/nebulus.ico src/small.ico src/nebulus.rc PROPERTIES LANGUAGE RC)
 #set_source_files_properties(src/nebulus.rc PROPERTIES LANGUAGE RC)
@@ -50,7 +52,12 @@ add_executable(starduck WIN32
     src/engine/proj_sceneloader.cpp
     src/engine/rnd_fbo.hpp
     src/engine/rnd_shaderman.hpp
-    src/nebulus.rc)
+    src/nebulus.rc
+    lib/imgui/imgui.cpp
+    lib/imgui/imgui_draw.cpp
+    lib/imgui/imgui_widgets.cpp
+    lib/imgui/examples/imgui_impl_win32.cpp
+    lib/imgui/examples/imgui_impl_opengl3.cpp)
 
 target_link_libraries(starduck OpenGL32.lib GLu32.lib glew32sd)
 

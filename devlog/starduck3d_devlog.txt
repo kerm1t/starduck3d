@@ -1,4 +1,10 @@
-﻿13.5.2017
+﻿21.9.2018
+ImGUI!
+was soll ich als Erstes ausgeben?
+FPS?
+Objekte?
+
+13.5.2017
 eeeeeeeeeeendlich den Textur+Color bug für Wavefront (.obj) Objekte gelöst!
 da hätte ich nur nach dem String "hack" suchen brauchen: Texturcoord (2 floats) in colorbuffer (erwartet 3 floats) geschrieben
 
