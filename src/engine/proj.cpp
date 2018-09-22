@@ -195,10 +195,13 @@ int proj::Proj::DoIt()
   ImGui_ImplOpenGL3_NewFrame();
   ImGui::NewFrame();
 
+  ImGuiIO& io = ImGui::GetIO();
   ImGui::Begin("Papa:");
+  ImGui::Text("mouse: %f,%f",io.MousePos.x,io.MousePos.y);
   ImGui::Text("Hallo Anton.");
-  int i_processing_step;
-  ImGui::RadioButton("none", &i_processing_step, 0);
+  static bool b_wireframe;
+  ImGui::Checkbox("wireframe:", &b_wireframe);
+  for (unsigned int ui = 0; ui < m_render.vVAOs.size(); ui++) m_render.vVAOs[ui].b_Wireframe = (int)b_wireframe;
   ImGui::End();
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

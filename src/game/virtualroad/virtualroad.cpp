@@ -39,6 +39,7 @@ Camera m_cam;
 
 int win_h,win_w;
 int mouse_x,mouse_y;
+int mouse_left, mouse_right;
 
 int iT = 1;
 bool bCamStickToTrack = FALSE;
@@ -66,11 +67,15 @@ void RenderThread(void *args)
 {
   while ((true) && (!b_program_stopped)) // do not interfere with freeing of ressources (Imgui, ...)
   {
-    ImGuiIO& io = ImGui::GetIO();
-    if (io.KeysDown[65] == true) // A
-    {
-      std::cout << "A pressed" << std::endl;
-    }
+//    ImGuiIO& io = ImGui::GetIO();
+//    if (io.KeysDown[65] == true) // A
+//    {
+//      std::cout << "A pressed" << std::endl;
+//    }
+//    io.DeltaTime = 1.0f / 60.0f;
+//    io.MousePos = ImVec2(mouse_x, mouse_y);
+//    io.MouseDown[0] = (mouse_left == 1);
+
     if (GetAsyncKeyState(VK_UP))
     {
       m_cam.MoveFwd();
@@ -152,11 +157,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     return FALSE;
   }
 
-  RECT rect; 
-  if(GetWindowRect(hWnd, &rect)) 
-  { 
-    win_w = rect.right - rect.left; 
-    win_h = rect.bottom - rect.top; 
+  RECT rect;
+  if(GetWindowRect(hWnd, &rect))
+  {
+    win_w = rect.right - rect.left;
+    win_h = rect.bottom - rect.top;
   }
   mouse_x = (int)(win_w/2.0f); // init
   mouse_y = (int)(win_h/2.0f);
@@ -295,6 +300,32 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   return TRUE;
 }
 
+int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+  if (ImGui::GetCurrentContext() == NULL)
+    return 0;
+
+  ImGuiIO& io = ImGui::GetIO();
+  switch (msg)
+  {
+  case WM_MOUSEMOVE:
+    // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645616(v=vs.85).aspx
+    int pt_x, pt_y;
+    pt_x = GET_X_LPARAM(lParam); // LOWORD u. HIWORD fkt. nicht bei mehreren Monitoren!
+    pt_y = GET_Y_LPARAM(lParam);
+    io.MousePos = ImVec2(pt_x, pt_y);
+    break;
+  case WM_LBUTTONDOWN:
+    mouse_left = 1;
+    io.MouseDown[0] = true;
+    break;
+  case WM_LBUTTONUP:
+    mouse_left = 0;
+    io.MouseDown[0] = false;
+    break;
+  }
+}
+
 //
 //  FUNKTION: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -312,6 +343,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   int pt_x,pt_y;
 
   glm::vec3 vVehDirNorm,vVehDirOrth;
+
+  ImGui_WndProcHandler(hWnd, message, wParam, lParam);
+//  ImGuiIO& io = ImGui::GetIO();
 
   switch (message)
   {
@@ -347,6 +381,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     pt_y = GET_Y_LPARAM(lParam);
 //    mouse_x = pt_x;
 //    mouse_y = pt_y;
+//    io.MousePos = ImVec2(pt_x, pt_y);
+    break;
+  case WM_LBUTTONDOWN:
+    mouse_left = 1;
+//    io.MouseDown[0] = true;
+    break;
+  case WM_LBUTTONUP:
+    mouse_left = 0;
+//    io.MouseDown[0] = false;
     break;
   case WM_COMMAND:
     wmId    = LOWORD(wParam);
