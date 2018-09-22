@@ -10,7 +10,9 @@ Plans:
 - IOS
 
 HowTo:  
-download glew, copy to /lib, build glew with Visual Studio (to build glew32sd.lib)  
+- download glew, copy to /lib, build glew with Visual Studio (to build glew32sd.lib)  
+- download ImGUI, copy to /lib
+
 adapt glew version CMAKELISTS.txt, i.e.
 ```
 set(glew "glew-2.1.0")
