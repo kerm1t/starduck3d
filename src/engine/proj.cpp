@@ -7,9 +7,16 @@
 #include "imgui_impl_win32.h"
 #include "imgui_impl_opengl3.h"
 
+#include "Timer.h"
+
 //#include "glm.hpp"
 //#include "Vec3f.hxx"
 //#include "img_bitmap.hpp"
+
+// FPS
+// http://www.songho.ca/misc/timer/timer.html
+// Windows --> (also doch lieber GlfW benutzen)
+Timer timer;
 
 proj::Proj::Proj()
 {
@@ -128,11 +135,14 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  vObjects.push_back(car);
 
 
-  obj::CGL_ObjectWavefront car2(&m_render);
-//  car2.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep.obj";
-//  car2.Load(0.4f, 0.0f, Vec3f(10.0f, 3.0f, 0.0f)); // scaled
-  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
-  car2.Load(1.0f, 0.0f, Vec3f(10.0f, 3.0f, 1.1f)); // scaled
+//  obj::CGL_ObjectWavefront car2(&m_render);
+//  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
+//  car2.Load(1.0f, 0.0f, Vec3f(20.0f, 6.0f, 1.1f)); // scaled
+
+
+  obj::CGL_ObjectWavefront car3(&m_render);
+  car3.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep.obj";
+  car3.Load(0.4f, 0.0f, Vec3f(10.0f, 3.0f, 0.0f)); // scaled
 
 
 
@@ -153,6 +163,9 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 int proj::Proj::DoIt()
 {
+  timer.stop();
+  timer.start();
+
   wglMakeCurrent(m_render.hDC,m_render.hRC); // ;-) now Tab-switching in MTS possible
 
   // only f. fixed pipeline --> glTranslatef(0, 0, -2.9f);
@@ -190,6 +203,8 @@ int proj::Proj::DoIt()
   m_render.DrawVAOs_NEU();          // Draw The Scene
 
 
+
+
   // --------- IMGUI ---------
   ImGui_ImplWin32_NewFrame();
   ImGui_ImplOpenGL3_NewFrame();
@@ -199,6 +214,8 @@ int proj::Proj::DoIt()
   ImGui::Begin("Papa:");
   ImGui::Text("mouse: %f,%f",io.MousePos.x,io.MousePos.y);
   ImGui::Text("Hallo Anton.");
+  float FPS = 1000.0f / timer.getElapsedTimeInMilliSec();
+  ImGui::Text("%.1f FPS", FPS);
   static bool b_wireframe;
   ImGui::Checkbox("wireframe:", &b_wireframe);
   for (unsigned int ui = 0; ui < m_render.vVAOs.size(); ui++) m_render.vVAOs[ui].b_Wireframe = (int)b_wireframe;

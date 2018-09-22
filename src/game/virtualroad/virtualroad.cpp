@@ -50,6 +50,7 @@ static float lastTime = 0.0f;                   // This will hold the time from 
 bool b_WM_resized = false;
 bool b_program_stopped = false;
 
+
 void CalculateFrameRate()
 {
   float currentTime = GetTickCount() * 0.001f;    
@@ -67,15 +68,6 @@ void RenderThread(void *args)
 {
   while ((true) && (!b_program_stopped)) // do not interfere with freeing of ressources (Imgui, ...)
   {
-//    ImGuiIO& io = ImGui::GetIO();
-//    if (io.KeysDown[65] == true) // A
-//    {
-//      std::cout << "A pressed" << std::endl;
-//    }
-//    io.DeltaTime = 1.0f / 60.0f;
-//    io.MousePos = ImVec2(mouse_x, mouse_y);
-//    io.MouseDown[0] = (mouse_left == 1);
-
     if (GetAsyncKeyState(VK_UP))
     {
       m_cam.MoveFwd();
@@ -175,7 +167,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   ImGui_ImplWin32_Init(hWnd);
 
 
-  // ---------------- register mouse ----------------
+  // ---------------- register mouse (for relative movement) ----------------
   // s. https://docs.microsoft.com/en-us/windows/desktop/dxtecharts/taking-advantage-of-high-dpi-mouse-movement
 #ifndef HID_USAGE_PAGE_GENERIC
 #define HID_USAGE_PAGE_GENERIC         ((USHORT) 0x01)
@@ -183,14 +175,13 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 #ifndef HID_USAGE_GENERIC_MOUSE
 #define HID_USAGE_GENERIC_MOUSE        ((USHORT) 0x02)
 #endif
-
   RAWINPUTDEVICE Rid[1];
   Rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
   Rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
   Rid[0].dwFlags = RIDEV_INPUTSINK;
   Rid[0].hwndTarget = hWnd;
   RegisterRawInputDevices(Rid, 1, sizeof(Rid[0]));
-  // ---------------- register mouse ----------------
+  // ---------------- register mouse (for relative movement) ----------------
 
 
 
@@ -203,6 +194,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
   glewExperimental = GL_TRUE; // <-- Nutzen?
   glewInit(); // <-- takes a little time
+//  wglSwapIntervalEXT(1);
 
   m_proj.Init();	// <-- Texture erst nach glewInit() laden!!
                   // a) data loading + b) data description c) render.Init()
@@ -308,6 +300,24 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
   ImGuiIO& io = ImGui::GetIO();
   switch (msg)
   {
+  case WM_INPUT:
+  {
+    if (!io.WantCaptureMouse)
+    {
+      UINT dwSize = 40;
+      static BYTE lpb[40];
+      GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
+      RAWINPUT* raw = (RAWINPUT*)lpb;
+      if (raw->header.dwType == RIM_TYPEMOUSE)
+      {
+        int xPosRelative = raw->data.mouse.lLastX;
+        int yPosRelative = raw->data.mouse.lLastY;
+        mouse_x += xPosRelative;
+        mouse_y += yPosRelative;
+      }
+    }
+    break;
+  }
   case WM_MOUSEMOVE:
     // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645616(v=vs.85).aspx
     int pt_x, pt_y;
@@ -331,9 +341,9 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 //
 //  ZWECK:  Verarbeitet Meldungen vom Hauptfenster.
 //
-//  WM_COMMAND	- Verarbeiten des Anwendungsmenüs
-//  WM_PAINT	- Zeichnen des Hauptfensters
-//  WM_DESTROY	- Beenden-Meldung anzeigen und zurückgeben
+//  WM_COMMAND  - Verarbeiten des Anwendungsmenüs
+//  WM_PAINT    - Zeichnen des Hauptfensters
+//  WM_DESTROY  - Beenden-Meldung anzeigen und zurückgeben
 //
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -356,7 +366,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     // s. https://gamedev.stackexchange.com/questions/52976/exclusive-mouse-movement-with-wm-input
     // there is DirectX / DirectInput, but that requires additional "weapons" we don't want to use here
     // ----------------------------------------------------------------------------
-  case WM_INPUT:
+// in ImGUI WndProcHandler gezogen, dort lässt sich mittels WantCaptureMouse der Fokus steuern
+/*  case WM_INPUT:
   {
     UINT dwSize = 40;
     static BYTE lpb[40];
@@ -370,7 +381,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       mouse_y += yPosRelative;
     }
     break;
-  }
+  }*/
   case WM_MOUSEWHEEL: // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645617(v=vs.85).aspx
     zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
     if (zDelta > 0) m_cam.Pos.z += 0.5; else m_cam.Pos.z -= 0.5; 

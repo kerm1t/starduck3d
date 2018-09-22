@@ -1,9 +1,36 @@
+2018-09-22
+- ego Fahrzeug (Jeep) steuern + positionieren
+- framerate im debug ~800 FPS im release > 1000
+  bricht jedoch auf dem SONY in beiden targets auf bis zu 6-20 FPS ein
+
+
+13.5.'17
+https://www.youtube.com/watch?v=EhyqW-r2i5g
+- mehr Buggyboy Elemente einbauen
+  - Flaggen (Bonus)
+  - Tore (Bonus)
+  - Baumstamm (Springen)
+  - Baumstammhaufen (Hindernis)
+  - Steine (Hindernis)
+  - Holzhaufen (Hindernis)
+  - Wasser
+  - Bäume (Optik)
+  - Schild (Wasser)
+  - senkrechte Wand
+- Anfang: 3,2,1,Go Billboards
+
+
+2018-09-21
+- mit Mousescroll nicht hoch/runter, sondern in Blockrichtung vor / zurück
+
+
 2018-09-19
 + nicht Mausposition, sondern Mausbewegung nutzen für Drehung
 
-2018-09-16
 
+2018-09-16
 + ImGUI integrieren
+
 
 2018-09-15
 - cameramode: fly
@@ -14,14 +41,14 @@
 
 
 13.5.'17
-
+https://www.youtube.com/watch?v=EhyqW-r2i5g
 - auf dem Mac
 - komplexere Strecke bauen
 - mehr Buggyboy Elemente einbauen
 ----
 - Geschwindigkeit auf Framesync (NVidia??) anpassen, da unterschiedl.
   Bewegungsgeschw. auf Intel (SONY) + NVidia (PC)
-- einen nebulus zylinder kreien
++ einen nebulus zylinder kreien
 - nebulus anlegen
 - nebulus game --> ist eigentlich virtualroad
 + von obj --> Guardrail + Wavefront ableiten !!

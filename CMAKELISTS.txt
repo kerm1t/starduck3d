@@ -14,6 +14,8 @@ set(glew "glew-2.0.0")
 ##    link_libraries(${GLEW_LIBRARIES})
 ##endif()
 
+add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLEW)
+ 
 link_directories(lib/${glew}/lib/Debug/Win32)
 
 #target_include_directories(starduck PRIVATE
@@ -32,6 +34,7 @@ add_executable(starduck WIN32
     # created previously
     src/game/virtualroad/resource.h
     # now the engine
+    src/common/Timer.cpp
     src/engine/camera.hpp
     src/engine/img_bitmap.hpp
     src/engine/img_DDS.hpp
