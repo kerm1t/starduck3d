@@ -10,10 +10,18 @@ Plans:
 - IOS
 
 HowTo:  
-- download glew, copy to /lib, build glew with Visual Studio (to build glew32sd.lib)  
+- download glew-SRC *), copy to /lib, build glew with Visual Studio (to build glew32sd.lib) ... *) binary only contains release mode libs 
 - download ImGUI, copy to /lib
+- patch ImGUI (doesn't detect mouse move currently)
+```
+static void ImGui_ImplWin32_UpdateMousePos()
+[...]
+//    io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
+[...]
+```
 
 adapt glew version CMAKELISTS.txt, i.e.
+
 ```
 set(glew "glew-2.1.0")
 ```
