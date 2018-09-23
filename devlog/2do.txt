@@ -2,6 +2,7 @@
 - ego Fahrzeug (Jeep) steuern + positionieren
 - framerate im debug ~800 FPS im release > 1000
   bricht jedoch auf dem SONY in beiden targets auf bis zu 6-20 FPS ein
+- vertikale Mausbewegung nOK
 
 
 13.5.'17
