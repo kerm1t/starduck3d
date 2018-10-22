@@ -1,5 +1,7 @@
-2018-09-16
+2018-10-15
+- Objekte als billboard einstellen
 
+2018-09-16
 - dies ist noch die alte Verzeichnisstruktur (Nebulus)
 - die Libraries sind schon hochgezogen (Glew 2.0)
 - Visual Studio Solution für VS2015
