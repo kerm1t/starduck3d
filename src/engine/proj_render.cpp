@@ -330,6 +330,7 @@ void proj::Render::Triangles_to_VBO(Vec3f v3pos)
   // ... after adding coords/cols, they can be forgotten
 }
 
+// currently only works with simple setups: Left, Right, Road
 int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
 {
   unsigned int ui_idVBO = vVAOs.size();
@@ -342,14 +343,15 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
   unsigned int sz;
 
   S_Point3D p0,p1,p2,p3;
-
-  unsigned int vCount[3];
+#define MAX_NUMBER_MARKERS 3
+  unsigned int vCount[MAX_NUMBER_MARKERS];
   vCount[0] = 0; // VBO_LEFT
   vCount[1] = 0; // VBO_RIGHT
   vCount[2] = 0; // VBO_ROAD
   sz = (unsigned int)rc_Param.m_c_Markers.size(); // number of marker vectors (lines)
   for (iLine=0;iLine<sz;iLine++)
   {
+    if (iLine < 2) continue; // hack!! keine Marker, nur Road
     const std::vector<S_MarkerPoint> &rc_Marker = rc_Param.m_c_Markers[iLine];
     for (iMarker=0;iMarker<rc_Marker.size()-1;iMarker++) // no. of markersteps (typically > 500)
     {
@@ -373,7 +375,7 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
     //        int textureID = rc_Param.m_TextureIDs[*p_idxVBO]; // nur die "Road" hat eine texture, Left+Right nicht
 
     float fTexStrip = 0.0f; // store strip of texture, if not full texture is mapped to triangle
-    float fTexIncr = 0.1f; // 2do <-- aus der "Höhe" des triangles berechnen!
+    float fTexIncr = 0.1f;  // 2do <-- aus der "Höhe" des triangles berechnen!
 
     for (iMarker=0;iMarker<rc_Marker.size()-1;iMarker++) // no. of markersteps (typically > 500)
     {

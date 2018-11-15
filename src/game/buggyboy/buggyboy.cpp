@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "virtualroad.h"
+#include "buggyboy.h"
 
 #include <imgui.h>
 #include "imgui_impl_win32.h"
@@ -53,7 +53,7 @@ bool b_program_stopped = false;
 
 void CalculateFrameRate()
 {
-  float currentTime = GetTickCount() * 0.001f;    
+  float currentTime = GetTickCount() * 0.001f;
   ++framesPerSecond;
   if( currentTime - lastTime > 1.0f )
   {
@@ -189,9 +189,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 
 
-  m_proj.m_scene.c_Scene = "..\\data\\virtualroad\\editor.scene";
-//  m_proj.m_scene.c_Scene = "D:\\GIT\\python_script\\cfg\\lane_projector_scenes\\CalibrationOval.scene";
-  m_proj.m_scene.c_Cfg = "..\\data\\virtualroad\\editor.cfg";
+  m_proj.m_scene.c_Scene = "..\\data\\buggyboy\\editor.scene";
+  m_proj.m_scene.c_Cfg   = "..\\data\\buggyboy\\editor.cfg";
 
   m_proj.m_render.width = win_w;
   m_proj.m_render.height = win_h;
@@ -252,17 +251,17 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
   wcex.cbSize = sizeof(WNDCLASSEX);
 
-  wcex.style			= CS_HREDRAW | CS_VREDRAW;
-  wcex.lpfnWndProc	= WndProc;
-  wcex.cbClsExtra		= 0;
-  wcex.cbWndExtra		= 0;
-  wcex.hInstance		= hInstance;
-  wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_GLSHOOT));
-  wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-  wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-  wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_GLSHOOT);
-  wcex.lpszClassName	= szWindowClass;
-  wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+  wcex.style         = CS_HREDRAW | CS_VREDRAW;
+  wcex.lpfnWndProc   = WndProc;
+  wcex.cbClsExtra    = 0;
+  wcex.cbWndExtra    = 0;
+  wcex.hInstance     = hInstance;
+  wcex.hIcon         = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_GLSHOOT));
+  wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
+  wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+  wcex.lpszMenuName  = MAKEINTRESOURCE(IDC_GLSHOOT);
+  wcex.lpszClassName = szWindowClass;
+  wcex.hIconSm       = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
   return RegisterClassEx(&wcex);
 }
@@ -371,7 +370,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     // s. https://gamedev.stackexchange.com/questions/52976/exclusive-mouse-movement-with-wm-input
     // there is DirectX / DirectInput, but that requires additional "weapons" we don't want to use here
     // ----------------------------------------------------------------------------
-// in ImGUI WndProcHandler gezogen, dort lässt sich mittels WantCaptureMouse der Fokus steuern
+//  in ImGUI WndProcHandler gezogen, dort lässt sich mittels WantCaptureMouse der Fokus steuern
 /*  case WM_INPUT:
   {
     UINT dwSize = 40;

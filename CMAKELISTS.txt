@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.6)
 
 project (starduck)
 
-set(glew "glew-2.1.0")
+set(glew "glew-2.0.0")
 
 ##find_package(GLEW REQUIRED)
 ##if (GLEW_FOUND)
@@ -37,7 +37,8 @@ file(GLOB_RECURSE SRC_IMGUI
     lib/imgui/examples/imgui_impl_opengl3.cpp)
 	
 add_executable(starduck WIN32
-    src/game/virtualroad/virtualroad.cpp
+    src/game/buggyboy/buggyboy.cpp
+#    src/game/virtualroad/virtualroad.cpp
     # created previously
     src/game/virtualroad/resource.h
     # now the engine

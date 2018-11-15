@@ -90,7 +90,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_scene.Load();
   m_render.m_Scene = &m_scene;
   m_render.Scene_to_VBO();
-  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\road_tex_256x256.bmp"));
+//  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\road_tex_256x256.bmp"));
+  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_road_vert4.bmp"));
 
 
 
@@ -98,11 +99,12 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_scenebuilder.p_render = &m_render;
   m_scenebuilder.p_scene = &m_scene;
 
-#define GUARDRAIL
+//#define GUARDRAIL
 #ifdef GUARDRAIL
   vao = m_scenebuilder.CreateGuardrails(); // "align" to road
   m_render.vVAOs.push_back(vao);
-#else
+#endif
+#ifdef CURBSTONE
   vao = m_scenebuilder.CreateCurbstones(); // "align" to road
   m_render.vVAOs.push_back(vao);
 #endif
@@ -220,6 +222,7 @@ int proj::Proj::DoIt()
   ImGui::Checkbox("wireframe:", &b_wireframe);
   for (unsigned int ui = 0; ui < m_render.vVAOs.size(); ui++) m_render.vVAOs[ui].b_Wireframe = (int)b_wireframe;
   ImGui::End();
+
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   // --------- IMGUI ---------

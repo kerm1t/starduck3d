@@ -1,3 +1,21 @@
+2018-10-27
+
+https://www.funstockretro.co.uk/news/throwback-thursday-buggy-boy/
+
+- Barken von der Seite andersfarbig
+- Editor: verschiedene Strecken (Road, Wasser, Tunnel, ...)
+- Editor: Streckenabschnitte zusammenfuehren (Anfang + Ende)
+- Billboards
+- Road Seiten auswerten (nicht ueberfahrbar)
+- Textur-Richtung, s. ...vert.bmp
+- Strecke einblenden und die Position zeigen!
+
+2018-10-14
+- Editor erstellen -> Papa
+- Strecke bauen -> Anton
+- Schilder platzieren -> Anton
+
+
 2018-09-22
 - ego Fahrzeug (Jeep) steuern + positionieren
 - framerate im debug ~800 FPS im release > 1000

@@ -1,0 +1,6 @@
+static S_MarkerPoint Road[] = {
+x y z  x y z
+}
+static unsigned char Road_Color = 4095 4095 0;
+oder:
+static char Road_Texture = "blabla.bmp"
