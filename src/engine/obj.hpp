@@ -43,6 +43,24 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
   class CObject
   {
+  protected:
+    GLfloat* pf_Vertices;
+    GLfloat* pf_Colors;
+    int nVert; // <--- ?? wird unten benutzt, aber wozu: mehrere guardrails ?
+    int nCol;
+
+    void xyz_push_back(GLfloat * pf_V, glm::vec3 V)
+    {
+      pf_V[nVert++] = V.x;
+      pf_V[nVert++] = V.y;
+      pf_V[nVert++] = V.z;
+    }
+    void rgb_push_back(GLfloat * pf_C, glm::vec3 C)
+    {
+      pf_C[nCol++] = C.r;
+      pf_C[nCol++] = C.g;
+      pf_C[nCol++] = C.b;
+    }
   public:
     bool bHasParts;
     glm::vec3 position;

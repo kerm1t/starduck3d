@@ -1,25 +1,18 @@
 #include "stdafx.h"
 #pragma once
 
-#define GLEW_STATIC
-#include <GL/glew.h>
-#include <gl\gl.h>   // Header File For The OpenGL32 Library
-
-//#include "inc_render.h"
+#include "obj.hpp"
 
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx
 
   // 2do: richtiges naming verwenden ui_XXX, ...
-  class Curbstone
+  class CCurbstone : public CGL_Object
   {
-  private:
-    GLfloat* pf_Vertices;
-    GLfloat* pf_Colors;
     unsigned int ui_idVBO;
-    int nVert;
-    int nCol;
-
+//    int nVert;
+//    int nCol;
+/*
     void xyz_push_back(GLfloat * pf_V, glm::vec3 V)
     {
       pf_V[nVert++] = V.x;
@@ -32,7 +25,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       pf_C[nCol++] = C.g;
       pf_C[nCol++] = C.b;
     }
-
+*/
   public:
     proj::Render * p_render;
     int Count;  // <-- Guardrail count
@@ -41,7 +34,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     int vCount; // #vertices
     int nBufferStart;
 
-    Curbstone()
+    CCurbstone()
     {     // <-- inline, sonst Linker error!
     };    // <-- inline
 
@@ -131,7 +124,5 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       vao.vPos = Vec3f(0.0f, 0.0f, 0.0f);
       return vao;
     }
-
-
   };
 }

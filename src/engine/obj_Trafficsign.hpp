@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #pragma once
 
-#define GLEW_STATIC
-#include <GL/glew.h>
-#include <gl\gl.h>   // Header File For The OpenGL32 Library
 
 //#include "inc_render.h"
 #include <vector> // später proj::render übergeben und das hier entfernen
@@ -20,7 +17,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 {             // how to put all into.h file --> s. Vec3f.hxx
 
   // 2do: richtiges naming verwenden ui_XXX, ...
-  class Trafficsign : public CGL_Object
+  class CTrafficsign : public CGL_Object
   {
   public:
 
@@ -28,7 +25,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 //    int triCount; // <-- triangle count
     int vCount;   // <-- vertex count
 
-    Trafficsign()
+    CTrafficsign()
     {     // <-- inline, sonst Linker error!
     };    // <-- inline
 

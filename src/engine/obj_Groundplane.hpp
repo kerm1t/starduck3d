@@ -5,7 +5,7 @@
 
 namespace obj
 {
-  class Groundplane : public CGL_Object
+  class CGroundplane : public CGL_Object
   {
   public:
     //    proj::Render * p_render;

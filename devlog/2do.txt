@@ -1,3 +1,7 @@
+2018-11-17
++ derive obj classes from CGLObj
++ move xyz_push_back + col_push_back to CObject
+ 
 2018-10-27
 
 https://www.funstockretro.co.uk/news/throwback-thursday-buggy-boy/

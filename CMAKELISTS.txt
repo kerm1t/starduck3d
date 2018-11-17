@@ -14,7 +14,7 @@ set(glew "glew-2.0.0")
 ##    link_libraries(${GLEW_LIBRARIES})
 ##endif()
 
-add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLEW, _CRT_SECURE_NO_WARNINGS)
+add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLEW _CRT_SECURE_NO_WARNINGS)
  
 link_directories(lib/${glew}/lib/Debug/Win32)
 

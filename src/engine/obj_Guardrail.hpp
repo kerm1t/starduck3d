@@ -1,24 +1,14 @@
 #include "stdafx.h"
 #pragma once
 
-#define GLEW_STATIC
-#include <GL/glew.h>
-#include <gl\gl.h>   // Header File For The OpenGL32 Library
-
 #include "obj.hpp"
 
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx
 
-  class Guardrail: public CGL_Object
+  class CGuardrail: public CGL_Object
   {
-  private:
-    GLfloat* pf_Vertices;
-    GLfloat* pf_Colors;
-    int nVert; // <--- ?? wird unten benutzt, aber wozu: mehrere guardrails ?
-    int nCol;
-
-    void xyz_push_back(GLfloat * pf_V, glm::vec3 V)
+/*    void xyz_push_back(GLfloat * pf_V, glm::vec3 V)
     {
       pf_V[nVert++] = V.x;
       pf_V[nVert++] = V.y;
@@ -30,13 +20,13 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       pf_C[nCol++] = C.g;
       pf_C[nCol++] = C.b;
     }
-
+*/
   public:
     uint16 count;         // <-- Guardrail count
     uint32 vCount;        // #vertices
     uint32 nBufferStart;  // for multiple Add's
 
-    Guardrail()
+    CGuardrail()
     {     // <-- inline, sonst Linker error!
     };    // <-- inline
 

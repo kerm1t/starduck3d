@@ -26,14 +26,14 @@ namespace proj
 
     proj::M3uLoader m_m3u; // to load a series of scenes
 
-    obj::Groundplane m_groundplane;
+    obj::CGroundplane m_groundplane;
 
     proj::Scene m_scene;
 
-    obj::Trafficsign m_trafficsigns;
+    obj::CTrafficsign m_trafficsigns;
 // wo ist guardrail etc. ??
 
-    proj::SceneBuilder m_scenebuilder; // <-- add to the scene: Guardrails / Curbstones
+    proj::CSceneBuilder m_scenebuilder; // <-- add to the scene: Guardrails / Curbstones
 
     // moving
     obj::Moving m_moving[2];

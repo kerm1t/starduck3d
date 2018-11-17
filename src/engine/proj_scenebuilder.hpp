@@ -18,18 +18,18 @@
 
 namespace proj
 {
-  class SceneBuilder
+  class CSceneBuilder
   {
   public:
     proj::Render * p_render;
     proj::Scene * p_scene;
 
-    obj::Trafficsign m_trafficsigns;
-    obj::Guardrail   m_guardrail;
-    obj::Curbstone   m_curbstone;
-    obj::Tunnel      m_tunnel;
+    obj::CTrafficsign m_trafficsigns;
+    obj::CGuardrail   m_guardrail;
+    obj::CCurbstone   m_curbstone;
+    obj::CTunnel      m_tunnel;
 
-    SceneBuilder()
+    CSceneBuilder()
     {
     };
 

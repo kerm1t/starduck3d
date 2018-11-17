@@ -1,5 +1,4 @@
 // -----------------------
-//
 // Camera
 //  -standard
 //  -Oculus Rift
@@ -12,6 +11,7 @@
 //#define GLM_FORCE_RADIANS // disabled ... distorts the projection
 #include "glm.hpp" // is there an _ext ??
 #include <gtc/matrix_transform.hpp>
+
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <gl\gl.h>    // Header File For The OpenGL32 Library
