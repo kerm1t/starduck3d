@@ -3,7 +3,7 @@
 #include "proj_render.h"
 
 #include "Vec3f.hxx"
-//#define GLM_FORCE_RADIANS // <-- strange!
+#define GLM_FORCE_RADIANS // <-- strange!
 #include "glm.hpp"
 #include <gtc/matrix_transform.hpp>
 
@@ -441,7 +441,7 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
     if (iLine==2) // 2do --> in der Scene-description speichern
     {
       vao.t_Shade = SHADER_TEXTURE;
-      vao.ui_idTexture = TEX_ROADSURFACE;
+      vao.ui_idTexture = TEX_WATER;// TEX_ROADSURFACE;
     }
     else
     {

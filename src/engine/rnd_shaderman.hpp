@@ -3,7 +3,7 @@
 
 #include <stdio.h> // <-- sprintf
 #include "inc_render.h"
-//#define GLM_FORCE_RADIANS // 2do, replace all deg. by rad.!!
+//#define GLM_FORCE_RADIANS // disabled ... distorts the projection
 #include "glm.hpp"
 #include <gtc/matrix_transform.hpp>
 

@@ -21,7 +21,8 @@ namespace proj
   // ========
 #define TEX_ARIALFONT    1 // war vorher 0, da gab's einen Fehler!!
 #define TEX_ROADSURFACE  2
-//#define TEX_TRAFFICSIGN  3
+#define TEX_WATER        3
+  //#define TEX_TRAFFICSIGN  3
 //#define TEX_CAR          4 // <-- this is actually the body
 //#define TEX_CAR_WINDOWS  5
 //#define TEX_CAR_TIRE     6

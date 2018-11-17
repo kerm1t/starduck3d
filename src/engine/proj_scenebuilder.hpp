@@ -8,7 +8,7 @@
 #include "stdafx.h"
 #pragma once
 
-//#define GLM_FORCE_RADIANS // 2do, replace all deg. by rad.!!
+//#define GLM_FORCE_RADIANS // disabled ... distorts the projection
 #include "glm.hpp"
 
 #include "obj_Guardrail.hpp" // <-- remove

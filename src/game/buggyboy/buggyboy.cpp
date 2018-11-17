@@ -327,7 +327,7 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     int pt_x, pt_y;
     pt_x = GET_X_LPARAM(lParam); // LOWORD u. HIWORD fkt. nicht bei mehreren Monitoren!
     pt_y = GET_Y_LPARAM(lParam);
-    io.MousePos = ImVec2(pt_x, pt_y);
+    io.MousePos = ImVec2((float)pt_x, (float)pt_y);
     break;
   case WM_LBUTTONDOWN:
     mouse_left = 1;
@@ -338,6 +338,7 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     io.MouseDown[0] = false;
     break;
   }
+  return 1;
 }
 
 //

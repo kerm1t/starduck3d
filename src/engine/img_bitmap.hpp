@@ -28,7 +28,7 @@ public:
     size_t result;
 
     // Open the file
-    FILE * file = fopen(imagepath,"rb");
+    FILE * file = fopen(imagepath, "rb");
     assert(file);
     if (!file)
     {
@@ -55,14 +55,14 @@ public:
     height    = *(int*)&(header[0x16]);
 
     // Some BMP files are misformatted, guess missing information
-    if (imageSize == 0) imageSize = width*height*3; // 3 : one byte for each Red, Green and Blue component
+    if (imageSize == 0) imageSize = width*height * 3; // 3 : one byte for each Red, Green and Blue component
     if (dataPos == 0)   dataPos = 54; // The BMP header is done that way
 
     // Create a buffer
     data = new unsigned char[imageSize];
 
     // Read the actual data from the file into the buffer
-    result = fread(data,1,imageSize,file);
+    result = fread(data, 1, imageSize, file);
 
     // Everything is in memory now, the file can be closed
     fclose(file);
@@ -78,7 +78,7 @@ public:
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     // Give the image to OpenGL
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);   // hier gibt es Schwierigkeiten mit .bmp,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data); // hier gibt es Schwierigkeiten mit .bmp,
 
     delete data;
 

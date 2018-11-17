@@ -25,7 +25,7 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 #include <GL/glew.h>
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
-//#define GLM_FORCE_RADIANS // 2do, replace all deg. by rad.!!, then remove this line
+//#define GLM_FORCE_RADIANS // disabled ... distorts the projection
 #include "glm.hpp"
 #include "math.h"
 
@@ -46,8 +46,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   public:
     bool bHasParts;
     glm::vec3 position;
-//    glm::vec3 direction; // position - prev.position
-    
+    //    glm::vec3 direction; // position - prev.position
+
     CObject()
     {
       bHasParts = false;
@@ -101,7 +101,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       //          1mal für uv's,
       //          1mal für col
 
-      uint16 nParts = v_parts.size();
+      uint16 nParts = (uint16)v_parts.size();
       for (uint16 ui = 0; ui < nParts; ui++)
       {
         // ---------------------------------------------------------------------------------
@@ -115,14 +115,14 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         err = glGetError();
         glBindBuffer(GL_ARRAY_BUFFER, p_render->positionBuffer[ui_idVBO + ui]);
         err = glGetError();
-        glBufferData(GL_ARRAY_BUFFER, v_parts[ui].vertices.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW); // init data storage
+        glBufferData(GL_ARRAY_BUFFER, v_parts[ui].vertices.size() * sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW); // init data storage
         err = glGetError();
         if (v_parts[ui].b_textured)
         {
           //          p_render->vVAOs[ui].idVBO_tex = (GLuint)p_render->ui_numVBOtex;
           glGenBuffers(1, &p_render->uvBuffer[ui_idVBO + ui]);
           glBindBuffer(GL_ARRAY_BUFFER, p_render->uvBuffer[ui_idVBO + ui]);
-          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].uvs.size()*sizeof(glm::vec2), &(v_parts[ui].uvs[0]), GL_STATIC_DRAW);
+          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].uvs.size() * sizeof(glm::vec2), &(v_parts[ui].uvs[0]), GL_STATIC_DRAW);
           err = glGetError();
           //          p_render->ui_numVBOtex++;
         }
@@ -139,8 +139,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           // Hack!! hier sollten tatsächlich die Farben 'rein
           glGenBuffers(1, &p_render->colorBuffer[ui_idVBO + ui]);
           glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO + ui]);
-//          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].vertices.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW); // init data storage
-          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].cols.size()*sizeof(glm::vec3), &(v_parts[ui].cols[0]), GL_STATIC_DRAW); // init data storage
+          //          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].vertices.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW); // init data storage
+          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].cols.size() * sizeof(glm::vec3), &(v_parts[ui].cols[0]), GL_STATIC_DRAW); // init data storage
           //          p_render->ui_numVBOcol++;
         }
         //        p_render->ui_numVBOpos++;
@@ -157,7 +157,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     void PartsToVAOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
     {
       // --> die infos erstmal am Objekt speichern !?
-      uint16 nParts = v_parts.size();
+      uint16 nParts = (uint16)v_parts.size();
       for (uint16 ui = 0; ui < nParts; ui++)
       {
         proj::c_VAO vao;
@@ -177,7 +177,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         {
           vao.t_Shade = proj::SHADER_COLOR_FLAT;
         }
-        vao.uiVertexCount = v_parts[ui].vertices.size();
+        vao.uiVertexCount = (uint16)v_parts[ui].vertices.size();
         vao.vPos = vPos;
         p_render->vVAOs.push_back(vao);
       }
@@ -204,7 +204,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   public:
     CGL_ObjectWavefront(proj::Render * p_rnd)
     {     // <-- inline, sonst Linker error!
-      position = glm::vec3(0.0f,0.0f,0.0f); // <--- ist das ok so ?
+      position = glm::vec3(0.0f, 0.0f, 0.0f); // <--- ist das ok so ?
 
       p_render = p_rnd;
     };    // <-- inline
@@ -233,12 +233,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       }
 
       CBMPLoader ldrBMP;
-      for (unsigned int ui=0; ui < v_parts.size(); ui++)
+      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
       {
         if (v_parts[ui].b_textured)
         {
 //          GLuint idGLTexture;
-          assert(sObjectDirectory.compare("")!=0);
+          assert(sObjectDirectory.compare("") != 0);
           std::string sTextureFullpath = sObjectDirectory + "\\" + v_parts[ui].s_Texture;
           v_parts[ui].idGLTexture = ldrBMP.loadBMP_custom(sTextureFullpath.c_str());
           p_render->vGLTexture.push_back(v_parts[ui].idGLTexture); // redundant!

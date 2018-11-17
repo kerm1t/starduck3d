@@ -9,10 +9,6 @@
 
 #include "Timer.h"
 
-//#include "glm.hpp"
-//#include "Vec3f.hxx"
-//#include "img_bitmap.hpp"
-
 // FPS
 // http://www.songho.ca/misc/timer/timer.html
 // Windows --> (also doch lieber GlfW benutzen)
@@ -67,8 +63,11 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   proj::c_VAO vao;
   CBMPLoader ldrBMP;
 
+
   m_render.FPS(); // <-- wenn ich das ins VAO fülle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
                   //     beim LoadObjects(s.u.) call
+
+
 //  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("D:\\__OpenGL_files\\arial_font.bmp")); <-- 2do: errorhandler + log visualisieren
 ///  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\arial_font.bmp"));
   m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp"));
@@ -90,8 +89,10 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_scene.Load();
   m_render.m_Scene = &m_scene;
   m_render.Scene_to_VBO();
+
 //  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\road_tex_256x256.bmp"));
   m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_road_vert4.bmp"));
+  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_water.bmp"));
 
 
 
@@ -122,7 +123,6 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   vao = m_trafficsigns.Add(m_render.vVAOs, -12.5f,0.5f,0.0f,  1.0f,0.0f,0.0f);
   m_render.vVAOs.push_back(vao);
 
-  
 
   // iv) Load VAOs for Moving objects
 //  m_render.m_Moving[0] = &m_moving[0]; // <-- movement applied to vertexshader(offset) while drawing/rendering
@@ -216,7 +216,7 @@ int proj::Proj::DoIt()
   ImGui::Begin("Papa:");
   ImGui::Text("mouse: %f,%f",io.MousePos.x,io.MousePos.y);
   ImGui::Text("Hallo Anton.");
-  float FPS = 1000.0f / timer.getElapsedTimeInMilliSec();
+  float FPS = 1000.0f / (float)timer.getElapsedTimeInMilliSec();
   ImGui::Text("%.1f FPS", FPS);
   static bool b_wireframe;
   ImGui::Checkbox("wireframe:", &b_wireframe);

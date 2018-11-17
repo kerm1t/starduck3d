@@ -261,10 +261,10 @@ namespace proj
     T_SLONG sl_ReadParameters(const std::string &rc_Paramfile);
     T_SLONG sl_ReadParametersAndScene(const std::string &rc_Paramfile);
   private:
-    T_SLONG sl_ReadColor(T_CHAR *line);
-    T_SLONG sl_ReadTextureID(T_CHAR *line);
-    T_SLONG sl_ReadMarkerpoint(T_CHAR *line, S_MarkerPoint &c_MP);
-    T_SLONG sl_Read6_Dof(T_CHAR *line, S_6Dof &c_6Dof);
+    void sl_ReadColor(T_CHAR *line);
+    void sl_ReadTextureID(T_CHAR *line);
+    void sl_ReadMarkerpoint(T_CHAR *line, S_MarkerPoint &c_MP);
+    void sl_Read6_Dof(T_CHAR *line, S_6Dof &c_6Dof);
 
     void if_set_param(T_CHAR *line, std::string s_find, T_REAL &f_val);
     void if_set_param_UL(T_CHAR *line, std::string s_find, T_ULONG &ul_val);      

@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
+//#define GLM_FORCE_RADIANS // disabled ... distorts the projection
 #include "glm.hpp"
 #include "math.h"
 

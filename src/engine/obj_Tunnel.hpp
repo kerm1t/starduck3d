@@ -52,7 +52,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     void Add(glm::vec3 voli, glm::vec3 hili, glm::vec3 vore, glm::vec3 hire, Vec3f col)
     {
       GLfloat height = 3.25f;
-//			GLfloat width  = 5.0f;
+//      GLfloat width  = 5.0f;
 
       nVert = nBufferStart;
       nCol  = nBufferStart;

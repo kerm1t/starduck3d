@@ -13,10 +13,8 @@ proj::SceneLoader::SceneLoader()
 {
 }
 
-T_SLONG proj::SceneLoader::sl_ReadColor(T_CHAR *line)
+void proj::SceneLoader::sl_ReadColor(T_CHAR *line)
 {
-  //    T_SLONG sl_Ret = sl_NOERROR;
-
   T_CHAR tmp[32];
   T_CHAR tmp2[8];
   T_CHAR tmp3[8];
@@ -29,17 +27,10 @@ T_SLONG proj::SceneLoader::sl_ReadColor(T_CHAR *line)
   sl_G = ::atoi(std::string(tmp3).c_str());
   sl_B = ::atoi(std::string(tmp4).c_str());
   *m_c_Colors.rbegin() = RGBcolor(sl_R, sl_G, sl_B); // Hack!
-
-  return sl_NOERROR;
-  //ERROR_EXIT:
-  //    REPORT_ERROR(sl_Ret, m_ach_ModuleName);
-  //    return sl_Ret;
 }
 
-T_SLONG proj::SceneLoader::sl_ReadTextureID(T_CHAR *line)
+void proj::SceneLoader::sl_ReadTextureID(T_CHAR *line)
 {
-  //    T_SLONG sl_Ret = sl_NOERROR;
-
   T_CHAR tmp[32];
   T_CHAR tmp2[8];
 
@@ -48,17 +39,10 @@ T_SLONG proj::SceneLoader::sl_ReadTextureID(T_CHAR *line)
   sscanf(line, "%s %s %s = %s;", tmp,tmp,tmp,tmp2);
   sl_TextureID = ::atoi(std::string(tmp2).c_str());
   *m_TextureIDs.rbegin() = sl_TextureID; // Hack!
-
-  return sl_NOERROR;
-  //ERROR_EXIT:
-  //    REPORT_ERROR(sl_Ret, m_ach_ModuleName);
-  //    return sl_Ret;
 }
 
-T_SLONG proj::SceneLoader::sl_ReadMarkerpoint(T_CHAR *line, S_MarkerPoint &c_MP)
+void proj::SceneLoader::sl_ReadMarkerpoint(T_CHAR *line, S_MarkerPoint &c_MP)
 {
-  //    T_SLONG sl_Ret = sl_NOERROR;
-
   T_CHAR tmp[64];
   T_CHAR tmp2[64];
   T_CHAR tmp3[64];
@@ -75,17 +59,10 @@ T_SLONG proj::SceneLoader::sl_ReadMarkerpoint(T_CHAR *line, S_MarkerPoint &c_MP)
   c_MP.s_Right.rl_Y = (T_REAL)::atof(std::string(tmp5).c_str());
   c_MP.s_Right.rl_Z = (T_REAL)::atof(std::string(tmp6).c_str());
   c_MP.b_Visible    = (T_REAL)::atof(std::string(tmp7).c_str()) > 0.5;
-
-  return sl_NOERROR;
-  //ERROR_EXIT:
-  //    REPORT_ERROR(sl_Ret, m_ach_ModuleName);
-  //    return sl_Ret;
 }
 
-T_SLONG proj::SceneLoader::sl_Read6_Dof(T_CHAR *line, S_6Dof &c_6Dof)
+void proj::SceneLoader::sl_Read6_Dof(T_CHAR *line, S_6Dof &c_6Dof)
 {
-  //    T_SLONG sl_Ret = sl_NOERROR;
-
   T_CHAR tmp[64];
   T_CHAR tmp2[64];
   T_CHAR tmp3[64];
@@ -102,11 +79,6 @@ T_SLONG proj::SceneLoader::sl_Read6_Dof(T_CHAR *line, S_6Dof &c_6Dof)
   c_6Dof.rl_Pitch   = (T_REAL)::atof(std::string(tmp5).c_str());
   c_6Dof.rl_Yaw     = (T_REAL)::atof(std::string(tmp6).c_str());
   c_6Dof.rl_Speed   = (T_REAL)::atof(std::string(tmp7).c_str());
-
-  return sl_NOERROR;
-  //ERROR_EXIT:
-  //    REPORT_ERROR(sl_Ret, m_ach_ModuleName);
-  //    return sl_Ret;
 }
 
 T_SLONG proj::SceneLoader::sl_ReadScene(const std::string &rc_Scenefile)
@@ -123,10 +95,6 @@ T_SLONG proj::SceneLoader::sl_ReadScene(const std::string &rc_Scenefile)
   S_6Dof c_6Dof;
 
   FILE *c_F;
-
-  //    static Timer timer;
-  //    double elapsedTime = 0.0;
-  //    timer.start();
 
   fopen_s(&c_F, rc_Scenefile.c_str(), "r");
   if (!c_F)
@@ -171,7 +139,7 @@ T_SLONG proj::SceneLoader::sl_ReadScene(const std::string &rc_Scenefile)
     }
     else if (std::string(tmp2) == "S_6Dof")
     {
-      //            m_c_Trajectory.clear();
+//      m_c_Trajectory.clear();
       fgets(line, sizeof line, c_F);
       while (*line != '}')
       {
@@ -216,6 +184,7 @@ void proj::SceneLoader::if_set_param(T_CHAR *line, std::string s_find, T_REAL &f
     f_val = (T_REAL)::atof(std::string(val).c_str());
   }
 }
+
 void proj::SceneLoader::if_set_param_UL(T_CHAR *line, std::string s_find, T_ULONG &ul_val)
 {
   T_CHAR key[1024];
@@ -227,6 +196,7 @@ void proj::SceneLoader::if_set_param_UL(T_CHAR *line, std::string s_find, T_ULON
     ul_val = ::atoi(std::string(val).c_str());
   }
 }
+
 void proj::SceneLoader::if_set_param_SL(T_CHAR *line, std::string s_find, T_SLONG &sl_val)
 {
   T_CHAR key[1024];
@@ -238,6 +208,7 @@ void proj::SceneLoader::if_set_param_SL(T_CHAR *line, std::string s_find, T_SLON
     sl_val = ::atoi(std::string(val).c_str());
   }
 }
+
 void proj::SceneLoader::if_set_param_Str(T_CHAR *line, std::string s_find, std::string &c_val)
 {
   T_CHAR key[1024];
@@ -344,7 +315,6 @@ T_SLONG proj::SceneLoader::sl_ReadParametersAndScene(const std::string &rc_Param
 {
   sl_ReadParameters(rc_Paramfile);
   sl_ReadScene(c_Scene_filename);
-
   return 0;
 }
 
