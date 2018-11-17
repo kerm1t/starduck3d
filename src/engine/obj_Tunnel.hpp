@@ -28,7 +28,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
     void Add(glm::vec3 voli, glm::vec3 hili, glm::vec3 vore, glm::vec3 hire, Vec3f col)
     {
-      GLfloat height = 3.25f;
+      GLfloat height = 3.25f; // [m]
 //      GLfloat width  = 5.0f;
 
       nVert = nBufferStart;
@@ -40,28 +40,13 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       glm::vec3 hireo = glm::vec3(hire.x,hire.y,hire.z + height); // hinten rechts oben
 
       // A) vertical element left --> add 6 points 
-      vert_pushback(voli);
-      vert_pushback(hili);
-      vert_pushback(volio);
-      vert_pushback(volio); // Tri 2
-      vert_pushback(hili);
-      vert_pushback(hilio);
+      vert_Vpushback({ voli,hili,volio,volio,hili,hilio });
 
       // B) vertical element right --> add 6 points 
-      vert_pushback(vore);
-      vert_pushback(hire);
-      vert_pushback(voreo);
-      vert_pushback(voreo); // Tri 2
-      vert_pushback(hire);
-      vert_pushback(hireo);
+      vert_Vpushback({ vore,hire,voreo,voreo,hire,hireo });
 
       // C) "upper" element
-      vert_pushback(volio);
-      vert_pushback(voreo);
-      vert_pushback(hireo);
-      vert_pushback(hireo); // Tri 2
-      vert_pushback(hilio);
-      vert_pushback(volio);
+      vert_Vpushback({ volio,voreo,hireo,hireo,hilio,volio });
 
       // color each vertex
       for (int i=0;i<6;i++)

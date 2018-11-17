@@ -41,9 +41,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     void Init(int iCount)
     {
       Count = iCount;
-      //            iNdx = 0;
-      //            nVert = 0;
-      //            nCol = 0;
       ui_idVBO = p_render->vVAOs.size();
 
       // 2016-07-28, 2do: indizes sharen, hier sind eigentlich nur 6 vertices erforderlich
@@ -64,12 +61,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       glm::vec3 hio = glm::vec3(hi.x,hi.y,hi.z + height); // hinten oben
 
       // A) vertical element --> add 6 points 
-      vert_pushback(vo);
-      vert_pushback(hi);
-      vert_pushback(voo);
-      vert_pushback(voo); // Tri 2
-      vert_pushback(hi);
-      vert_pushback(hio);
+      vert_Vpushback({ vo,hi,voo,voo,hi,hio });
 
       // B) "flat" element
       glm::vec3 vohi = hi-vo;  // kmöu
@@ -79,12 +71,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       glm::vec3 voa = glm::vec3(vo.x+width*out.x,vo.y+width*out.y,vo.z + height); // vorne aussen (oben)
       glm::vec3 hia = glm::vec3(hi.x+width*out.x,hi.y+width*out.y,hi.z + height); // hinten aussen (oben)
 
-      vert_pushback(voo);
-      vert_pushback(voa);
-      vert_pushback(hio);
-      vert_pushback(hio); // Tri 2
-      vert_pushback(hia);
-      vert_pushback(voa);
+      vert_Vpushback({ voo,voa,hio,hio,hia,voa });
 
       // color each vertex
       for (int i=0;i<6;i++)

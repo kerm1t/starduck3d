@@ -49,11 +49,20 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     int nVert; // <--- ?? wird unten benutzt, aber wozu: mehrere guardrails ?
     int nCol;
 
+    void vert_Vpushback(std::vector<glm::vec3> vVert)
+    {
+      for (int i = 0; i < vVert.size(); i++)
+      {
+        pf_Vert[nVert++] = vVert[i].x;
+        pf_Vert[nVert++] = vVert[i].y;
+        pf_Vert[nVert++] = vVert[i].z;
+      }
+    }
     void vert_pushback(glm::vec3 V)
     {
-      pf_Vert[nVert++] = V.x;
-      pf_Vert[nVert++] = V.y;
-      pf_Vert[nVert++] = V.z;
+        pf_Vert[nVert++] = V.x;
+        pf_Vert[nVert++] = V.y;
+        pf_Vert[nVert++] = V.z;
     }
     void col_pushback(glm::vec3 C)
     {

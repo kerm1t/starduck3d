@@ -72,9 +72,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       {
         col_pushback(glm::vec3(col.x+0.1f,col.y+0.1f,col.z+0.1f));
       }
-
-      // funktioniert nicht, wenn ich iNdx hier setze -->           iNdx = i;
-      // dann gibt es einen HEAP error
     }
 
     void _ToVBO()
