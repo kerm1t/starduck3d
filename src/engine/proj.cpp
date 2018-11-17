@@ -100,7 +100,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_scenebuilder.p_render = &m_render;
   m_scenebuilder.p_scene = &m_scene;
 
-//#define GUARDRAIL
+//#define CURBSTONE
 #ifdef GUARDRAIL
   vao = m_scenebuilder.CreateGuardrails(); // "align" to road
   m_render.vVAOs.push_back(vao);

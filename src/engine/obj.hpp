@@ -44,22 +44,22 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   class CObject
   {
   protected:
-    GLfloat* pf_Vertices;
-    GLfloat* pf_Colors;
+    GLfloat* pf_Vert;
+    GLfloat* pf_Col;
     int nVert; // <--- ?? wird unten benutzt, aber wozu: mehrere guardrails ?
     int nCol;
 
-    void xyz_push_back(GLfloat * pf_V, glm::vec3 V)
+    void vert_pushback(glm::vec3 V)
     {
-      pf_V[nVert++] = V.x;
-      pf_V[nVert++] = V.y;
-      pf_V[nVert++] = V.z;
+      pf_Vert[nVert++] = V.x;
+      pf_Vert[nVert++] = V.y;
+      pf_Vert[nVert++] = V.z;
     }
-    void rgb_push_back(GLfloat * pf_C, glm::vec3 C)
+    void col_pushback(glm::vec3 C)
     {
-      pf_C[nCol++] = C.r;
-      pf_C[nCol++] = C.g;
-      pf_C[nCol++] = C.b;
+      pf_Col[nCol++] = C.r;
+      pf_Col[nCol++] = C.g;
+      pf_Col[nCol++] = C.b;
     }
   public:
     bool bHasParts;
@@ -69,6 +69,14 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     CObject()
     {
       bHasParts = false;
+//      iNdx = 0;
+      nVert = 0;
+      nCol = 0;
+    }
+    ~CObject()
+    {
+//      delete[] pf_Col;
+//      delete[] pf_Vert;
     }
   };
 

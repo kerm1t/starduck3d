@@ -48,8 +48,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
       // 2016-07-28, 2do: indizes sharen, hier sind eigentlich nur 6 vertices erforderlich
       vCount = iCount*4*3; // 12 = 4 triangles, 3 vertices
-      pf_Vertices = new GLfloat[vCount*3]; // vertex.x/y/z
-      pf_Colors   = new GLfloat[vCount*3]; // color.r/g/b
+      pf_Vert = new GLfloat[vCount*3]; // vertex.x/y/z
+      pf_Col  = new GLfloat[vCount*3]; // color.r/g/b
     }
 
     void Add(glm::vec3 vo, glm::vec3 hi, Vec3f col)
@@ -64,12 +64,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       glm::vec3 hio = glm::vec3(hi.x,hi.y,hi.z + height); // hinten oben
 
       // A) vertical element --> add 6 points 
-      xyz_push_back(pf_Vertices, vo);
-      xyz_push_back(pf_Vertices, hi);
-      xyz_push_back(pf_Vertices, voo);
-      xyz_push_back(pf_Vertices, voo); // Tri 2
-      xyz_push_back(pf_Vertices, hi);
-      xyz_push_back(pf_Vertices, hio);
+      vert_pushback(vo);
+      vert_pushback(hi);
+      vert_pushback(voo);
+      vert_pushback(voo); // Tri 2
+      vert_pushback(hi);
+      vert_pushback(hio);
 
       // B) "flat" element
       glm::vec3 vohi = hi-vo;  // kmöu
@@ -79,21 +79,21 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       glm::vec3 voa = glm::vec3(vo.x+width*out.x,vo.y+width*out.y,vo.z + height); // vorne aussen (oben)
       glm::vec3 hia = glm::vec3(hi.x+width*out.x,hi.y+width*out.y,hi.z + height); // hinten aussen (oben)
 
-      xyz_push_back(pf_Vertices, voo);
-      xyz_push_back(pf_Vertices, voa);
-      xyz_push_back(pf_Vertices, hio);
-      xyz_push_back(pf_Vertices, hio); // Tri 2
-      xyz_push_back(pf_Vertices, hia);
-      xyz_push_back(pf_Vertices, voa);
+      vert_pushback(voo);
+      vert_pushback(voa);
+      vert_pushback(hio);
+      vert_pushback(hio); // Tri 2
+      vert_pushback(hia);
+      vert_pushback(voa);
 
       // color each vertex
       for (int i=0;i<6;i++)
       {
-        rgb_push_back(pf_Colors, glm::vec3(col.x,col.y,col.z));
+        col_pushback(glm::vec3(col.x,col.y,col.z));
       }
       for (int i=0;i<6;i++)
       {
-        rgb_push_back(pf_Colors, glm::vec3(col.x+0.1f,col.y+0.1f,col.z+0.1f));
+        col_pushback(glm::vec3(col.x+0.1f,col.y+0.1f,col.z+0.1f));
       }
 
       // funktioniert nicht, wenn ich iNdx hier setze -->           iNdx = i;
@@ -105,14 +105,14 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       // hier vCount statt nVert nutzen, da nVert li+re+...? beinhaltet (14400 statt 48xx) <-- klären!
       glGenBuffers(1, &p_render->positionBuffer[ui_idVBO]); // = 3
       glBindBuffer(GL_ARRAY_BUFFER, p_render->positionBuffer[ui_idVBO]);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount * 3, pf_Vertices, GL_STATIC_DRAW); // init data storage
+      glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount * 3, pf_Vert, GL_STATIC_DRAW); // init data storage
 
       glGenBuffers(1, &p_render->colorBuffer[ui_idVBO]); // = 3
       glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO]);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount * 3, pf_Colors, GL_STATIC_DRAW);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount * 3, pf_Col, GL_STATIC_DRAW);
 
-      delete[] pf_Colors;
-      delete[] pf_Vertices;
+      delete[] pf_Col;
+      delete[] pf_Vert;
     }
 
     proj::c_VAO VAO()
