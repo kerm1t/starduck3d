@@ -61,7 +61,7 @@ void proj::SceneLoader::sl_ReadMarkerpoint(T_CHAR *line, S_MarkerPoint &c_MP)
   c_MP.b_Visible    = (T_REAL)::atof(std::string(tmp7).c_str()) > 0.5;
 }
 
-void proj::SceneLoader::sl_Read6_Dof(T_CHAR *line, S_6Dof &c_6Dof)
+void proj::SceneLoader::sl_Read6_Dof(T_CHAR *line, S_6Dof &c_6Dof) // (e.g.) trajectory
 {
   T_CHAR tmp[64];
   T_CHAR tmp2[64];

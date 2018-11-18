@@ -14,8 +14,10 @@ import csv
 #from scene_basic import FlatArc
 from vec import Vec3
 
-descr_file = r'..\cfg\lane_projector_scenes\_scene_edit.csv'
-scene_file = r"..\cfg\lane_projector_scenes\editor.scene"
+#descr_file = r'..\cfg\lane_projector_scenes\_scene_edit.csv'
+#scene_file = r"..\cfg\lane_projector_scenes\editor.scene"
+descr_file = r'.\_scene_edit.csv'
+scene_file = r".\editor.scene"
 
 #aSegments = ['FlatArc','Clothoid','Snake','Straight','Exit','Roadworks','Zebra','Arrow']
 aSegments = ['FlatArc','Clothoid','Straight']
@@ -67,20 +69,6 @@ NumberOfSegments = 50  # <-- shall be even
 # TkInter Book:          http://effbot.org/tkinterbook/tkinter-application-windows.htm
 # how to create lines:   http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/create_line.html
 # compile .py to .exe:   http://logix4u.net/component/content/article/27-tutorials/44-how-to-create-windows-executable-exe-from-python-script
-
-
-#def vector(*v):
-#    return numpy.ravel(numpy.array(v, numpy.float32))
-#   return array(v)
-#   print v
-#def v3len(*v):
-#    return math.sqrt(v[0][0][0]*v[0][0][0] + v[0][0][1]*v[0][0][1] + v[0][0][2]*v[0][0][2])
-#def v3norm(*v):
-#    vlen = v3len(*v)
-#    return vector(v[0][0][0]*vlen,v[0][0][1]*vlen,v[0][0][2]*vlen)
-#def v3scale(*v):
-#    vnew = v3norm(v)
-#    return vector(vnew[0]*v[1],vnew[1]*v[1],vnew[2]*v[1])
 
 
 # --------------------------------------------------------------------------------------------------------------->
@@ -654,6 +642,8 @@ def save():
     for seg in aTrack:
         print >>f, seg.tostr()
 
+
+
 def export():
 # ---------------------------------------------------------------------------------------------------------
 # S_6Dof:        s_Pos.rl_X, s_Pos.rl_Y, s_Pos.rl_Z, rl_Roll, rl_Pitch, rl_Yaw, rl_Speed
@@ -662,78 +652,28 @@ def export():
     if len(aTrack)==0: return
     f = open(scene_file, "w")
     bVisible = 1
+
+# ===========================
+#  a) Trajectory (enemy autodrive help / driving limitations?)
+# ===========================
     fSpeed   = 30.0
     a6DOF    = []
 
-    aMarkers = [] # 1..x(7) aMarker
-    aMarkers.append([]) # Hack!! left
-    aMarkers.append([]) # Hack!! right
-
-    aRoad = [] # NEU !!
-
-#     road
-#      +-------------------------------+
-#      |                               |
-#      |      markerL     markerR      |
-#      |          ++---*---++          |
-#      |          ||   |   ||          |
-#      |          ||   |   ||          |
-#      |          ++---*---++          |
-#      |              P(init)          |
-#      |                               |
-#      +-------------------------------+
-
-#      +-------------------------------+
-#      |                               |
-#      |      markerL                  |
-#      |          ++---*---++          |
-#      |     v1L  ||  v1R              |
-#      |          ||                   |
-#
-#
-
-    P = Vec3(*Pinit)
-    D = Vec3(*Dinit)
+    P = Vec3(*Pinit) # position
+    D = Vec3(*Dinit) # direction
     for seg in aTrack:
         aL = [] # hier steht das Skeleton (Zermtrum) des linken Markers
         aR = []
         (aL,aR,Pnew,Dnew) = seg.generate(P,D,NumberOfSegments,2.25) # NumberOfSegments gives resolution
-#        print r1                                                   # --> e.g. for 8 Segments output is 9 points !!
-#        print r2
-# in Pnew steht das End-Element des Tracks
-#        x1 = r1[0][0] # segment-start Left
-#        y1 = r1[0][1]
-#        z1 = r1[0][2]
-#        x2 = r2[0][0] # segment-start right
-#        y2 = r2[0][1]
-#        z2 = r2[0][2]
-# -------------------------------------------
-# hier werden keine Segmente exportiert,
-# sondern die Begrenzungspunkte der Segmente,
-# also m?ssen 9 Punkte geschrieben werden !!!
-# -------------------------------------------
+
         for j in range(len(aL)): # assume: r1 and r2 hold the same number of steps
-#            print j
             PSkel_L = aL[j] # Point L of Marker Skeleton
             PSkel_R = aR[j]
 #            vLR = PSkel_R-PSkel_L
             vLR = PSkel_L-PSkel_R # <--- Fix !!!
 
-#            vd = vector(x1-x2,y1-y2,z1-z2)
             v1L =  vLR*0.025
             v1R = -vLR*0.025
-
-#            x1next = r1[j][0] # segment-next <-- beim letzten Element des Tracks auf das erste Elem. des neuen Tracks zeigen
-#            y1next = r1[j][1]
-#            z1next = r1[j][2]
-
-#            x2next = r2[j][0] # segment-next
-#            y2next = r2[j][1]
-#            z2next = r2[j][2]
-
-
-            zADD = 0.02 # 2do: if smaller 0.1 markers disappear (they don't fit exactly with Road segments)
-#            vdnext = vector(x1next-x2next,y1next-y2next,z1next-z2next)
 
 # ===========================
 #  Trajectory not centered!!
@@ -743,17 +683,44 @@ def export():
                 s6DOF    = '{ %.3f , %.3f , %.3f , %.3f , %.3f , %.3f , %.3f } ,' % (PTraj.x,PTraj.y,PTraj.z, PTraj.x,PTraj.y,PTraj.z, fSpeed) # Hack!
                 a6DOF.append(s6DOF) # Hack!
 
-                # Marker LEFT (ML)   MLleft,MLright
-                PLL = PSkel_L+v1L
-                PLR = PSkel_L+v1R
-                sMarkerStep = '{ %.3f , %.3f , %.3f , %.3f , %.3f , %.3f , %d } ,' % (PLL.x,PLL.y,PLL.z+zADD, PLR.x,PLR.y,PLR.z+zADD, bVisible)
-                aMarkers[0].append(sMarkerStep)
+        P = Pnew
+        D = Dnew
 
-                # Marker RIGHT (MR)   MRleft,MRright
-                PRL = PSkel_R+v1L
-                PRR = PSkel_R+v1R
-                sMarkerStep = '{ %.3f , %.3f , %.3f , %.3f , %.3f , %.3f , %d } ,' % (PRL.x,PRL.y,PRL.z+zADD, PRR.x,PRR.y,PRR.z+zADD, bVisible)
-                aMarkers[1].append(sMarkerStep)
+    # =================== Hack!!! an das letzte Element eine Traj anfuegen
+    PTraj = PSkel_L+vLR*0.5
+    s6DOF    = '{ %.3f , %.3f , %.3f , %.3f , %.3f , %.3f , %.3f } ,' % (PTraj.x,PTraj.y,PTraj.z, PTraj.x,PTraj.y,PTraj.z, fSpeed) # Hack!
+    a6DOF.append(s6DOF) # Hack!
+
+    print >>f, 'static S_6Dof Trajectory[] = {'
+    for s in a6DOF: print >>f, s
+    print >>f, '}'
+
+
+
+# ===========================
+#  b) Road
+# ===========================
+    P = Vec3(*Pinit) # position
+    D = Vec3(*Dinit) # direction
+    for seg in aTrack:
+        aL = [] # hier steht das Skeleton (Zermtrum) des linken Markers
+        aR = []
+        (aL,aR,Pnew,Dnew) = seg.generate(P,D,NumberOfSegments,2.25) # NumberOfSegments gives resolution
+        
+        aRoadSeg = [] # NEU !!
+        for j in range(len(aL)): # assume: r1 and r2 hold the same number of steps
+            PSkel_L = aL[j] # Point L of Marker Skeleton
+            PSkel_R = aR[j]
+#            vLR = PSkel_R-PSkel_L
+            vLR = PSkel_L-PSkel_R # <--- Fix !!!
+
+            v1L =  vLR*0.025
+            v1R = -vLR*0.025
+
+# ===========================
+#  Trajectory not centered!!
+# ===========================
+            if (j<(len(aL)-1)): # Hack!
 
                 # Road (relative to markers!)
                 v1L =  vLR*0.75
@@ -761,34 +728,17 @@ def export():
                 PRoadL = PSkel_L+v1L
                 PRoadR = PSkel_R+v1R
                 sRoadStep = '{ %.3f , %.3f , %.3f , %.3f , %.3f , %.3f , %d } ,' % (PRoadL.x,PRoadL.y,PRoadL.z, PRoadR.x,PRoadR.y,PRoadR.z, bVisible)
-                aRoad.append(sRoadStep)
-
-#            x1 = x1next # segment-next
-#            y1 = y1next
-#            z1 = z1next
-#            x2 = x2next # segment-next
-#            y2 = y2next
-#            z2 = z2next
+                aRoadSeg.append(sRoadStep)
 
         P = Pnew
         D = Dnew
+        a = 'static unsigned char Road_Color = 250 250 250;'
+        print >>f, ('static S_MarkerPoint %s[] = {' % 'Road')
+        for aR in aRoadSeg:
+            print >>f, aR
+        print >>f, '}'
+        print >>f, a # color
 
-    # =================== Hack!!! an das letzte Element eine Traj anf?gen
-    PTraj = PSkel_L+vLR*0.5
-    s6DOF    = '{ %.3f , %.3f , %.3f , %.3f , %.3f , %.3f , %.3f } ,' % (PTraj.x,PTraj.y,PTraj.z, PTraj.x,PTraj.y,PTraj.z, fSpeed) # Hack!
-    a6DOF.append(s6DOF) # Hack!
-
-    # Marker LEFT (ML)   MLleft,MLright
-    PLL = PSkel_L+v1L
-    PLR = PSkel_L+v1R
-    sMarkerStep = '{ %.3f , %.3f , %.3f , %.3f , %.3f , %.3f , %d } ,' % (PLL.x,PLL.y,PLL.z+zADD, PLR.x,PLR.y,PLR.z+zADD, bVisible)
-    aMarkers[0].append(sMarkerStep)
-
-    # Marker RIGHT (MR)   MRleft,MRright
-    PRL = PSkel_R+v1L
-    PRR = PSkel_R+v1R
-    sMarkerStep = '{ %.3f , %.3f , %.3f , %.3f , %.3f , %.3f , %d } ,' % (PRL.x,PRL.y,PRL.z+zADD, PRR.x,PRR.y,PRR.z+zADD, bVisible)
-    aMarkers[1].append(sMarkerStep)
 
     # Road (relative to markers!)
     v1L =  vLR*0.75
@@ -797,29 +747,18 @@ def export():
     PRoadR = PSkel_R+v1R
     sRoadStep = '{ %.3f , %.3f , %.3f , %.3f , %.3f , %.3f , %d } ,' % (PRoadL.x,PRoadL.y,PRoadL.z, PRoadR.x,PRoadR.y,PRoadR.z, bVisible)
     aRoad.append(sRoadStep)
-    # =================== Hack !!!!
-
-    print >>f, 'static S_6Dof Trajectory[] = {'
-    for s in a6DOF: print >>f, s
-    print >>f, '}'
-
-    a = ('static unsigned char RightMarker_Color = 4095 4095 4095;', 'static unsigned char LeftMarker_Color = 4095 4095 0;','static unsigned char trajectory_Color = 4095 0 4095;')
-    aMNames  = ['RightMarker','LeftMarker','trajectory'] # Hack!!
-    i=0
-    for aM in aMarkers:
-        print >>f, ('static S_MarkerPoint %s[] = {' % aMNames[i])
-        for s in aM:
-            print >>f, s
-        print >>f, '}'
-        print >>f, a[i] # color
-        i+=1
 
     a = 'static unsigned char Road_Color = 250 250 250;'
     print >>f, ('static S_MarkerPoint %s[] = {' % 'Road')
-    for aR in aRoad:
+    for aR in aRoadSeg:
         print >>f, aR
     print >>f, '}'
     print >>f, a # color
+    # =================== Hack !!!!
+
+
+
+
 
     print "Export done."
 
@@ -848,10 +787,10 @@ if __name__ == "__main__":
     lb2.grid(row=1,column=0,padx=4,sticky=N)
 
     #2) track image
-    cnv = Canvas(top, width=canvas_w, height=canvas_h)
+    cnv = Canvas(top, width=canvas_w, height=canvas_h,scrollregion=(0,0,500,500))
     cnv.create_rectangle(0, 0, canvas_w, canvas_h, fill="white")
     cnv.grid(row=0,column=1,rowspan=2,padx=4)#,sticky=N+S+E+W)
-
+    
     #3) geometry properties
     geometry_properties(top)
 

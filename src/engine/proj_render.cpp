@@ -52,7 +52,7 @@ GLvoid proj::Render::ReSizeGLScene(GLsizei width, GLsizei height) // Resize And 
 {
   if (height==0)                     // Prevent A Divide By Zero By
   {
-    height = 1;                    // Making Height Equal One
+    height = 1;                      // Making Height Equal One
   }
   glViewport(0, 0, width, height);   // Reset The Current Viewport
 }
@@ -97,7 +97,7 @@ HDC proj::Render::GL_attach_to_DC(HWND hWnd)
     MessageBox(NULL,"Can't Find A Suitable PixelFormat.","ERROR",MB_OK|MB_ICONEXCLAMATION);
     return ERR_PIXELFORMAT;
   }
-  if(!SetPixelFormat(hDC,PixelFormat,&pfd)) // Are We Able To Set The Pixel Format?
+  if (!SetPixelFormat(hDC,PixelFormat,&pfd)) // Are We Able To Set The Pixel Format?
   {
     char str[255];
     DWORD err = GetLastError();
@@ -135,7 +135,7 @@ HDC proj::Render::GL_attach_to_DC(HWND hWnd)
     MessageBox(NULL,"Can't Create A GL Rendering Context.","ERROR",MB_OK|MB_ICONEXCLAMATION);
     return ERR_CONTEXT;
   }
-  if(!wglMakeCurrent(hDC,hRC)) // Try To Activate The Rendering Context
+  if (!wglMakeCurrent(hDC,hRC)) // Try To Activate The Rendering Context
   {
     MessageBox(NULL,"Can't Activate The GL Rendering Context.","ERROR",MB_OK|MB_ICONEXCLAMATION);
     return ERR_GLMAKECURRENT;
@@ -190,7 +190,7 @@ void proj::Render::Bind_VBOs_to_VAOs() // s. http://www.arcsynthesis.org/gltut/P
 
   // ===== 3d-VBO's (regular shader, i.e. Scene + Objects) =====
 
-  for (unsigned int iVAO = 1; iVAO < vVAOs.size(); iVAO++) // <-- start with 1, as 0 is for FPS-coords
+  for (iVAO = 1; iVAO < vVAOs.size(); iVAO++) // <-- start with 1, as 0 is for FPS-coords
   {
     glBindVertexArray(vVertexArray[iVAO]);  // select/bind array and
     // attach a)  position and
@@ -330,7 +330,6 @@ void proj::Render::Triangles_to_VBO(Vec3f v3pos)
   // ... after adding coords/cols, they can be forgotten
 }
 
-// currently only works with simple setups: Left, Right, Road
 int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
 {
   unsigned int ui_idVBO = vVAOs.size();
@@ -344,23 +343,31 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
 
   S_Point3D p0,p1,p2,p3;
 #define MAX_NUMBER_MARKERS 3
-  unsigned int vCount[MAX_NUMBER_MARKERS];
-  vCount[0] = 0; // VBO_LEFT
-  vCount[1] = 0; // VBO_RIGHT
-  vCount[2] = 0; // VBO_ROAD
+//  unsigned int vCount[MAX_NUMBER_MARKERS];
+//  vCount[0] = 0; // VBO_LEFT
+//  vCount[1] = 0; // VBO_RIGHT
+//  vCount[2] = 0; // VBO_ROAD
   sz = (unsigned int)rc_Param.m_c_Markers.size(); // number of marker vectors (lines)
+//  sz = 3;
+// ------------------------------------
+//
+// 11/17/2018 - different scene concept
+// every segment is stored individually
+//
+// ------------------------------------
+
   for (iLine=0;iLine<sz;iLine++)
   {
-    if (iLine < 2) continue; // hack!! keine Marker, nur Road
+    unsigned int vCount = 0;
     const std::vector<S_MarkerPoint> &rc_Marker = rc_Param.m_c_Markers[iLine];
     for (iMarker=0;iMarker<rc_Marker.size()-1;iMarker++) // no. of markersteps (typically > 500)
     {
-      if (rc_Marker[iMarker].b_Visible) vCount[iLine]+=6; // 2 triangles per Quad
+      if (rc_Marker[iMarker].b_Visible) vCount+=6; // 2 triangles per Quad
     }
 
-    GLfloat* vertices  = new GLfloat[vCount[iLine]*3]; // Vertex.x/y/z
-    GLfloat* colors    = new GLfloat[vCount[iLine]*3]; // Color.r/g/b
-    GLfloat* texCoords = new GLfloat[vCount[iLine]*2]; // Texture.U/V
+    GLfloat* vertices  = new GLfloat[vCount*3]; // Vertex.x/y/z
+    GLfloat* colors    = new GLfloat[vCount*3]; // Color.r/g/b
+    GLfloat* texCoords = new GLfloat[vCount*2]; // Texture.U/V
 
     int iV = 0;
     int iTx = 0;
@@ -437,7 +444,7 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
 
     // b) store VAO props for OpenGL-drawing loop (and later manipulation, e.g. position change)
     c_VAO vao;
-    vao.Name = aParts[iLine];
+    vao.Name = "seg";// aParts[iLine];
     if (iLine==2) // 2do --> in der Scene-description speichern
     {
       vao.t_Shade = SHADER_TEXTURE;
@@ -445,23 +452,25 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
     }
     else
     {
-      vao.t_Shade = SHADER_COLOR_FLAT;
+//      vao.t_Shade = SHADER_COLOR_FLAT;
+      vao.t_Shade = SHADER_TEXTURE;
+      vao.ui_idTexture = TEX_ROADSURFACE;
     }
-    vao.uiVertexCount = vCount[iLine]*3;
+    vao.uiVertexCount = vCount*3;
     vVAOs.push_back(vao);
 
     // VBO, s. http://ogldev.atspace.co.uk/www/tutorial02/tutorial02.html
     glGenBuffers(1, &positionBuffer[ui_idVBO]);
     glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[ui_idVBO]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount[iLine]*3, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount*3, vertices, GL_STATIC_DRAW);
 
     glGenBuffers(1, &colorBuffer[ui_idVBO]);
     glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[ui_idVBO]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount[iLine]*3, colors, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount*3, colors, GL_STATIC_DRAW);
 
     glGenBuffers(1, &uvBuffer[ui_idVBO]);
     glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[ui_idVBO]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount[iLine]*2, texCoords, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount*2, texCoords, GL_STATIC_DRAW);
 
     delete [] colors;
     delete [] vertices;

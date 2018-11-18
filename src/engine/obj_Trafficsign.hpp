@@ -5,7 +5,7 @@
 //#include "inc_render.h"
 #include <vector> // später proj::render übergeben und das hier entfernen
 
-#include "obj.hpp" // <-- warum brauche ich dasd hier, aber nicht inden anderen Obj-Create files (Tunnel, Guardrail,Curbstone etc.) 
+#include "obj.hpp"
 
 // holds all trafficsigns, so they can be switched on/off, added, deleted
 // traffic-signs are immobile

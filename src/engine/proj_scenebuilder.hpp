@@ -140,10 +140,13 @@ namespace proj
       const std::vector<S_MarkerPoint> &rc_Marker = rc_Param.m_c_Markers[iLine];
 
       m_tunnel.p_render = p_render;
-      m_tunnel.Init(rc_Marker.size()); // Achtung --> zu viele Elemente initialisiert!!
+      uint16 sz = rc_Marker.size();
+//      if (sz < 75) return null;
+      m_tunnel.Init(sz); // Achtung --> zu viele Elemente initialisiert!!
 
       int iObj=0;
-      for (unsigned int iMarker=50;iMarker<75;iMarker++) // no. of markersteps (typically > 500)
+//      for (unsigned int iMarker=50;iMarker<75;iMarker++) // no. of markersteps (typically > 500)
+      for (unsigned int iMarker=0;iMarker<25;iMarker++) // no. of markersteps (typically > 500)
       {
         if (rc_Marker[iMarker].b_Visible)
         {

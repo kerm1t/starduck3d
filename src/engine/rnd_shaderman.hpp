@@ -15,11 +15,11 @@ public:
   // =============
 
   // ** Shader1 **
-  GLuint program;     // = sh1
+  GLuint program;           // = sh1
   // std-attrib
   GLuint sh1_attr_pos;
   GLuint sh1_attr_col;
-  GLuint sh1_attr_tex;// uv
+  GLuint sh1_attr_tex;      // uv
   // uniform
   GLuint sh1_unif_offset;   // <-- for object-movement
   GLuint sh1_unif_MVPMatrix;
@@ -93,8 +93,8 @@ public:
 // comment out on SONY    assert(strlen(buffer)==0);
 
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, fragmentShaderSource, 0); // set array of strings as source code
-    glCompileShader(fragmentShader); // compile
+    glShaderSource    (fragmentShader, 1, fragmentShaderSource, 0); // set array of strings as source code
+    glCompileShader   (fragmentShader); // compile
     glGetShaderInfoLog(fragmentShader, 512, NULL, buffer); // <-- debug
     err = glGetError();
     // 2do: check that buffer = "No errors."
@@ -103,8 +103,8 @@ public:
     program = glCreateProgram(); // create empty program object
     glAttachShader(program, vertexShader); // attach shader
     glAttachShader(program, fragmentShader); // attach shader
-    glLinkProgram(program); // link
-    glUseProgram(program); // install ... and use in the further runtime ...
+    glLinkProgram (program); // link
+    glUseProgram  (program); // install ... and use in the further runtime ...
                            // start here, otherwise --> http://stackoverflow.com/questions/8688171/android-opengl20-error-on-command-gluniformmatrix4fv 
     err = glGetError();
 
@@ -161,23 +161,23 @@ public:
 
     // Shader for FPS
     GLuint vshaderFPS = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vshaderFPS, 1, vshd_src_FPS, 0);
-    glCompileShader(vshaderFPS);
+    glShaderSource    (vshaderFPS, 1, vshd_src_FPS, 0);
+    glCompileShader   (vshaderFPS);
     glGetShaderInfoLog(vshaderFPS, 512, NULL, buffer); // <-- debug, kann man sich schoen im debugger ansehen!!
     err = glGetError();
     // 2do: check that buffer = "No errors."
     GLuint fshaderFPS = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fshaderFPS, 1, fshd_src_FPS, 0); // set array of strings as source code
-    glCompileShader(fshaderFPS); // compile
+    glShaderSource    (fshaderFPS, 1, fshd_src_FPS, 0); // set array of strings as source code
+    glCompileShader   (fshaderFPS); // compile
     glGetShaderInfoLog(fshaderFPS, 512, NULL, buffer); // <-- debug
     err = glGetError();
     // 2do: check that buffer = "No errors."
     program_fps = glCreateProgram(); // create empty program object
     glAttachShader(program_fps, vshaderFPS); // attach shader
     glAttachShader(program_fps, fshaderFPS); // attach shader
-    glLinkProgram(program_fps); // link
+    glLinkProgram (program_fps); // link
     err = glGetError();
-    glUseProgram(program_fps);
+    glUseProgram  (program_fps);
     err = glGetError();
 
     // attribs

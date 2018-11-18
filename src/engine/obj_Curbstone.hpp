@@ -10,22 +10,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   class CCurbstone : public CGL_Object
   {
     unsigned int ui_idVBO;
-//    int nVert;
-//    int nCol;
-/*
-    void xyz_push_back(GLfloat * pf_V, glm::vec3 V)
-    {
-      pf_V[nVert++] = V.x;
-      pf_V[nVert++] = V.y;
-      pf_V[nVert++] = V.z;
-    }
-    void rgb_push_back(GLfloat * pf_C, glm::vec3 C)
-    {
-      pf_C[nCol++] = C.r;
-      pf_C[nCol++] = C.g;
-      pf_C[nCol++] = C.b;
-    }
-*/
+
   public:
     proj::Render * p_render;
     int Count;  // <-- Guardrail count
@@ -82,9 +67,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       {
         col_pushback(glm::vec3(col.x+0.1f,col.y+0.1f,col.z+0.1f));
       }
-
-      // funktioniert nicht, wenn ich iNdx hier setze -->           iNdx = i;
-      // dann gibt es einen HEAP error
     }
 
     void ToVBO()
