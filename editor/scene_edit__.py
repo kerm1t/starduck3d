@@ -35,6 +35,22 @@ class ResizingCanvas(Canvas):
         # rescale all the objects tagged with the "all" tag
         self.scale("all",0,0,wscale,hscale)
 
+class StatusBar(Frame):
+    def __init__(self, master):
+        Frame.__init__(self, master)
+        self.label = Label(self, bd=1, relief=SUNKEN, anchor=W)
+        self.label.pack(fill=X)
+
+    def set(self, format, *args):
+        self.label.config(text=format % args)
+        self.label.update_idletasks()
+
+    def clear(self):
+        self.label.config(text="")
+        self.label.update_idletasks()
+
+#descr_file = r'..\cfg\lane_projector_scenes\_scene_edit.csv'
+#scene_file = r"..\cfg\lane_projector_scenes\editor.scene"
 descr_file = r'.\_scene_edit.csv'
 scene_file = r".\editor.scene"
 
@@ -778,14 +794,13 @@ def export():
     # =================== Hack !!!!
 
 
+
+
+
     print "Export done."
 
-
-def change_scale(event):
-    global cnvScale,cnv_scale
-    print cnvScale.get()
-    cnv_scale = float(cnvScale.get())
-    drawTrack(-1)
+def callback():
+    print "called the callback!"
 
 
 if __name__ == "__main__":
@@ -801,41 +816,38 @@ if __name__ == "__main__":
     # display the menu
     root.config(menu=menubar)
 
-    # --> scale the image almost "properly"
+    scrollbar = Tkinter.Scrollbar(root, orient="vertical")
+
     root.columnconfigure(1, weight=1) # http://www.velocityreviews.com/forums/t869039-tkinter-why-arent-my-widgets-expanding-when-i-resize-the-window.html
     root.rowconfigure(1, weight=1)  # column 1 will resize
 
-
-    scrollbar = Tkinter.Scrollbar(root, orient="vertical")
-
-    frame = Frame(root, relief=RAISED, borderwidth=1)
-    frame.pack(side=LEFT,fill=BOTH,expand=YES)
-
-    w = Label(frame, text="Scale")
-    w.pack()
-    cnvScale = StringVar(root)
-    cnvScale.set('1')
-    opt = OptionMenu(frame, cnvScale, '0.5','1','2','3','4', command=change_scale)
-    opt.pack(side=TOP)
+    # create a toolbar
+#    toolbar = Frame(root)
+#    b = Button(toolbar, text="new", width=6, command=callback)
+#    toolbar.grid(row=0,column=0,columnspan=5,padx=4,sticky=N)
 
     # 1a) basic markers
-    lb = Listbox(frame, width=20, height=10, yscrollcommand=scrollbar.set)
+    lb = Listbox(root, width=20, height=10, yscrollcommand=scrollbar.set)
 #    lb.grid(row=1,column=0,padx=4, sticky=E)
-    lb.pack(side=TOP,fill=BOTH,expand=YES)
+    lb.pack(side=LEFT)#,fill=BOTH,expand=YES)
 
     scrollbar.config(command=lb.yview)
 
     #1b) track list
-    lb2 = Listbox(frame, width=20, height=14, yscrollcommand=scrollbar.set)
+    lb2 = Listbox(root, width=20, height=14, yscrollcommand=scrollbar.set)
 #    lb2.grid(row=2,column=0,padx=4,sticky=N)
-    lb2.pack(side=BOTTOM,fill=BOTH,expand=YES)
+    lb2.pack(side=LEFT)#,fill=BOTH,expand=YES)
 
     #2) track image
-    cnv = ResizingCanvas(root, width=canvas_w, height=canvas_h,highlightthickness=0)
+    cnv = ResizingCanvas(root, width=canvas_w, height=canvas_h, highlightthickness=0)
 #    cnv = Canvas(root, width=canvas_w, height=canvas_h,scrollregion=(0,0,500,500))
     cnv.create_rectangle(0, 0, canvas_w, canvas_h, fill="white")
 #    cnv.grid(row=1,column=1,rowspan=2,padx=4,sticky=N+S+E+W)
     cnv.pack(side=LEFT, fill=BOTH, expand=YES)
+
+#    status = StatusBar(root)
+#    status.grid(row=3,column=0,columnspan=5,padx=4,sticky=N+S+E+W)
+#    status.set("Add segments, exported will be a) trajectory, b) road segments")
 
     #3) geometry properties
     geometry_properties(root)
