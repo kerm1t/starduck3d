@@ -1,7 +1,9 @@
 2018-11-18
 Editor:
 =======
-- scroll field
++ append, insert segments
++ resizeable
+(-) scroll field
 
 Starduck/buggyboy:
 ==================

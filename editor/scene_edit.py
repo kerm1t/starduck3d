@@ -32,8 +32,8 @@ class ResizingCanvas(Canvas):
         self.height = event.height
         # resize the canvas 
         self.config(width=self.width, height=self.height)
-        # rescale all the objects tagged with the "all" tag
-        self.scale("all",0,0,wscale,hscale)
+        # rescale all the objects tagged with the "bg" tag --> or: "all"
+        self.scale("bg",0,0,wscale,hscale)
 
 descr_file = r'.\_scene_edit.csv'
 scene_file = r".\editor.scene"
@@ -45,21 +45,21 @@ aTrack    = []
 root   = Tkinter.Tk()
 root.title("Buggyboy Scene Editor (C) 2018")
 segtype = StringVar()
-s_l1  = StringVar()
+s_l1  = StringVar()      # Labels
 s_l2  = StringVar()
 s_l3  = StringVar()
 s_l4  = StringVar()
 s_l5  = StringVar()
 s_l6  = StringVar()
 
-s_e1  = StringVar()      # geometry
+s_e1  = StringVar()      # edit-field
 s_e2  = StringVar()
 s_e3  = StringVar()
 s_e4  = StringVar()
 s_e5  = StringVar()
 s_e6  = StringVar()
 
-sOptMarker = StringVar() # marker
+sOptMarker = StringVar() # Marker --> texture
 s_e7  = StringVar()
 s_e8  = StringVar()
 s_e9  = StringVar()
@@ -171,6 +171,7 @@ class FlatArc:
         y = P.y
         for a in r1:
             xy = xInit+x/cnv_scale,yInit+y/cnv_scale,xInit+a.x/cnv_scale,yInit+a.y/cnv_scale
+#            xy = xInit+x/cnv.wscale,yInit+y/cnv.hscale,xInit+a.x/cnv.wscale,yInit+a.y/cnv.hscale
             if col=='red': lw=3  # Hack!
             else: lw = linewidth # Hack!
             cnv.create_line(xy, fill=col, width="%d" % lw)
@@ -245,7 +246,9 @@ class Clothoid:
         y = P.y
         for a in r1:
             xy = xInit+x/cnv_scale,yInit+y/cnv_scale,xInit+a.x/cnv_scale,yInit+a.y/cnv_scale
-            cnv.create_line(xy, fill=col, width="%d" % linewidth)
+            if col=='red': lw=3  # Hack!
+            else: lw = linewidth # Hack!
+            cnv.create_line(xy, fill=col, width="%d" % lw)
             x = a.x
             y = a.y
     def props(self):
@@ -356,7 +359,9 @@ class Straight:
         y = P.y
         for a in r1:
             xy = xInit+x/cnv_scale,yInit+y/cnv_scale,xInit+a.x/cnv_scale,yInit+a.y/cnv_scale
-            cnv.create_line(xy, fill=col, width="%d" % linewidth)
+            if col=='red': lw=3  # Hack!
+            else: lw = linewidth # Hack!
+            cnv.create_line(xy, fill=col, width="%d" % lw)
             x = a.x
             y = a.y
     def props(self):
@@ -533,7 +538,6 @@ def geometry_properties(root):
     b = Button(p1, text="set", width=10, command=enter_geometry)
     p1.add(b)
 
-#    p1.grid(row=0,column=3,rowspan=2,padx=4,sticky=N) # http://effbot.org/tkinterbook/grid.htm
     p1.pack(side=RIGHT)
 
 def marker_properties(root):
@@ -576,12 +580,11 @@ def marker_properties(root):
     b2 = Button(p2, text="set", width=10, command=enter_marker)
     p2.add(b2)
 
-#    p2.grid(row=0,column=4,rowspan=2,padx=4,sticky=N)
     p2.pack(side=RIGHT)
 
 def drawTrack(iSel):
     print aTrack
-    cnv.create_rectangle(0, 0, canvas_w, canvas_h, fill="white")
+    cnv.create_rectangle(0, 0, cnv.width, cnv.height, fill="white", tags="bg")
     r1 = []
     r2 = []
     P = Vec3(*Pinit)
@@ -597,7 +600,8 @@ def drawTrack(iSel):
         P = Pnew
         D = Dnew
 
-def lb_click(event): # add segment to track
+#def lb_click(event): # add segment to track
+def btnAppend(): # add segment to track
     i = int(lb.curselection()[0])
     lb2.insert(END, aSegments[i] )
     if aSegments[i] == 'FlatArc':
@@ -611,6 +615,24 @@ def lb_click(event): # add segment to track
     if aSegments[i] == 'Zebra':
         seg = Zebra(5.0)
     aTrack.append(seg)
+    drawTrack(-1)
+
+def btnInsert(): # add segment to track
+    i = int(lb.curselection()[0])
+    j = int(lb2.curselection()[0])
+#    print "insert %d at %d" % i,j
+    lb2.insert(j, aSegments[i] )
+    if aSegments[i] == 'FlatArc':
+        seg = FlatArc(80.0,math.radians(90.0),1) # 1 (clockwise) or -1 (ccw)
+    if aSegments[i] == 'Clothoid':
+        seg = Clothoid(1.0/150,1.0/1000,80)
+    if aSegments[i] == 'Snake':
+        seg = Snake(1,2,3,4)
+    if aSegments[i] == 'Straight':
+        seg = Straight(100.0)
+    if aSegments[i] == 'Zebra':
+        seg = Zebra(5.0)
+    aTrack.insert(j,seg)
     drawTrack(-1)
 
 def lb2_click(event): # select segment within track
@@ -767,7 +789,7 @@ def export():
     PRoadL = PSkel_L+v1L
     PRoadR = PSkel_R+v1R
     sRoadStep = '{ %.3f , %.3f , %.3f , %.3f , %.3f , %.3f , %d } ,' % (PRoadL.x,PRoadL.y,PRoadL.z, PRoadR.x,PRoadR.y,PRoadR.z, bVisible)
-    aRoad.append(sRoadStep)
+    aRoadSeg.append(sRoadStep)
 
     a = 'static unsigned char Road_Color = 250 250 250;'
     print >>f, ('static S_MarkerPoint %s[] = {' % 'Road')
@@ -787,11 +809,9 @@ def change_scale(event):
     cnv_scale = float(cnvScale.get())
     drawTrack(-1)
 
-
 if __name__ == "__main__":
 # ----------------------------------------
 # do not mix pack and grid  frame manager!
-# grid has problems with resizecanvas, i.e. doesn#t resize the bitmap
 # ----------------------------------------
     menubar = Menu(root)
     menubar.add_command(label="Load",  command=load)
@@ -810,7 +830,8 @@ if __name__ == "__main__":
 
     frame = Frame(root, relief=RAISED, borderwidth=1)
     frame.pack(side=LEFT,fill=BOTH,expand=YES)
-
+    
+# --- LEFT ---
     w = Label(frame, text="Scale")
     w.pack()
     cnvScale = StringVar(root)
@@ -819,35 +840,40 @@ if __name__ == "__main__":
     opt.pack(side=TOP)
 
     # 1a) basic markers
-    lb = Listbox(frame, width=20, height=10, yscrollcommand=scrollbar.set)
-#    lb.grid(row=1,column=0,padx=4, sticky=E)
+    lb = Listbox(frame, width=20, height=10, yscrollcommand=scrollbar.set, exportselection=False)
     lb.pack(side=TOP,fill=BOTH,expand=YES)
 
     scrollbar.config(command=lb.yview)
+    bA = Button(frame, text="Append", command=btnAppend)
+    bA.pack(fill=BOTH)
+    bI = Button(frame, text="Insert", command=btnInsert)
+    bI.pack(fill=BOTH)
 
     #1b) track list
-    lb2 = Listbox(frame, width=20, height=14, yscrollcommand=scrollbar.set)
-#    lb2.grid(row=2,column=0,padx=4,sticky=N)
-    lb2.pack(side=BOTTOM,fill=BOTH,expand=YES)
+    lb2 = Listbox(frame, width=20, height=14, yscrollcommand=scrollbar.set, exportselection=False)
+    lb2.pack(side=TOP,fill=BOTH,expand=YES)
+    bD = Button(frame, text="Delete", command=btnInsert)
+    bD.pack(fill=BOTH)
 
+# --- CENTER ---
     #2) track image
-    cnv = ResizingCanvas(root, width=canvas_w, height=canvas_h,highlightthickness=0)
-#    cnv = Canvas(root, width=canvas_w, height=canvas_h,scrollregion=(0,0,500,500))
+    cnv = ResizingCanvas(root, width=canvas_w, height=canvas_h, highlightthickness=0)
     cnv.create_rectangle(0, 0, canvas_w, canvas_h, fill="white")
-#    cnv.grid(row=1,column=1,rowspan=2,padx=4,sticky=N+S+E+W)
     cnv.pack(side=LEFT, fill=BOTH, expand=YES)
+    cnv.create_rectangle(0, 0, cnv.width, cnv.height, fill="white", tags="bg")
 
+# --- RIGHT ---
     #3) geometry properties
     geometry_properties(root)
 
     #4) marker properties
-    marker_properties(root)
+#    marker_properties(root)
 
     i = 0
     for seg in aSegments:
         lb.insert(i, seg )
         i+=1
-    lb.bind("<ButtonRelease-1>", lb_click)
+# now with button    lb.bind("<ButtonRelease-1>", lb_click)
     lb2.bind("<ButtonRelease-1>", lb2_click)
 
     root.mainloop()
