@@ -66,7 +66,7 @@ s_e9  = StringVar()
 s_e10 = StringVar()
 s_e11 = StringVar()
 
-iLB2  = -1 # Hack
+#iLB2  = -1 # Hack
 
 # ===== canvas =====
 canvas_w  = 500
@@ -131,6 +131,7 @@ class FlatArc:
         self.alpha = alpha
         self.direction = direction
         self.name = 'FlatArc'
+        self.texture = 'texRoad' # texWater, ...
         # array of markers, init: 1x left, 1x right
         self.aMarker = []
         # self, P_relative, Dir_relative, scale, width, striped, name
@@ -165,7 +166,6 @@ class FlatArc:
         P = m + D * self.radius * self.direction
         D = Vec3(-D.y, D.x, 0)
         return (aLeft, aRight, P, D)
-
     def draw(self,r1,r2,P,Dir,col):
         x = P.x
         y = P.y
@@ -201,6 +201,8 @@ class FlatArc:
         for m in self.aMarker:
             if m.name == sOptMarker.get():
                 m.set(e7,e8,e9,e10,e11)
+    def set_texture(self,texture):
+        self.texture = texture
     def tostr(self):
         return '%s,%f,%f,%f' % (self.name,self.radius,self.alpha,self.direction)
 
@@ -210,6 +212,7 @@ class Clothoid:
         self.c1 = c1
         self.l = l
         self.name = 'Clothoid'
+        self.texture = 'texRoad' # texWater, ...
         # array of markers, init: 1x left, 1x right
         self.aMarker = []
         # self, P, Dir, scale, width, striped, name
@@ -275,6 +278,8 @@ class Clothoid:
         for m in self.aMarker:
             if m.name == sOptMarker.get():
                 m.set(e7,e8,e9,e10,e11)
+    def set_texture(self,texture):
+        self.texture = texture
     def tostr(self):
         return '%s,%f,%f,%f' % (self.name,self.c0,self.c1,self.l)
 
@@ -285,6 +290,7 @@ class Snake:
         self.wavelength = wavelength
         self.debug = debug
         self.name = 'Snake'
+        self.texture = 'texRoad' # texWater, ...
     def generate(self, PStart, DirStart, NumberOfSegments, width):
         print 'snake not implemented yet.'
         res1 = []
@@ -314,6 +320,8 @@ class Snake:
         self.debug=e4
     def set_marker(self, marker):
         self.marker = marker
+    def set_texture(self,texture):
+        self.texture = texture
     def tostr(self):
         return '%s,%f,%f,%f,%f' % (self.name,self.father,self.amplitude,self.wavelength,self.debug)
 
@@ -321,6 +329,7 @@ class Straight:
     def __init__(self, l):
         self.l = l
         self.name = 'Straight'
+        self.texture = 'texRoad' # texWater, ...
         # array of markers, init: 1x left, 1x right
         self.aMarker = []
         # self, P, Dir, scale, width, striped, name
@@ -386,6 +395,8 @@ class Straight:
         for m in self.aMarker:
             if m.name == sOptMarker.get():
                 m.set(e7,e8,e9,e10,e11)
+    def set_texture(self,texture):
+        self.texture = texture
     def tostr(self):
         print self.name
         print self.l
@@ -395,6 +406,7 @@ class Zebra:
     def __init__(self, l):
         self.l = l
         self.name = 'Zebra'
+        self.texture = 'texRoad' # texWater, ...
         # array of markers, init: 1x left, 1x right
         self.aMarker = []
         # self, P, Dir, scale, width, striped, name
@@ -442,6 +454,8 @@ class Zebra:
         for m in self.aMarker:
             if m.name == sOptMarker.get():
                 m.set(e7,e8,e9,e10,e11)
+    def set_texture(self,texture):
+        self.texture = texture
     def tostr(self):
         print self.name
         print self.l
@@ -617,7 +631,7 @@ def btnAppend(): # add segment to track
     aTrack.append(seg)
     drawTrack(-1)
 
-def btnInsert(): # add segment to track
+def btnInsert(): # insert segment into track
     i = int(lb.curselection()[0])
     j = int(lb2.curselection()[0])
 #    print "insert %d at %d" % i,j
@@ -636,26 +650,26 @@ def btnInsert(): # add segment to track
     drawTrack(-1)
 
 def lb2_click(event): # select segment within track
-    global iLB2
-    iLB2 = int(lb2.curselection()[0])
-    seg = aTrack[iLB2]
+    i = int(lb2.curselection()[0])
+    seg = aTrack[i]
     seg.props()
-    drawTrack(iLB2+1) # highlight selected segement! (can be commented out)
+    drawTrack(i+1) # highlight selected segement! (can be commented out)
 
 def marker_click(event):
-    seg = aTrack[iLB2]
+    i = int(lb2.curselection()[0])
+    seg = aTrack[i]
     for m in seg.aMarker:
         if m.name == sOptMarker.get():
             m.props()
 
 def enter_geometry(): # edit
-    i = iLB2 # <-- Hack!! das Listview behaelt nicht die Auswahl bei Focus-verlust
+    i = int(lb2.curselection()[0])
     seg = aTrack[i]
     seg.set(e1.get(),e2.get(),e3.get(),e4.get(),e5.get(),e6.get())
     drawTrack(i)
 
 def enter_marker(): # edit
-    i = iLB2 # <-- Hack!! das Listview behaelt nicht die Auswahl bei Focus-verlust
+    i = int(lb2.curselection()[0])
     seg = aTrack[i]
     seg.set_marker(sOptMarker.get(),e7.get(),e8.get(),e9.get(),e10.get(),e11.get())
     drawTrack(i)
@@ -775,7 +789,8 @@ def export():
 
         P = Pnew
         D = Dnew
-        a = 'static unsigned char Road_Color = 250 250 250;'
+#        a = 'static unsigned char Road_Color = 250 250 250;'
+        a = 'static uword Texture = "%s";' % seg.texture
         print >>f, ('static S_MarkerPoint %s[] = {' % 'Road')
         for aR in aRoadSeg:
             print >>f, aR
@@ -791,7 +806,8 @@ def export():
     sRoadStep = '{ %.3f , %.3f , %.3f , %.3f , %.3f , %.3f , %d } ,' % (PRoadL.x,PRoadL.y,PRoadL.z, PRoadR.x,PRoadR.y,PRoadR.z, bVisible)
     aRoadSeg.append(sRoadStep)
 
-    a = 'static unsigned char Road_Color = 250 250 250;'
+#    a = 'static unsigned char Road_Color = 250 250 250;'
+    a = 'static uword Texture = "%s";' % seg.texture
     print >>f, ('static S_MarkerPoint %s[] = {' % 'Road')
     for aR in aRoadSeg:
         print >>f, aR
@@ -808,6 +824,13 @@ def change_scale(event):
     print cnvScale.get()
     cnv_scale = float(cnvScale.get())
     drawTrack(-1)
+
+def change_texture(event):
+    global texture
+#    print texture.get()
+#    i = iLB2 # <-- Hack!! das Listview behaelt nicht die Auswahl bei Focus-verlust
+    seg = aTrack[int(lb2.curselection()[0])]
+    seg.set_texture(texture.get())
 
 if __name__ == "__main__":
 # ----------------------------------------
@@ -863,6 +886,10 @@ if __name__ == "__main__":
     cnv.create_rectangle(0, 0, cnv.width, cnv.height, fill="white", tags="bg")
 
 # --- RIGHT ---
+    texture = StringVar(root)
+    texture.set('texRoad')
+    opt = OptionMenu(root, texture, 'texRoad','texWater', command=change_texture)
+    opt.pack(side=RIGHT)
     #3) geometry properties
     geometry_properties(root)
 
