@@ -1,6 +1,16 @@
 2018-11-18
+- editor: (somehow) center track on canvas
+- editor: texture load, save
+- editor: scrollbar f. lb2
+- editor: add texture "undef."
++ editor: get rid of markers (these are included in the texture)
+- editor: derive segments from common class
+- editor: length (50) & width (2*1.75) configurable
+
+2018-11-18
 Editor:
 =======
++ texture
 + append, insert segments
 + resizeable
 (-) scroll field

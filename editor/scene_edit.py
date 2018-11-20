@@ -1,12 +1,11 @@
 #!/usr/bin/python
 #
 # changes
-# 2018-11-18, resizeable canvas
+# 2018-11-18, resizeable canvas, texture
 # 2018-11-18, buggyboy-flavor: store road as segments, do not store markers anymore
 # 2017-07-12, get rid of NumPy (as installation is a hassle), runs with plain Python install
 #             needs vec.py and __init__.py to import
 #
-#import numpy # replaces Numeric
 import math
 
 from Tkinter import *
@@ -38,9 +37,14 @@ class ResizingCanvas(Canvas):
 descr_file = r'.\_scene_edit.csv'
 scene_file = r".\editor.scene"
 
-#aSegments = ['FlatArc','Clothoid','Snake','Straight','Exit','Roadworks','Zebra','Arrow']
+
 aSegments = ['FlatArc','Clothoid','Straight']
+aTex      = ["texRoad", "texWater"]
+TEXdef    = "texRoad"
+
+
 aTrack    = []
+
 
 root   = Tkinter.Tk()
 root.title("Buggyboy Scene Editor (C) 2018")
@@ -59,14 +63,14 @@ s_e4  = StringVar()
 s_e5  = StringVar()
 s_e6  = StringVar()
 
+s_texture = StringVar(root)
+
 sOptMarker = StringVar() # Marker --> texture
 s_e7  = StringVar()
 s_e8  = StringVar()
 s_e9  = StringVar()
 s_e10 = StringVar()
 s_e11 = StringVar()
-
-#iLB2  = -1 # Hack
 
 # ===== canvas =====
 canvas_w  = 500
@@ -91,29 +95,6 @@ NumberOfSegments = 50  # <-- shall be even
 
 
 # --------------------------------------------------------------------------------------------------------------->
-class Marker:
-    def __init__(self, P, Dir, scale, width, striped, name, track):
-        self.P = P
-        self.Dir = Dir
-        self.scale = scale
-        self.width = width
-        self.striped = striped
-        self.name = name
-        self.track = 0 # 0 = Left, 1 = Right
-    def props(self):
-        s_e7.set( '%.2f,%.2f,%.2f' % (self.P.x,self.P.y,self.P.z) )
-        s_e8.set( '%.2f,%.2f,%.2f' % (self.Dir.x,self.Dir.y,self.Dir.z) )
-        s_e9.set(self.scale)
-        s_e10.set(self.width)
-        s_e11.set(self.striped)
-    def set(self,e7,e8,e9,e10,e11):
-        P = e7.split(',')
-        self.P = [float(P.x),float(P.y),float(P.z)]
-        Dir = e8.split(',')
-        self.Dir = [float(Dir.x),float(Dir.y),float(Dir.z)]
-        self.scale = float(e9)
-        self.width = float(e10)
-        self.striped = e11
 
 # Geometric objects have two methods to be implemented
 # 1. length(self): return the length of the object in meter
@@ -131,14 +112,7 @@ class FlatArc:
         self.alpha = alpha
         self.direction = direction
         self.name = 'FlatArc'
-        self.texture = 'texRoad' # texWater, ...
-        # array of markers, init: 1x left, 1x right
-        self.aMarker = []
-        # self, P_relative, Dir_relative, scale, width, striped, name
-        self.aMarker.append( Marker(Vec3(0, 1.75,0),Vec3(1,0,0),0.1,0.15,None,'Rightmarker',1) )
-        self.aMarker.append( Marker(Vec3(0,-1.75,0),Vec3(1,0,0),0.1,0.15,None,'Leftmarker',0) )
-#        for m in self.aMarker:
-#            print m
+        self.texture = TEXdef # texRoad, texWater, ...
     def length(self):
         return self.radius*self.alpha
     def generate(self, PStart, DirStart, NumberOfSegments, width): # copied from SceneGenerator.py
@@ -190,17 +164,11 @@ class FlatArc:
         s_e4.set('')
         s_e5.set('')
         s_e6.set('')
-        for m in self.aMarker:
-            if m.name == sOptMarker.get():
-                m.props()
+        s_texture.set(self.texture)
     def set(self,e1,e2,e3,e4,e5,e6):
         self.radius=float(e1)
         self.alpha=float(e2)
         self.direction=int(e3)
-    def set_marker(self,sOpt,e7,e8,e9,e10,e11):
-        for m in self.aMarker:
-            if m.name == sOptMarker.get():
-                m.set(e7,e8,e9,e10,e11)
     def set_texture(self,texture):
         self.texture = texture
     def tostr(self):
@@ -212,14 +180,7 @@ class Clothoid:
         self.c1 = c1
         self.l = l
         self.name = 'Clothoid'
-        self.texture = 'texRoad' # texWater, ...
-        # array of markers, init: 1x left, 1x right
-        self.aMarker = []
-        # self, P, Dir, scale, width, striped, name
-        self.aMarker.append( Marker([0, 1.75,0],[1,0,0],0.1,0.15,None,'Rightmarker',1) )
-        self.aMarker.append( Marker([0,-1.75,0],[1,0,0],0.1,0.15,None,'Leftmarker',0) )
-        for m in self.aMarker:
-            print m
+        self.texture = TEXdef # texRoad, texWater, ...
     def length(self):
         return self.l
     def generate(self, PStart, DirStart, NumberOfSegments, width): # copied from SceneGenerator.py
@@ -267,6 +228,7 @@ class Clothoid:
         s_e4.set('')
         s_e5.set('')
         s_e6.set('')
+        s_texture.set(self.texture)
         for m in self.aMarker:
             if m.name == sOptMarker.get():
                 m.props()
@@ -274,10 +236,6 @@ class Clothoid:
         self.c0=float(e1)
         self.c1=float(e2)
         self.l =float(e3)
-    def set_marker(self, marker):
-        for m in self.aMarker:
-            if m.name == sOptMarker.get():
-                m.set(e7,e8,e9,e10,e11)
     def set_texture(self,texture):
         self.texture = texture
     def tostr(self):
@@ -290,7 +248,7 @@ class Snake:
         self.wavelength = wavelength
         self.debug = debug
         self.name = 'Snake'
-        self.texture = 'texRoad' # texWater, ...
+#        self.texture = TEXdef # texRoad, texWater, ...
     def generate(self, PStart, DirStart, NumberOfSegments, width):
         print 'snake not implemented yet.'
         res1 = []
@@ -318,8 +276,6 @@ class Snake:
         self.amplitude=e2
         self.wavelength=e3
         self.debug=e4
-    def set_marker(self, marker):
-        self.marker = marker
     def set_texture(self,texture):
         self.texture = texture
     def tostr(self):
@@ -329,14 +285,7 @@ class Straight:
     def __init__(self, l):
         self.l = l
         self.name = 'Straight'
-        self.texture = 'texRoad' # texWater, ...
-        # array of markers, init: 1x left, 1x right
-        self.aMarker = []
-        # self, P, Dir, scale, width, striped, name
-        self.aMarker.append( Marker(Vec3(0, 1.75,0),Vec3(1,0,0),0.1,0.15,None,'Rightmarker',1) )
-        self.aMarker.append( Marker(Vec3(0,-1.75,0),Vec3(1,0,0),0.1,0.15,None,'Leftmarker',0) )
-        for m in self.aMarker:
-            print m
+        self.texture = TEXdef # texRoad, texWater, ...
     def length(self):
         return self.l
     def generate(self, PStart, DirStart, NumberOfSegments, width): # copied from SceneGenerator.py
@@ -386,15 +335,9 @@ class Straight:
         s_e4.set('')
         s_e5.set('')
         s_e6.set('')
-        for m in self.aMarker:
-            if m.name == sOptMarker.get():
-                m.props()
+        s_texture.set(self.texture)
     def set(self,e1,e2,e3,e4,e5,e6):
         self.l = float(e1)
-    def set_marker(self, marker):
-        for m in self.aMarker:
-            if m.name == sOptMarker.get():
-                m.set(e7,e8,e9,e10,e11)
     def set_texture(self,texture):
         self.texture = texture
     def tostr(self):
@@ -407,12 +350,6 @@ class Zebra:
         self.l = l
         self.name = 'Zebra'
         self.texture = 'texRoad' # texWater, ...
-        # array of markers, init: 1x left, 1x right
-        self.aMarker = []
-        # self, P, Dir, scale, width, striped, name
-        self.aMarker.append( Marker([0, 1.75,0],[1,0,0],0.1,0.15,None,'Zebra',1) ) # currently in use?
-        for m in self.aMarker:
-            print m
     def length(self):
         return self.l
     def generate(self, PStart, DirStart, NumberOfSegments, width): # copied from SceneGenerator.py
@@ -445,15 +382,9 @@ class Zebra:
         s_e4.set('')
         s_e5.set('')
         s_e6.set('')
-        for m in self.aMarker:
-            if m.name == sOptMarker.get():
-                m.props()
+        s_texture.set(self.texture)
     def set(self,e1,e2,e3,e4,e5,e6):
         self.l = float(e1)
-    def set_marker(self, marker):
-        for m in self.aMarker:
-            if m.name == sOptMarker.get():
-                m.set(e7,e8,e9,e10,e11)
     def set_texture(self,texture):
         self.texture = texture
     def tostr(self):
@@ -614,10 +545,9 @@ def drawTrack(iSel):
         P = Pnew
         D = Dnew
 
-#def lb_click(event): # add segment to track
 def btnAppend(): # add segment to track
     i = int(lb.curselection()[0])
-    lb2.insert(END, aSegments[i] )
+    lb2.insert(END, "%s (%s)" % (aSegments[i], TEXdef) )
     if aSegments[i] == 'FlatArc':
         seg = FlatArc(80.0,math.radians(90.0),1) # 1 (clockwise) or -1 (ccw)
     if aSegments[i] == 'Clothoid':
@@ -635,7 +565,7 @@ def btnInsert(): # insert segment into track
     i = int(lb.curselection()[0])
     j = int(lb2.curselection()[0])
 #    print "insert %d at %d" % i,j
-    lb2.insert(j, aSegments[i] )
+    lb2.insert(j, "%s (%s)" % (aSegments[i], TEXdef) )
     if aSegments[i] == 'FlatArc':
         seg = FlatArc(80.0,math.radians(90.0),1) # 1 (clockwise) or -1 (ccw)
     if aSegments[i] == 'Clothoid':
@@ -815,7 +745,6 @@ def export():
     print >>f, a # color
     # =================== Hack !!!!
 
-
     print "Export done."
 
 
@@ -826,11 +755,13 @@ def change_scale(event):
     drawTrack(-1)
 
 def change_texture(event):
-    global texture
-#    print texture.get()
-#    i = iLB2 # <-- Hack!! das Listview behaelt nicht die Auswahl bei Focus-verlust
-    seg = aTrack[int(lb2.curselection()[0])]
-    seg.set_texture(texture.get())
+    global s_texture
+    i = int(lb2.curselection()[0])
+    seg = aTrack[i]
+    seg.set_texture(s_texture.get())
+    lb2.delete(i)
+    lb2.insert(i,"%s (%s)" % (seg.name, seg.texture))
+
 
 if __name__ == "__main__":
 # ----------------------------------------
@@ -872,33 +803,32 @@ if __name__ == "__main__":
     bI = Button(frame, text="Insert", command=btnInsert)
     bI.pack(fill=BOTH)
 
-    #1b) track list
+    # 1b) track list
     lb2 = Listbox(frame, width=20, height=14, yscrollcommand=scrollbar.set, exportselection=False)
     lb2.pack(side=TOP,fill=BOTH,expand=YES)
     bD = Button(frame, text="Delete", command=btnInsert)
     bD.pack(fill=BOTH)
 
 # --- CENTER ---
-    #2) track image
+    # 2) track image
     cnv = ResizingCanvas(root, width=canvas_w, height=canvas_h, highlightthickness=0)
     cnv.create_rectangle(0, 0, canvas_w, canvas_h, fill="white")
     cnv.pack(side=LEFT, fill=BOTH, expand=YES)
     cnv.create_rectangle(0, 0, cnv.width, cnv.height, fill="white", tags="bg")
 
 # --- RIGHT ---
-    texture = StringVar(root)
-    texture.set('texRoad')
-    opt = OptionMenu(root, texture, 'texRoad','texWater', command=change_texture)
+    s_texture.set('texRoad') # StringVar(), see above
+    opt = OptionMenu(root, s_texture, 'texRoad','texWater', command=change_texture)
     opt.pack(side=RIGHT)
-    #3) geometry properties
+    # 3) geometry properties
     geometry_properties(root)
 
-    #4) marker properties
+    # 4) marker properties
 #    marker_properties(root)
 
     i = 0
     for seg in aSegments:
-        lb.insert(i, seg )
+        lb.insert(i, seg)
         i+=1
 # now with button    lb.bind("<ButtonRelease-1>", lb_click)
     lb2.bind("<ButtonRelease-1>", lb2_click)
