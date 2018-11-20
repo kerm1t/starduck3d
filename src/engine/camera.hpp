@@ -50,9 +50,9 @@ public:
 
   // Projection (intrinsics)
   glm::float32 fovy_DEG, fovy_RAD; // e.g. 60.0f
-  glm::float32 aspect;	// width/height
-  glm::float32 zNear;		// e.g. 0.1f
-  glm::float32 zFar;		// e.g. 100.0f
+  glm::float32 aspect;  // width/height
+  glm::float32 zNear;   // e.g. 0.1f
+  glm::float32 zFar;    // e.g. 100.0f
 
   // View (extrinsics)
   glm::vec3 Pos;        // eye - in glm-Sprech

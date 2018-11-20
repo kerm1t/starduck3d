@@ -335,20 +335,13 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
   unsigned int ui_idVBO = vVAOs.size();
   SceneParam &rc_Param = m_Scene->m_SceneLoader;
 
-  std::string aParts[3] = {"Marker Left","Marker Right","Road"};
-
   unsigned int iLine;
   unsigned int iMarker;
   unsigned int sz;
 
   S_Point3D p0,p1,p2,p3;
-#define MAX_NUMBER_MARKERS 3
-//  unsigned int vCount[MAX_NUMBER_MARKERS];
-//  vCount[0] = 0; // VBO_LEFT
-//  vCount[1] = 0; // VBO_RIGHT
-//  vCount[2] = 0; // VBO_ROAD
   sz = (unsigned int)rc_Param.m_c_Markers.size(); // number of marker vectors (lines)
-//  sz = 3;
+
 // ------------------------------------
 //
 // 11/17/2018 - different scene concept
@@ -379,7 +372,7 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
     float f_G = rc_Param.m_c_Colors[iLine].u_Green / 4095.0f;
     float f_B = rc_Param.m_c_Colors[iLine].u_Blue  / 4095.0f;
 
-    //        int textureID = rc_Param.m_TextureIDs[*p_idxVBO]; // nur die "Road" hat eine texture, Left+Right nicht
+//    int textureID = rc_Param.m_TextureIDs[*p_idxVBO]; // nur die "Road" hat eine texture, Left+Right nicht
 
     float fTexStrip = 0.0f; // store strip of texture, if not full texture is mapped to triangle
     float fTexIncr = 0.1f;  // 2do <-- aus der "Höhe" des triangles berechnen!
@@ -445,7 +438,7 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
     // b) store VAO props for OpenGL-drawing loop (and later manipulation, e.g. position change)
     c_VAO vao;
     vao.Name = "seg";// aParts[iLine];
-    if (iLine==2) // 2do --> in der Scene-description speichern
+/*    if (iLine==2) // 2do --> in der Scene-description speichern
     {
       vao.t_Shade = SHADER_TEXTURE;
       vao.ui_idTexture = TEX_WATER;// TEX_ROADSURFACE;
@@ -456,6 +449,12 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
       vao.t_Shade = SHADER_TEXTURE;
       vao.ui_idTexture = TEX_ROADSURFACE;
     }
+*/
+    vao.t_Shade = SHADER_TEXTURE;
+    std::string sTex = rc_Param.m_Textures[iLine];
+    if (sTex.compare("texWater;") == 0) vao.ui_idTexture = TEX_WATER;
+    if (sTex.compare("texRoad;") == 0) vao.ui_idTexture = TEX_ROADSURFACE;
+
     vao.uiVertexCount = vCount*3;
     vVAOs.push_back(vao);
 

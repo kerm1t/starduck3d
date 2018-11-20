@@ -790,7 +790,7 @@ def export():
         P = Pnew
         D = Dnew
 #        a = 'static unsigned char Road_Color = 250 250 250;'
-        a = 'static uword Texture = "%s";' % seg.texture
+        a = 'static string Texture = %s;' % seg.texture
         print >>f, ('static S_MarkerPoint %s[] = {' % 'Road')
         for aR in aRoadSeg:
             print >>f, aR
@@ -807,7 +807,7 @@ def export():
     aRoadSeg.append(sRoadStep)
 
 #    a = 'static unsigned char Road_Color = 250 250 250;'
-    a = 'static uword Texture = "%s";' % seg.texture
+    a = 'static string Texture = %s;' % seg.texture
     print >>f, ('static S_MarkerPoint %s[] = {' % 'Road')
     for aR in aRoadSeg:
         print >>f, aR

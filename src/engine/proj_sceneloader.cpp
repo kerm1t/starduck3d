@@ -32,13 +32,25 @@ void proj::SceneLoader::sl_ReadColor(T_CHAR *line)
 void proj::SceneLoader::sl_ReadTextureID(T_CHAR *line)
 {
   T_CHAR tmp[32];
-  T_CHAR tmp2[8];
+  T_CHAR tmp2[255];
 
   T_SLONG sl_TextureID;
 
   sscanf(line, "%s %s %s = %s;", tmp,tmp,tmp,tmp2);
   sl_TextureID = ::atoi(std::string(tmp2).c_str());
-  *m_TextureIDs.rbegin() = sl_TextureID; // Hack!
+//  *m_TextureIDs.rbegin() = sl_TextureID; // Hack!
+}
+
+void proj::SceneLoader::sl_ReadTexture(T_CHAR *line)
+{
+  T_CHAR tmp[32];
+  T_CHAR tmp2[255];
+
+  std::string s_Texture;
+
+  sscanf(line, "%s %s %s = %s;", tmp, tmp, tmp, tmp2);
+  s_Texture = std::string(tmp2).c_str();
+  *m_Textures.rbegin() = s_Texture; // reverse iterator
 }
 
 void proj::SceneLoader::sl_ReadMarkerpoint(T_CHAR *line, S_MarkerPoint &c_MP)
@@ -107,6 +119,7 @@ T_SLONG proj::SceneLoader::sl_ReadScene(const std::string &rc_Scenefile)
   m_c_Colors.clear();
   m_c_Markers.clear();
   m_c_Trajectory.clear();
+  m_Textures.clear();
 
   while (fgets(line, sizeof line, c_F))
   {
@@ -124,11 +137,17 @@ T_SLONG proj::SceneLoader::sl_ReadScene(const std::string &rc_Scenefile)
     {
       sl_ReadTextureID(line);
     }
+    else if (std::string(tmp2) == "string")
+    {
+      sl_ReadTexture(line);
+    }
     else if (std::string(tmp2) == "S_MarkerPoint") // read all lines of markerpoint
     {
+      // push back now and later set it with rbegin() ... hmmm
       m_c_Markers.push_back(std::vector<S_MarkerPoint>()); // new Marker-vector, can be multiple
       m_c_Colors.push_back(RGBcolor(1450, 1700, 1200)); // init colors, can be changed in subsequent line
-      m_TextureIDs.push_back(0); // init textureIDs, can be changed in subsequent line
+//      m_TextureIDs.push_back(0); // init textureIDs, can be changed in subsequent line
+      m_Textures.push_back("");
       fgets(line, sizeof line, c_F);
       while (*line != '}')
       {

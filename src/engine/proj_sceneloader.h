@@ -235,11 +235,17 @@ namespace proj
     // Lane Parameters
     std::vector<S_6Dof> m_c_Trajectory;
 
+
+// ------------------------------------------------------------------------
+// 3 separate vectors, which can be access via the same index --> improve!!
     std::vector<std::vector<S_MarkerPoint> > m_c_Markers;
 
     std::vector<RGBcolor> m_c_Colors;
 
-    std::vector<T_UWORD> m_TextureIDs;
+//    std::vector<T_UWORD> m_TextureIDs;
+    std::vector<std::string> m_Textures;
+// ------------------------------------------------------------------------
+
 
     RGBcolor m_RoadColor;
 
@@ -263,11 +269,12 @@ namespace proj
   private:
     void sl_ReadColor(T_CHAR *line);
     void sl_ReadTextureID(T_CHAR *line);
+    void sl_ReadTexture(T_CHAR *line);
     void sl_ReadMarkerpoint(T_CHAR *line, S_MarkerPoint &c_MP);
     void sl_Read6_Dof(T_CHAR *line, S_6Dof &c_6Dof);
 
     void if_set_param(T_CHAR *line, std::string s_find, T_REAL &f_val);
-    void if_set_param_UL(T_CHAR *line, std::string s_find, T_ULONG &ul_val);      
+    void if_set_param_UL(T_CHAR *line, std::string s_find, T_ULONG &ul_val);
     void if_set_param_SL(T_CHAR *line, std::string s_find, T_SLONG &sl_val);
     void if_set_param_Str(T_CHAR *line, std::string s_find, std::string &c_val);
     void v_ApplySpeedFactor(T_REAL rl_SpeedFactor);

@@ -221,6 +221,8 @@ int proj::Proj::DoIt()
   static bool b_wireframe;
   ImGui::Checkbox("wireframe:", &b_wireframe);
   for (unsigned int ui = 0; ui < m_render.vVAOs.size(); ui++) m_render.vVAOs[ui].b_Wireframe = (int)b_wireframe;
+//  static int vw;
+  ImGui::SliderFloat("view width", &(float)m_render.p_cam->zFar, 10.0, 200.0);
   ImGui::End();
 
   ImGui::Render();
