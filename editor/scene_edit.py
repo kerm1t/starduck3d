@@ -75,17 +75,17 @@ s_e11 = StringVar()
 # ===== canvas =====
 canvas_w  = 500
 canvas_h  = 500
-cnv_scale =   1  # pixel = m/cnv_scale
+cnv_scale =   1          # pixel = m/cnv_scale
 xInit     = 250
 yInit     = 250-80
 
 linewidth = 1
 
 # ===== generation =====
-Pinit     = Vec3(0,0,0)   # start (world)
-Dinit     = Vec3(1,0,0)   # start
-scale     = 1         # increase to "zoom-out" in editor
-NumberOfSegments = 50  # <-- shall be even
+Pinit     = Vec3(0,0,0)  # start (world)
+Dinit     = Vec3(1,0,0)  # start
+scale     = 1            # increase to "zoom-out" in editor
+NumberOfSegments = 50    # <-- shall be even
 
 
 # TKInter Reference:     http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/index.html
@@ -96,7 +96,7 @@ NumberOfSegments = 50  # <-- shall be even
 
 # --------------------------------------------------------------------------------------------------------------->
 
-# Geometric objects have two methods to be implemented
+# Geometric objects (segments) have two methods to be implemented
 # 1. length(self): return the length of the object in meter
 # 2. generate(self, PStart, DirStart, NumberOfSegments, width):
 #       Starting from PStart in the direction DirStart produce (res1, res2, P, D) with
@@ -105,7 +105,6 @@ NumberOfSegments = 50  # <-- shall be even
 #          P:    PStart for the next segment, a guess is (res1 + res2)/2
 #          D:    DirStart for the next segment
 
-# geometry elements:
 class FlatArc:
     def __init__(self, radius, alpha, direction):
         self.radius = radius
@@ -116,7 +115,6 @@ class FlatArc:
     def length(self):
         return self.radius*self.alpha
     def generate(self, PStart, DirStart, NumberOfSegments, width): # copied from SceneGenerator.py
-#        print NumberOfSegments
         D0 = Vec3(-DirStart.y, DirStart.x, 0) # orthogonal to Dir
         aLeft  = []
         aRight = []
@@ -241,7 +239,7 @@ class Clothoid:
     def tostr(self):
         return '%s,%f,%f,%f' % (self.name,self.c0,self.c1,self.l)
 
-class Snake:
+class Snake: # only used for 6DoF (trajectory)?
     def __init__(self, father, amplitude, wavelength, debug=0):
         self.father = father
         self.amplitude = amplitude
@@ -276,8 +274,8 @@ class Snake:
         self.amplitude=e2
         self.wavelength=e3
         self.debug=e4
-    def set_texture(self,texture):
-        self.texture = texture
+#    def set_texture(self,texture):
+#        self.texture = texture
     def tostr(self):
         return '%s,%f,%f,%f,%f' % (self.name,self.father,self.amplitude,self.wavelength,self.debug)
 
@@ -295,20 +293,9 @@ class Straight:
         D0 = Vec3(-DirStart.y, DirStart.x, 0) * width/2.0
         for i in range(NumberOfSegments):
             l = float(self.l)
-#            print "(1) l"
-#            print l
-#            print "(2)NumberOfSegments"
-#            print NumberOfSegments
             fSeg =  i/float(NumberOfSegments)
-#            print "(3)fSeg"
-#            print fSeg
             fL = l * fSeg
-#            print "(4)fL"
-#            print fL
-#            x = fL*DirStart <-- so wird "*" auf den Float angewendet
             x = DirStart*fL # <-- so wird die Vec3 "__mult__" aufgerufen
-#            print "(5)x"
-#            print x
             res1.append(PStart + x + D0)
             res2.append(PStart + x - D0)
         return (res1, res2, PStart + DirStart*self.l, DirStart)
@@ -341,8 +328,6 @@ class Straight:
     def set_texture(self,texture):
         self.texture = texture
     def tostr(self):
-        print self.name
-        print self.l
         return '%s,%f' % (self.name,float(self.l))
 
 class Zebra:
