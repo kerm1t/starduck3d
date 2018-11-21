@@ -140,7 +140,7 @@ namespace proj
       const std::vector<S_MarkerPoint> &rc_Marker = rc_Param.m_c_Markers[iLine];
 
       m_tunnel.p_render = p_render;
-      uint16 sz = rc_Marker.size();
+      uint16 sz = (uint16)rc_Marker.size();
 //      if (sz < 75) return null;
       m_tunnel.Init(sz); // Achtung --> zu viele Elemente initialisiert!!
 
