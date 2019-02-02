@@ -1,3 +1,6 @@
+2/1/2019
+- wasser, Road, wird die Textur schon im Editor geladen?
+
 2018-10-15
 - Objekte als billboard einstellen
 

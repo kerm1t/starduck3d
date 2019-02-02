@@ -70,7 +70,7 @@ namespace proj
     // =============
     Camera * p_cam;
 
-    proj::Scene * m_Scene;
+    proj::Scene * p_Scene;
 
     obj::Moving * m_Moving[2]; // Pointer to Moving objects, as their moving coord's are applied while drawing/rendering
 //    obj::CObjParts * p_car;
@@ -82,15 +82,15 @@ namespace proj
     HDC GL_attach_to_DC(HWND hWnd);
 
     GLvoid ReSizeGLScene(GLsizei width, GLsizei height); // Resize And Initialize The GL Window
-    void Init_Textures();
+//    void Init_Textures();
 
-    void Groundplane();
+//    void Groundplane();
     void FPS();
     void Triangles_to_VBO(Vec3f v3pos); // most simple VBO/VAO, just in case errors happen...
     int Scene_to_VBO();//uint * p_idxVBO);
 //    int DestroyScene_VBO();
 
-    void get_xyz_Hack(int iT, float &x, float &y, float &z, float &xto, float &yto, float &zto);
+//    void get_xyz_Hack(int iT, float &x, float &y, float &z, float &xto, float &yto, float &zto);
 
     void Bind_VBOs_to_VAOs();
     void DrawVAOs_NEU();

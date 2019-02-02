@@ -55,9 +55,12 @@ add_executable(starduck WIN32
     src/engine/obj_scene.hpp
     src/engine/obj_trafficsign.hpp
     src/engine/obj_tunnel.hpp
+    src/engine/proj.h
     src/engine/proj.cpp
     src/engine/proj_m3uloader.hpp
+    src/engine/proj_render.h
     src/engine/proj_render.cpp
+    src/engine/proj_scene.h
     src/engine/proj_scene.cpp
     src/engine/proj_scenebuilder.hpp
     src/engine/proj_sceneloader.cpp

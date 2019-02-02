@@ -44,7 +44,7 @@ int proj::Render::Init()
   InitShader2(); // Splash screen
 
   b_splash_screen = true;
-    
+
   return 0;
 }
 
@@ -333,7 +333,7 @@ void proj::Render::Triangles_to_VBO(Vec3f v3pos)
 int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
 {
   unsigned int ui_idVBO = vVAOs.size();
-  SceneParam &rc_Param = m_Scene->m_SceneLoader;
+  SceneParam &rc_Param = p_Scene->m_SceneLoader;
 
   unsigned int iLine;
   unsigned int iMarker;
@@ -499,6 +499,7 @@ glDeleteBuffers(2, &colorBuffer[0]);
 return 0;
 }
 */
+/*
 void proj::Render::get_xyz_Hack(int iT, GLfloat &x, GLfloat &y, GLfloat &z, GLfloat &xto, GLfloat &yto, GLfloat &zto)
 {
   SceneParam &rc_Param = m_Scene->m_SceneLoader;
@@ -512,7 +513,7 @@ void proj::Render::get_xyz_Hack(int iT, GLfloat &x, GLfloat &y, GLfloat &z, GLfl
   yto = ylook;//-y;
   zto = zlook;//-z;
 }
-
+*/
 // int proj::Render::Egopos_and_Lookat()
 
 // rotate: https://www.opengl.org/discussion_boards/showthread.php/179290-Rotation-w-Rectangular-Pixels-(2D-VAO)

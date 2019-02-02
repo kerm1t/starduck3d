@@ -87,7 +87,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
   // i) Load Scene VAOs
   m_scene.Load();
-  m_render.m_Scene = &m_scene;
+  m_render.p_Scene = &m_scene;
   m_render.Scene_to_VBO();
 
 //  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\road_tex_256x256.bmp"));
@@ -214,8 +214,9 @@ int proj::Proj::DoIt()
 
   ImGuiIO& io = ImGui::GetIO();
   ImGui::Begin("Papa:");
-  ImGui::Text("mouse: %f,%f",io.MousePos.x,io.MousePos.y);
   ImGui::Text("Hallo Anton.");
+  ImGui::Text("mouse: %f,%f",io.MousePos.x,io.MousePos.y);
+  ImGui::Text("loaded: %s", m_scene.c_Scene.c_str());
   float FPS = 1000.0f / (float)timer.getElapsedTimeInMilliSec();
   ImGui::Text("%.1f FPS", FPS);
   static bool b_wireframe;

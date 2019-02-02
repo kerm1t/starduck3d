@@ -1,4 +1,7 @@
 2018-11-18
+- randomly place
+  - traffic signs
+  - buildings
 - editor: (somehow) center track on canvas
 - editor: texture load, save
 - editor: scrollbar f. lb2
