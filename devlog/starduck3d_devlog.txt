@@ -1,4 +1,8 @@
-﻿21.9.2018
+﻿2/1/2019
+Branch cleanup angelegt
+Objekte vom Typ Moving gelöscht --> wie kann man Objekte bewegen?
+
+21.9.2018
 ImGUI!
 was soll ich als Erstes ausgeben?
 FPS?

@@ -260,7 +260,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       provide parts with appropriate Material (set pointer)
     */
     bool loadOBJParts(const char * path, std::vector <CPart> & out_v_CParts, float fScale = 1.0f, float fZ = 0.0f) // this has to be inside a class,
-    {																		                                                                           // otherwise it shouldn't be in a .hpp!!
+    {                                                                                                              // otherwise it shouldn't be in a .hpp!!
       uint16 nPartsRead = 0;
       uint16 nPartsWritten = 0;
 
@@ -278,6 +278,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
       std::ifstream file;
       file.open(path);
+      assert(file.good());
 
       std::string line;
 

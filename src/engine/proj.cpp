@@ -68,8 +68,6 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
                   //     beim LoadObjects(s.u.) call
 
 
-//  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("D:\\__OpenGL_files\\arial_font.bmp")); <-- 2do: errorhandler + log visualisieren
-///  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\arial_font.bmp"));
   m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp"));
 
 
@@ -89,6 +87,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_scene.Load();
   m_render.p_Scene = &m_scene;
   m_render.Scene_to_VBO();
+
+
 
 //  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\road_tex_256x256.bmp"));
   m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_road_vert4.bmp"));
@@ -129,17 +129,19 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  m_render.m_Moving[1] = &m_moving[1];
  
   GLenum err = glGetError();
-///  obj::CGL_ObjectWavefront car(&m_render);
-///  car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
-///  car.Load(0.04f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
-//  car.sObjectFullpath = "..\\data\\conference_room\\conference.obj";
-//  car.Load(0.003f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
-//  vObjects.push_back(car);
+  obj::CGL_ObjectWavefront car(&m_render);
+  car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
+  car.Load(0.04f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
 
+/*  obj::CGL_ObjectWavefront room(&m_render);
+  room.sObjectFullpath = "..\\data\\conference_room\\conference.obj";
+  room.Load(0.003f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
+  vObjects.push_back(room);
+  */
 
-//  obj::CGL_ObjectWavefront car2(&m_render);
-//  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
-//  car2.Load(1.0f, 0.0f, Vec3f(20.0f, 6.0f, 1.1f)); // scaled
+  obj::CGL_ObjectWavefront car2(&m_render);
+  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
+  car2.Load(1.0f, 0.0f, Vec3f(20.0f, 6.0f, 1.1f)); // scaled
 
 
   obj::CGL_ObjectWavefront car3(&m_render);
