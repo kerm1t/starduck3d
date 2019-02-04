@@ -1,4 +1,16 @@
-﻿2/1/2019
+﻿2/3/2019
+transformation des ego-Fahrzeugs war kein Problem. Jetzt zur rotation.
+Das ist unsere MVP Matrix. wie geht das jetzt eigentlich mit Push und Pop?
+die transformation in offset kann man eigentlich auch mit in die MVP packen
+s. https://learnopengl.com/Getting-started/Transformations
+
+2/2/2019
+- branch mtl_shading
+  a) im Loader erkennen, was im MTL steht
+  b) statisches flat shading: im Loader vertices kolorieren
+  c) später: der Lichtquelle angepasstes Flat shading
+
+2/1/2019
 Branch cleanup angelegt
 Objekte vom Typ Moving gelöscht --> wie kann man Objekte bewegen?
 

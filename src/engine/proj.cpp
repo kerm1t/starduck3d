@@ -140,8 +140,10 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   */
 
   obj::CGL_ObjectWavefront car2(&m_render);
-  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
-  car2.Load(1.0f, 0.0f, Vec3f(20.0f, 6.0f, 1.1f)); // scaled
+//  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
+//  car2.Load(.6f, 0.0f, Vec3f(20.0f, 6.0f, 0.7f)); // scaled
+  car2.sObjectFullpath = "..\\data\\virtualroad\\lowpoly_jeep3\\jeep.obj";
+  car2.Load(.6f, 0.0f, Vec3f(20.0f, 6.0f, 0.7f)); // scaled
 
 
   obj::CGL_ObjectWavefront car3(&m_render);
@@ -226,6 +228,36 @@ int proj::Proj::DoIt()
   for (unsigned int ui = 0; ui < m_render.vVAOs.size(); ui++) m_render.vVAOs[ui].b_Wireframe = (int)b_wireframe;
 //  static int vw;
   ImGui::SliderFloat("view width", &(float)m_render.p_cam->zFar, 10.0, 200.0);
+  float v[3] = { m_render.p_cam->Pos.x,m_render.p_cam->Pos.y,m_render.p_cam->Pos.z };
+  ImGui::InputFloat3("cam.pos", v);
+  float vAt[3] = { m_render.p_cam->At.x,m_render.p_cam->At.y,m_render.p_cam->At.z };
+  ImGui::InputFloat3("cam.at", vAt);
+  float vDir[3] = { m_render.p_cam->At.x,m_render.p_cam->At.y,m_render.p_cam->At.z };
+  ImGui::InputFloat3("cam.dir", vDir);
+  ImGui::End();
+
+  ImGui::Begin("Objects");
+  static int selected = -1;
+  if (ImGui::TreeNode("Obj's rendered"))
+  {
+    ImGui::Columns(4, "cols"); // no. of columns
+    ImGui::Separator();
+    ImGui::Text("#"); ImGui::NextColumn();
+    ImGui::Text("Obj."); ImGui::NextColumn();
+    ImGui::Text("#Vtx"); ImGui::NextColumn();
+    ImGui::Text("Pos"); ImGui::NextColumn();
+    ImGui::Separator();
+    for (int i = 0; i < m_render.vVAOs.size(); i++)
+    {
+      ImGui::Text("%d",i); ImGui::NextColumn();
+      ImGui::Text(m_render.vVAOs[i].Name.c_str()); ImGui::NextColumn();
+      ImGui::Text("%d",m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
+      ImGui::Text("%.2f,%.2f,%.2f",m_render.vVAOs[i].vPos.x, m_render.vVAOs[i].vPos.y, m_render.vVAOs[i].vPos.z); ImGui::NextColumn();
+    }
+    ImGui::Columns(1);
+    ImGui::Separator();
+    ImGui::TreePop();
+  }
   ImGui::End();
 
   ImGui::Render();

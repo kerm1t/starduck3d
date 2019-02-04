@@ -85,6 +85,8 @@ public:
     Dir[1] = 1.0f;
     Dir[2] = 0.0f;
 
+    At = Pos + Dir;
+
     Norm = glm::vec3(0.0f,0.0f,1.0f); // z = up
     bStickToObject = false;
   }
@@ -201,24 +203,7 @@ public:
     Dir[0] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD);
     Dir[1] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD);
   }
-/*
-  void Look_with_Mouse(glm::vec2 mouse) // absolute
-  {
-    float w_half = width  / 2.0f;
-    float h_half = height / 2.0f;
-    float m_x = (mouse.x-w_half) / w_half;
-    float m_z = (mouse.y-h_half) / h_half;
 
-    // DirMouse anstatt Dir benutzen!
-    float thetaRAD = m_x * mouselook_RAD;
-    DirMouse[1] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD); // DirM...[1] ?
-    DirMouse[0] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD); // DirM...[0] ?
-    DirMouse[2] = -sin(m_z * mouselook_RAD/aspect);
-
-    At = Pos + DirMouse;
-    Norm = glm::vec3(0, 0, 1);  // Head is up <-- change on Oculus!
-  }
-*/
   void Look_with_Mouse(glm::vec2 mouse) // relative
   {
     float m_x = mouse.x / 150.0f;
@@ -231,6 +216,8 @@ public:
     DirMouse[2] = -sin(m_z * mouselook_RAD / aspect);
 
     At = Pos + DirMouse;
+// Problem: hier gibt es eine Rückkopplung    Dir = At - Pos; // 2019-02-03
+//          also Blickrichtung-Kamera und Fahrtrichtung entkoppeln?
     Norm = glm::vec3(0, 0, 1);  // Head is up <-- change on Oculus!
   }
 };

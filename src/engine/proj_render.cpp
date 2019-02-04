@@ -551,7 +551,7 @@ void proj::Render::DrawVAOs_NEU()
     if (ui == 0)
       glUseProgram(program_fps);
     else
-      glUseProgram(program);
+      glUseProgram(program); // 2/2/19 für jedes Objekt glUseProgram aufrufen?
     
     bool bMoved = false; // workaround, removed later
 
@@ -566,6 +566,36 @@ void proj::Render::DrawVAOs_NEU()
       // first translate
       Model = glm::translate(Model,glm::vec3(vVAOs[ui].vPos.x,vVAOs[ui].vPos.y,vVAOs[ui].vPos.z));
       p_cam->change_Model(Model);
+    }
+    
+//    if (ui == 27) // Conticar
+    if( (ui == 28) || (ui == 29) || (ui == 30) ) // Jeep
+    {
+//      glUniform3f(sh1_unif_offset, move.x,move.y,0.0f);
+      glm::vec3 move; // hack, just a test for object movement
+      move.x = p_cam->Pos.x - vVAOs[ui].vPos.x;
+      move.y = p_cam->Pos.y - vVAOs[ui].vPos.y;
+      glm::vec3 dir = p_cam->At - p_cam->Pos;
+//      move.x += p_cam->Dir.x*3.0f; // dir is not updated currently, as it is only for objects moved, not for camera
+//      move.y += p_cam->Dir.y*3.0f;
+      move.x += dir.x*3.0f;
+      move.y += dir.y*3.0f;
+/// s.u.      glUniform3f(sh1_unif_offset, move.x, move.y, 0.0f);
+      // rotation
+      glm::mat4 Model = glm::mat4(1.0f);
+      glm::float32 f_VehRot_Z = -atan2(dir.x, dir.y);
+      glm::float32 f_VehRot_Z_DEG = /*90.0f + */glm::degrees(f_VehRot_Z);
+      // translate
+//      Model = glm::translate(Model, glm::vec3(move.x, move.y, 0));
+// "steering the car" works only with first ranslation, then rotation
+      Model = glm::translate(Model, glm::vec3(p_cam->Pos.x + dir.x*3.0f, p_cam->Pos.y+dir.y*3.0f, 0));
+      Model = glm::rotate(Model, f_VehRot_Z_DEG, glm::vec3(0.0f, 0.0f, 1.0f)); // where x, y, z is axis of rotation (e.g. 0 1 0)
+      p_cam->change_Model(Model);
+    }
+    else
+    {
+      glUniform3f(sh1_unif_offset, 0.0f, 0.0f, 0.0f);
+//      p_cam->reset_Model();
     }
 
     if (vVAOs[ui].b_moving)

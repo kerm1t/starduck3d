@@ -71,7 +71,8 @@ namespace proj
     Camera * p_cam;
 
     proj::Scene * p_Scene;
-
+    
+    
     obj::Moving * m_Moving[2]; // Pointer to Moving objects, as their moving coord's are applied while drawing/rendering
 //    obj::CObjParts * p_car;
 //    obj::CObjParts * p_car2;

@@ -66,14 +66,14 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec2> uvs;
     std::vector<glm::vec3> normals; // won't be used at the moment. (for bumpmaps??)
-    std::vector<glm::vec3> cols; // ... if not textured
+    std::vector<glm::vec3> cols;    // ... if not textured
   };
 
   class CMaterial
   {
   public:
     std::string s_Material;
-    float       Ns;     // exponent, focus of the specular highlight
+    float       Ns;     // specular exponent, focus of the specular highlight
     glm::vec3   Ka;     //  ambient reflectivity (rgb)
     glm::vec3   Kd;     //  diffuse reflectivity (rgb) <-- use this in the first place
     glm::vec3   Ks;     // specular reflectivity (rgb)
@@ -96,7 +96,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         8   Reflection on and Ray trace off
         9   Transparency: Glass on
             Reflection: Ray trace off
-        10	Casts shadows onto invisible surfaces
+       10   Casts shadows onto invisible surfaces
     */
     std::string map_Kd; // texture's filename
 
@@ -237,7 +237,11 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         }
         else
         {
-          part.cols.push_back(part.Kd); // ...try... (Ks, Kd, how to combine??)
+          // depending on illum
+//          part.cols.push_back(part.Kd); // ...try... (Ks, Kd, how to combine??)
+          unsigned int normalIndex = normalIndices[i];
+          float f = glm::dot(part.Ka,temp_normals[normalIndex - 1]);
+          part.cols.push_back(f * part.Kd + part.Ks); // a bisserl gehackt hier, aber tut's erstmal
         }
         if (temp_normals.size() > 0) // 2017-07-24, hack
         {
@@ -259,8 +263,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       ... load "parts"
       provide parts with appropriate Material (set pointer)
     */
-    bool loadOBJParts(const char * path, std::vector <CPart> & out_v_CParts, float fScale = 1.0f, float fZ = 0.0f) // this has to be inside a class,
-    {                                                                                                              // otherwise it shouldn't be in a .hpp!!
+    bool loadOBJParts(const char * path,
+      std::vector <CPart> & out_v_CParts, float fScale = 1.0f, float fZ = 0.0f)
+    {
       uint16 nPartsRead = 0;
       uint16 nPartsWritten = 0;
 
