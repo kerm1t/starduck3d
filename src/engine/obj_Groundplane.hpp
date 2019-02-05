@@ -16,12 +16,12 @@ namespace obj
       float fPlanewidth = 300.0f;
       // 3D
       coords.push_back( fPlanewidth); coords.push_back( fPlanewidth); coords.push_back(-0.1f);
+      coords.push_back(fPlanewidth); coords.push_back(-fPlanewidth); coords.push_back(-0.1f);
       coords.push_back(-fPlanewidth); coords.push_back( fPlanewidth); coords.push_back(-0.1f);
-      coords.push_back( fPlanewidth); coords.push_back(-fPlanewidth); coords.push_back(-0.1f);
 
       coords.push_back( fPlanewidth); coords.push_back(-fPlanewidth); coords.push_back(-0.1f);
-      coords.push_back(-fPlanewidth); coords.push_back( fPlanewidth); coords.push_back(-0.1f);
       coords.push_back(-fPlanewidth); coords.push_back(-fPlanewidth); coords.push_back(-0.1f);
+      coords.push_back(-fPlanewidth); coords.push_back( fPlanewidth); coords.push_back(-0.1f);
 
       float r = 0.349f; // 89.0 / 255.0f;
       float g = 1.0f;

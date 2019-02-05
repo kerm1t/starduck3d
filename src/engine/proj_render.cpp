@@ -39,6 +39,12 @@ int proj::Render::Init()
   glDepthFunc(GL_LESS);
   glEnable(GL_DEPTH_TEST); // <-- !
   // schneidet "zu viel" weg -->    glEnable(GL_CULL_FACE);
+  // falsch!
+  // um Culling zu nutzen, müssen alle Triangles in derselben Order angelegt werden
+  // 2/4/2019 fixed: groundplane
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_FRONT); // 2do: die Strassen-texturen andersherum (ccw oder cw) an die GPU übergeben
+//  glFrontFace(GL_CCW);
 
   InitShader1(); // <-- wenn ich das auskommentiere, dann erscheint ein weisses Rechteck oben rechts !?
   InitShader2(); // Splash screen
@@ -239,11 +245,11 @@ void proj::Render::FPS()
   // (-1,-1) +---------------+
   //
   coords.push_back(-1.0f); coords.push_back(-1.0f);
-  coords.push_back( 1.0f); coords.push_back(-1.0f);
   coords.push_back(-1.0f); coords.push_back( 1.0f);
+  coords.push_back(1.0f); coords.push_back(-1.0f);
   coords.push_back(-1.0f); coords.push_back( 1.0f);
-  coords.push_back( 1.0f); coords.push_back(-1.0f);
   coords.push_back( 1.0f); coords.push_back( 1.0f);
+  coords.push_back(1.0f); coords.push_back(-1.0f);
 #endif
 
   std::vector<GLfloat> uvs;
@@ -385,6 +391,7 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
                | /|
                |/ |
             p0 +--+ p1
+            2/4/2019 for culling in CW order: p2->p0->p3
         */
         p0 = rc_Marker[iMarker].s_Left;
         p1 = rc_Marker[iMarker].s_Right;
@@ -395,12 +402,12 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
         vertices[iV] = p0.rl_X;   colors[iV++] = f_R; //  texCoords[iTx++] = 0.0f;  // U
         vertices[iV] = p0.rl_Y;   colors[iV++] = f_G; //  texCoords[iTx++] = 0.0f;  // V
         vertices[iV] = p0.rl_Z;   colors[iV++] = f_B;
-        vertices[iV] = p1.rl_X;   colors[iV++] = f_R; //  texCoords[iTx++] = 0.0f;
-        vertices[iV] = p1.rl_Y;   colors[iV++] = f_G; //  texCoords[iTx++] = 1.0f;
-        vertices[iV] = p1.rl_Z;   colors[iV++] = f_B;
-        vertices[iV] = p2.rl_X;   colors[iV++] = f_R; //  texCoords[iTx++] = 1.0f;
-        vertices[iV] = p2.rl_Y;   colors[iV++] = f_G; //  texCoords[iTx++] = 0.0f;
+        vertices[iV] = p2.rl_X;   colors[iV++] = f_R; //  texCoords[iTx++] = 0.0f;
+        vertices[iV] = p2.rl_Y;   colors[iV++] = f_G; //  texCoords[iTx++] = 1.0f;
         vertices[iV] = p2.rl_Z;   colors[iV++] = f_B;
+        vertices[iV] = p1.rl_X;   colors[iV++] = f_R; //  texCoords[iTx++] = 1.0f;
+        vertices[iV] = p1.rl_Y;   colors[iV++] = f_G; //  texCoords[iTx++] = 0.0f;
+        vertices[iV] = p1.rl_Z;   colors[iV++] = f_B;
         /*
           U ^                Texture coordinates
             |
@@ -409,28 +416,28 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
         */
         texCoords[iTx++] = fTexStrip + 0.0f;     // p0 - U
         texCoords[iTx++] = 0.0f;                 // p0 - V
-        texCoords[iTx++] = fTexStrip + 0.0f;     // p1 - U
-        texCoords[iTx++] = 1.0f;                 // p1 - V
         texCoords[iTx++] = fTexStrip + fTexIncr; // p2 - U
         texCoords[iTx++] = 1.0f;                 // p2 - V
+        texCoords[iTx++] = fTexStrip + 0.0f;     // p1 - U
+        texCoords[iTx++] = 1.0f;                 // p1 - V
 
         // 2nd Triangle
         vertices[iV] = p2.rl_X;   colors[iV++] = f_R; //  texCoords[iTx++] = 0.0f;
         vertices[iV] = p2.rl_Y;   colors[iV++] = f_G; //  texCoords[iTx++] = 0.0f;
         vertices[iV] = p2.rl_Z;   colors[iV++] = f_B;
-        vertices[iV] = p3.rl_X;   colors[iV++] = f_R; //  texCoords[iTx++] = 0.0f;
-        vertices[iV] = p3.rl_Y;   colors[iV++] = f_G; //  texCoords[iTx++] = 1.0f;
-        vertices[iV] = p3.rl_Z;   colors[iV++] = f_B;
-        vertices[iV] = p0.rl_X;   colors[iV++] = f_R; //  texCoords[iTx++] = 1.0f;
-        vertices[iV] = p0.rl_Y;   colors[iV++] = f_G; //  texCoords[iTx++] = 0.0f;
+        vertices[iV] = p0.rl_X;   colors[iV++] = f_R; //  texCoords[iTx++] = 0.0f;
+        vertices[iV] = p0.rl_Y;   colors[iV++] = f_G; //  texCoords[iTx++] = 1.0f;
         vertices[iV] = p0.rl_Z;   colors[iV++] = f_B;
+        vertices[iV] = p3.rl_X;   colors[iV++] = f_R; //  texCoords[iTx++] = 1.0f;
+        vertices[iV] = p3.rl_Y;   colors[iV++] = f_G; //  texCoords[iTx++] = 0.0f;
+        vertices[iV] = p3.rl_Z;   colors[iV++] = f_B;
 
         texCoords[iTx++] = fTexStrip + fTexIncr; // p2 - U
         texCoords[iTx++] = 1.0f;                 // p2 - V
-        texCoords[iTx++] = fTexStrip + fTexIncr; // p3 - U
-        texCoords[iTx++] = 0.0f;                 // p3 - V
         texCoords[iTx++] = fTexStrip + 0.0f;     // p0 - U
         texCoords[iTx++] = 0.0f;                 // p0 - V
+        texCoords[iTx++] = fTexStrip + fTexIncr; // p3 - U
+        texCoords[iTx++] = 0.0f;                 // p3 - V
         fTexStrip += fTexIncr;
       }
     }
@@ -623,7 +630,7 @@ void proj::Render::DrawVAOs_NEU()
     if (vVAOs[ui].t_Shade == SHADER_TEXTURE)
     {
       glUniform1i(sh1_unif_col_tex, 1); // shader into texture-branch
-
+       
       // http://ogldev.atspace.co.uk/www/tutorial16/tutorial16.html
       glActiveTexture(GL_TEXTURE0);
       err = glGetError();

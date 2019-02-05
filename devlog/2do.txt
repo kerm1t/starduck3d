@@ -1,3 +1,8 @@
+2/4
+- culling-fix: Tunnel, Schilder
+  Problem: beim Culling sind Billboards (Objekte, die nur aus einer Seite bestehen)
+           nur von einer Seite sichtbar. need to define backside!
+
 2/2/2019
 - vVAO.Pos soll auch glm::vec3 werden
 - Texturanimation, s. Twitter Beitrag vom 6.Juli 2017
@@ -5,7 +10,7 @@
 
 2/1/2019
 - wasser, Road, wird die Textur schon im Editor geladen?
-- moving-Objects: wie wäre es, mal das eigene Fahrzeug zu bewegen, so aus der Egoperspektive
++ moving-Objects: wie wäre es, mal das eigene Fahrzeug zu bewegen, so aus der Egoperspektive
 + Conti-car Farben setzen simple shading: Phone, Gourad o. Flat!!
 + wie kann ich ein Objekt hinzufügen, einfach ein Objekt "room" geht nicht
   doch, lag daran, dass die Datei nicht existierte
@@ -32,7 +37,7 @@ Editor:
 
 Starduck/buggyboy:
 ==================
-- display buggy
++ display buggy
 - randomly place flags (single and double) <-- billboards
   alternative: place flags with editor
 - collision check car & flags

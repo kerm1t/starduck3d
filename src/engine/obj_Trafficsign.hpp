@@ -72,8 +72,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
       int i=0;
       Vertices[i++] = x-0.05f*_x; Vertices[i++] = y-0.05f*_y; Vertices[i++] = z1;
-      Vertices[i++] = x-0.05f*_x; Vertices[i++] = y-0.05f*_y; Vertices[i++] = z2;
       Vertices[i++] = x+0.05f*_x; Vertices[i++] = y+0.05f*_y; Vertices[i++] = z1;
+      Vertices[i++] = x - 0.05f*_x; Vertices[i++] = y - 0.05f*_y; Vertices[i++] = z2;
 
       Vertices[i++] = x+0.05f*_x; Vertices[i++] = y+0.05f*_y; Vertices[i++] = z1;
       Vertices[i++] = x+0.05f*_x; Vertices[i++] = y+0.05f*_y; Vertices[i++] = z2;
@@ -82,8 +82,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       //            if (iType==1)
       //            {
       Vertices[i++] = x-0.5f*_x; Vertices[i++] = y-0.5f*_y; Vertices[i++] = z2;
-      Vertices[i++] = x;         Vertices[i++] = y;         Vertices[i++] = z2+0.5f;//0.25;
       Vertices[i++] = x+0.5f*_x; Vertices[i++] = y+0.5f*_y; Vertices[i++] = z2;
+      Vertices[i++] = x;         Vertices[i++] = y;         Vertices[i++] = z2 + 0.5f;//0.25;
       //            }
 
       GLfloat colors[3*3*3]; // 27 = 3 Triangles * 3 Vertices * 3 Coordinates
