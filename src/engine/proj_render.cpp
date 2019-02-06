@@ -42,7 +42,7 @@ int proj::Render::Init()
   // falsch!
   // um Culling zu nutzen, müssen alle Triangles in derselben Order angelegt werden
   // 2/4/2019 fixed: groundplane
-  glEnable(GL_CULL_FACE);
+///  glEnable(GL_CULL_FACE);
   glCullFace(GL_FRONT); // 2do: die Strassen-texturen andersherum (ccw oder cw) an die GPU übergeben
 //  glFrontFace(GL_CCW);
 
@@ -595,7 +595,9 @@ void proj::Render::DrawVAOs_NEU()
       // translate
 //      Model = glm::translate(Model, glm::vec3(move.x, move.y, 0));
 // "steering the car" works only with first ranslation, then rotation
-      Model = glm::translate(Model, glm::vec3(p_cam->Pos.x + dir.x*3.0f, p_cam->Pos.y+dir.y*3.0f, 0));
+//      Model = glm::translate(Model, glm::vec3(p_cam->Pos.x + dir.x*3.0f, p_cam->Pos.y+dir.y*3.0f, 0));
+//      Model = glm::translate(Model, glm::vec3(p_cam->Pos.x + dir.x*-0.5f, p_cam->Pos.y + dir.y*-0.5f, 0));
+      Model = glm::translate(Model, glm::vec3(p_cam->Pos.x + dir.x*f_camy, p_cam->Pos.y + dir.y*f_camy, 0));
       Model = glm::rotate(Model, f_VehRot_Z_DEG, glm::vec3(0.0f, 0.0f, 1.0f)); // where x, y, z is axis of rotation (e.g. 0 1 0)
       p_cam->change_Model(Model);
     }

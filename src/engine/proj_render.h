@@ -69,6 +69,7 @@ namespace proj
 
     // =============
     Camera * p_cam;
+    float f_camy;
 
     proj::Scene * p_Scene;
     

@@ -71,7 +71,7 @@ public:
     fovy_DEG =  60.0f;
     fovy_RAD = fovy_DEG * 3.14159f/180.0f; // 2do, DEGTORAD, math.pi
     aspect   =   4.0f / 3.0f;
-    zNear    =   1.0f;
+    zNear    =   0.5f; // do not clip near objects, e.g. when camera perspcetive "inside" car.
     zFar     = 100.0f;
 
     mouselook_DEG = 180.0f;

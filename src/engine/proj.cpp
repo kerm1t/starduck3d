@@ -147,7 +147,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 
   obj::CGL_ObjectWavefront car3(&m_render);
-  car3.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep.obj";
+  car3.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep_openair.obj";
   car3.Load(0.4f, 0.0f, Vec3f(10.0f, 3.0f, 0.0f)); // scaled
 
 
@@ -234,6 +234,7 @@ int proj::Proj::DoIt()
   ImGui::InputFloat3("cam.at", vAt);
   float vDir[3] = { m_render.p_cam->At.x,m_render.p_cam->At.y,m_render.p_cam->At.z };
   ImGui::InputFloat3("cam.dir", vDir);
+  ImGui::SliderFloat("cam.y", &(float)m_render.f_camy, -3.0f, 3.0f);
   ImGui::End();
 
   ImGui::Begin("Objects");

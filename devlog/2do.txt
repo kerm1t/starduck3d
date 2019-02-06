@@ -1,3 +1,14 @@
+2/5
+- Kamera a) in-car  b) hinter dem auto
+  ... die Scheiben sind jedoch schwarz, also entweder transparent oder gar kein Vertex
+  okay, habe die Scheiben entfernt (bisschen Blender Grundkenntnisse angeeignet)
+  allerdings merke ich jetzt, dass mein Loader kaputt ist. Der letzt "face"-Abschnitt wird
+  gar nicht als part angelegt
+- i) trajektorie / trägheit für Bewegung Auto
+  ii) Bewegung als Fussgänger sofortig
+- Häuser platzieren
+- Billboards platzieren (Spiel als Editor)!!!!
+
 2/4
 - culling-fix: Tunnel, Schilder
   Problem: beim Culling sind Billboards (Objekte, die nur aus einer Seite bestehen)
