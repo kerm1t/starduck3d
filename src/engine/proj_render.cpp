@@ -576,8 +576,9 @@ void proj::Render::DrawVAOs_NEU()
     }
     
 //    if (ui == 27) // Conticar
-    if( (ui == 28) || (ui == 29) || (ui == 30) ) // Jeep
-    {
+//    if( (ui == 28) || (ui == 29) || (ui == 30) ) // Jeep
+    if ((ui == 28) || (ui == 29)) // Jeep_Openair
+      {
 //      glUniform3f(sh1_unif_offset, move.x,move.y,0.0f);
       glm::vec3 move; // hack, just a test for object movement
       move.x = p_cam->Pos.x - vVAOs[ui].vPos.x;

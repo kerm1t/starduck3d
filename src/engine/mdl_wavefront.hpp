@@ -287,9 +287,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
       std::string line;
 
-      std::fill(temp_object, temp_object + 255, 0); // init with "0"
-      
-      bool b_NewPart = false;
+//      std::fill(temp_object, temp_object + 255, 0); // init with "0"
+
+      bool b_FirstPart = true;
       while (file.good())
       {
         std::getline(file,line);
@@ -319,19 +319,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         }
         else if (line.compare(0,2,"v ") == 0)
         {
-          if (b_NewPart == true)
-          {
-            if (strlen(temp_object) == 0) strcpy(temp_object,mtllib); // Hack!
-            AddPart(out_v_CParts,
-              temp_object, temp_material, v_Mat,
-              temp_vertices,
-              temp_uvs,
-              temp_normals,
-              vertexIndices,
-              uvIndices,
-              normalIndices);
-          }
-          b_NewPart = false;
           glm::vec3 vertex;
           sscanf(line.c_str(), "v %f %f %f\n", &vertex.x, &vertex.z, &vertex.y);
           vertex = vertex * fScale; // Blender-OBJ tuning
@@ -353,11 +340,27 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         }
         else if (line.compare(0,6,"usemtl") == 0)
         {
+          if (b_FirstPart == true)
+          {
+          }
+          else
+          {
+//            if (strlen(temp_object) == 0) strcpy(temp_object, mtllib); // Hack!
+            AddPart(out_v_CParts,
+              temp_object, temp_material, v_Mat,
+              temp_vertices,
+              temp_uvs,
+              temp_normals,
+              vertexIndices,
+              uvIndices,
+              normalIndices);
+          }
+          b_FirstPart = false;
           sscanf(line.c_str(), "usemtl %s\n", temp_material);
         }
         else if (line[0] == 'f') // face -- indices of v=vertices,vt=texture_uv,vn=normals
         {
-          b_NewPart = true;
+//          b_NewPart = true;
           unsigned int v[4], vt[4], vn[4];
           // a) 4 indices * v/vt/vn (textured)
           int matches = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d\n",

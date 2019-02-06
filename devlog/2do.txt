@@ -4,6 +4,10 @@
   okay, habe die Scheiben entfernt (bisschen Blender Grundkenntnisse angeeignet)
   allerdings merke ich jetzt, dass mein Loader kaputt ist. Der letzt "face"-Abschnitt wird
   gar nicht als part angelegt
+  loader umgeschrieben (hat 3 Minnuten gedauert)
+  und auch die "mitfahrende Barriere" gefixt, das war der hack, die Objekte 27-29 zu bewegen,
+  wobei derneue Jeep_openair aber nur noch 2 parts hat, das 3. Objekt war also die Barriere
+  grrrrr.
 - i) trajektorie / trägheit für Bewegung Auto
   ii) Bewegung als Fussgänger sofortig
 - Häuser platzieren
