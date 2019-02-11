@@ -64,8 +64,12 @@ namespace proj
     std::vector<GLuint> vVertexArray;    // stores VAO's: a) Position(x,y,z), b1) color OR b2) u,v-Texture
 
 //    std::vector<GLuint> vPositionBuffer; // stores position
-
+#define FPS_LOWPASS 255
+    float aFPS[FPS_LOWPASS];
+    int idxFPS;
     bool b_splash_screen;
+
+    bool b_culling;
 
     // =============
     Camera * p_cam;

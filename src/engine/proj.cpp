@@ -222,9 +222,14 @@ int proj::Proj::DoIt()
   ImGui::Text("mouse: %f,%f",io.MousePos.x,io.MousePos.y);
   ImGui::Text("loaded: %s", m_scene.c_Scene.c_str());
   float FPS = 1000.0f / (float)timer.getElapsedTimeInMilliSec();
-  ImGui::Text("%.1f FPS", FPS);
+  m_render.aFPS[m_render.idxFPS++ % FPS_LOWPASS] = FPS;
+  FPS = 0.0; for (int i = 0; i < FPS_LOWPASS; i++) {
+    FPS += m_render.aFPS[i];
+  }FPS = FPS / FPS_LOWPASS;
+  ImGui::Text("%.0f FPS", FPS);
   static bool b_wireframe;
-  ImGui::Checkbox("wireframe:", &b_wireframe);
+  ImGui::Checkbox("wireframe", &b_wireframe);
+  ImGui::Checkbox("culling", &m_render.b_culling);
   for (unsigned int ui = 0; ui < m_render.vVAOs.size(); ui++) m_render.vVAOs[ui].b_Wireframe = (int)b_wireframe;
 //  static int vw;
   ImGui::SliderFloat("view width", &(float)m_render.p_cam->zFar, 10.0, 200.0);

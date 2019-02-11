@@ -1,3 +1,7 @@
+2/9
++ backface culling optional
++ FPS tiefpass Filter
+
 2/5
 - Kamera a) in-car  b) hinter dem auto
   ... die Scheiben sind jedoch schwarz, also entweder transparent oder gar kein Vertex
