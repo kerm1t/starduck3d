@@ -539,6 +539,16 @@ void proj::Render::DrawVAOs_NEU()
 
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
+  if (b_culling)
+  {
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT); // 2do: die Strassen-texturen andersherum (ccw oder cw) an die GPU übergeben
+//  glFrontFace(GL_CCW);
+  }
+  else
+  {
+    glDisable(GL_CULL_FACE);
+  }
 
 //  glUseProgram(program_fps);
   /*

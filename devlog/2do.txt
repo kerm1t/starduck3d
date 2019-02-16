@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 2/14
 - beliebige Objekte laden (derzeit kann ich Anton's village nur an einer best. Position laden!?)
 - Ego-Fahrzeug nicht per Index, sondern anders (ID) setzen
 - Ego Fahrzeuge auswählen und vorkonfigurieren (x-Abstand, Mausfreiheitsgrad etc.)
 - Schilder v.d. Strasse nehmen (oder neben die Strasse setzen)
 + Anton's Ministadt geladen ins Programm
+=======
+2/9
++ backface culling optional
++ FPS tiefpass Filter
+>>>>>>> 43a4977c96e22a27b401fb5d69869efd1d7a2337
 
 2/5
 --------------------------------------------------------
