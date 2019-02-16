@@ -129,15 +129,19 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  m_render.m_Moving[1] = &m_moving[1];
  
   GLenum err = glGetError();
-  obj::CGL_ObjectWavefront car(&m_render);
-  car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
+/*  obj::CGL_ObjectWavefront car(&m_render);
+//  car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
+  car.sObjectFullpath = "d:\\X\\untitled.obj";
   car.Load(0.04f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
-
+*/
 /*  obj::CGL_ObjectWavefront room(&m_render);
   room.sObjectFullpath = "..\\data\\conference_room\\conference.obj";
   room.Load(0.003f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
   vObjects.push_back(room);
   */
+  obj::CGL_ObjectWavefront anton(&m_render);
+  anton.sObjectFullpath = "..\\data\\virtualroad\\erstes_projekt2.obj";
+  anton.Load(4.4f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
 
   obj::CGL_ObjectWavefront car2(&m_render);
 //  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
@@ -151,7 +155,6 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   car3.Load(0.4f, 0.0f, Vec3f(10.0f, 3.0f, 0.0f)); // scaled
 
 
-
   obj::CGL_ObjectWavefront barrier1(&m_render);
   barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
   barrier1.Load();
@@ -160,6 +163,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
     barrier1.PartsToVBOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
     barrier1.PartsToVAOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
   }
+
 
 
   assert(m_render.vVAOs.size()<m_render.VBOCOUNT);

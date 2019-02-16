@@ -1,10 +1,20 @@
+2/14
+- beliebige Objekte laden (derzeit kann ich Anton's village nur an einer best. Position laden!?)
+- Ego-Fahrzeug nicht per Index, sondern anders (ID) setzen
+- Ego Fahrzeuge auswählen und vorkonfigurieren (x-Abstand, Mausfreiheitsgrad etc.)
+- Schilder v.d. Strasse nehmen (oder neben die Strasse setzen)
++ Anton's Ministadt geladen ins Programm
+
 2/5
-- Kamera a) in-car  b) hinter dem auto
+--------------------------------------------------------
+Inspiration: https://www.youtube.com/watch?v=Sg07FTzDKzk
+--------------------------------------------------------
++ Kamera a) in-car  b) hinter dem auto
   ... die Scheiben sind jedoch schwarz, also entweder transparent oder gar kein Vertex
   okay, habe die Scheiben entfernt (bisschen Blender Grundkenntnisse angeeignet)
   allerdings merke ich jetzt, dass mein Loader kaputt ist. Der letzt "face"-Abschnitt wird
   gar nicht als part angelegt
-  loader umgeschrieben (hat 3 Minnuten gedauert)
+  loader umgeschrieben (hat 3 Minuten gedauert)
   und auch die "mitfahrende Barriere" gefixt, das war der hack, die Objekte 27-29 zu bewegen,
   wobei derneue Jeep_openair aber nur noch 2 parts hat, das 3. Objekt war also die Barriere
   grrrrr.
