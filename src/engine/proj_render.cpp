@@ -585,10 +585,7 @@ void proj::Render::DrawVAOs_NEU()
       p_cam->change_Model(Model);
     }
     
-//    if (ui == 27) // Conticar
-//    if( (ui == 28) || (ui == 29) || (ui == 30) ) // Jeep
-//    if ((ui == 28) || (ui == 29)) // Jeep_Openair
-    if ((ui == 44) || (ui == 45)) // Jeep_Openair
+    if (vVAOs[ui].Name.compare("Jeep")==0) // Conticar, Jeep_Openair
     {
 //      glUniform3f(sh1_unif_offset, move.x,move.y,0.0f);
       glm::vec3 move; // hack, just a test for object movement
