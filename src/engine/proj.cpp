@@ -143,6 +143,10 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   anton.sObjectFullpath = "..\\data\\virtualroad\\erstes_projekt2.obj";
   anton.Load(4.4f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
 
+  obj::CGL_ObjectWavefront holzstapel(&m_render);
+  holzstapel.sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
+  holzstapel.Load(0.4f, 0.0f, Vec3f(10.0f, 1.0f, 0.5f)); // scaled
+
   obj::CGL_ObjectWavefront car2(&m_render);
 //  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
 //  car2.Load(.6f, 0.0f, Vec3f(20.0f, 6.0f, 0.7f)); // scaled
