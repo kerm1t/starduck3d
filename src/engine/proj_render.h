@@ -50,7 +50,7 @@ namespace proj
     #define VBO_CAR_TIRE1   12
     #define VBO_CAR_TIRE2   13
     */        // nur statische integrale Datentypen können innerhalb einer Klasse initialisiert werden...
-    static const unsigned int VBOCOUNT = 99;
+    static const unsigned int VBOCOUNT = 999;
 
     // pointers to all VAO buffer's
     GLuint positionBuffer[VBOCOUNT];

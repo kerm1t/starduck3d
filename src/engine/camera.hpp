@@ -65,6 +65,7 @@ public:
 
   bool bStickToObject;
 //  obj::CObject& obj;
+  int iStickToObj;
 
   Camera()
   {
@@ -146,13 +147,13 @@ public:
   {
   }
 
-  void MoveFwd()
+  void MoveFwd(float fSpeed)
   {
 #define VELO_FIRST  25.0f;
 #define VELO_SECOND 12.0f;
     float zsave = Pos[2];
     // in "Dir" Richtung weiterbewegen
-    Pos += DirMouse * 1.0f /VELO_FIRST; // /50 war zu langsam
+    Pos += DirMouse * fSpeed; // e.g. 1.0f / VELO_FIRST
     Pos[2] = zsave; // only in walk/drive mode
   }
   void MoveLeft()
@@ -163,11 +164,11 @@ public:
     Pos -= dirortho;
     Pos[2] = zsave; // only in walk/drive mode
   }
-  void MoveBack()
+  void MoveBack(float fSpeed)
   {
 #define VELO_BACK   50.0f;
     float zsave = Pos[2];
-    Pos -= DirMouse * 1.0f /VELO_BACK;
+    Pos -= DirMouse * fSpeed;
     Pos[2] = zsave; // only in walk/drive mode
   }
   void MoveRight()

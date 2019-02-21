@@ -70,11 +70,11 @@ void RenderThread(void *args)
   {
     if (GetAsyncKeyState(VK_UP))
     {
-      m_cam.MoveFwd();
+      m_cam.MoveFwd(1.0f/25.0f);
     }
     if (GetAsyncKeyState(VK_DOWN))
     {
-      m_cam.MoveBack();
+      m_cam.MoveBack(1.0f/50.0f);
     }
     if (GetAsyncKeyState(VK_LEFT))
     {
@@ -460,14 +460,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     case 87: // W
 //      m_proj.m_render.iWireframe = 1-m_proj.m_render.iWireframe;
-      m_cam.MoveFwd();
+      m_cam.MoveFwd(1.0f);
       break;
     case 65: // A
       m_cam.TurnLeft();
       m_cam.StrafeLeft();
       break;
     case 83: // S
-      m_cam.MoveBack();
+      m_cam.MoveBack(1.0f);
       break;
     case 68: // D
       m_cam.StrafeRight();

@@ -143,9 +143,18 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   anton.sObjectFullpath = "..\\data\\virtualroad\\erstes_projekt2.obj";
   anton.Load(4.4f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
 
-  obj::CGL_ObjectWavefront holzstapel(&m_render);
-  holzstapel.sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
-  holzstapel.Load(0.4f, 0.0f, Vec3f(10.0f, 1.0f, 0.5f)); // scaled
+//  obj::CGL_ObjectWavefront holzstapel(&m_render);
+//  holzstapel.sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
+//  holzstapel.Load(0.4f, 0.0f, Vec3f(rand() % 100, rand() % 100, 0.5f)); // scaled
+
+#define N_HOLZSTAPEL 40
+  obj::CGL_ObjectWavefront holzstapel[N_HOLZSTAPEL];
+  for (unsigned int ui = 0; ui < N_HOLZSTAPEL; ui++)
+  {
+    holzstapel[ui].setRender(&m_render);
+    holzstapel[ui].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
+    holzstapel[ui].Load(0.4f, 0.0f, Vec3f(-100+rand() % 200, -100+rand() % 200, 0.5f)); // scaled
+  }
 
   obj::CGL_ObjectWavefront car2(&m_render);
 //  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
@@ -238,6 +247,9 @@ int proj::Proj::DoIt()
   static bool b_wireframe;
   ImGui::Checkbox("wireframe", &b_wireframe);
   ImGui::Checkbox("culling", &m_render.b_culling);
+  ImGui::RadioButton("Free", &m_render.p_cam->iStickToObj,0);
+  ImGui::RadioButton("Jeep1", &m_render.p_cam->iStickToObj,1);
+  ImGui::RadioButton("Jeep2", &m_render.p_cam->iStickToObj,2);
   for (unsigned int ui = 0; ui < m_render.vVAOs.size(); ui++) m_render.vVAOs[ui].b_Wireframe = (int)b_wireframe;
 //  static int vw;
   ImGui::SliderFloat("view width", &(float)m_render.p_cam->zFar, 10.0, 200.0);

@@ -237,12 +237,18 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   class CGL_ObjectWavefront : public CGL_Abstr_ObjectLoaded
   {
   public:
+    CGL_ObjectWavefront() {}; // default constructor
     CGL_ObjectWavefront(proj::Render * p_rnd)
     {     // <-- inline, sonst Linker error!
       position = glm::vec3(0.0f, 0.0f, 0.0f); // <--- ist das ok so ?
 
       p_render = p_rnd;
     };    // <-- inline
+    
+    void setRender(proj::Render * p_rnd)
+    {
+      p_render = p_rnd;
+    };
 
     void Load(float fScale = 1.0f, float fZ = 0.0f, Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f)) // load OBJ 'n texture
     {
