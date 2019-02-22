@@ -19,6 +19,8 @@ namespace proj
     HWND  dummyHWND;   // for NVidia SetPixelformat-Fix
     int width, height;
 
+    glm::vec3 Cursor;  // 2do: move to editor.hpp !!
+
     //        bool b_PNG;
 
     // =================

@@ -41,7 +41,7 @@
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
 //#define GLM_FORCE_RADIANS // 2do, replace all deg. by rad.!!, then remove this line
-#include "glm.hpp"
+#include "glm/glm.hpp"
 #include "../common/types.h"
 
 // blender model from:  http://www.tutorialsforblender3d.com/Models/index_Models.html

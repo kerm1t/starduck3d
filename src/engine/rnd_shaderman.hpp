@@ -4,8 +4,8 @@
 #include <stdio.h> // <-- sprintf
 #include "inc_render.h"
 //#define GLM_FORCE_RADIANS // disabled ... distorts the projection
-#include "glm.hpp"
-#include <gtc/matrix_transform.hpp>
+#include "glm/glm.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 
 class ShaderMan // Shader manager
 {

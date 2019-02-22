@@ -22,7 +22,7 @@ link_directories(lib/${glew}/lib/Debug/Win32)
 include_directories(src/common
     src/engine
     lib/${glew}/include
-    lib/glm/glm
+    lib/glm
     lib/imgui
     lib/imgui/examples)
 

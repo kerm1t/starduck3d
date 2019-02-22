@@ -9,7 +9,7 @@
 #pragma once
 
 //#define GLM_FORCE_RADIANS // disabled ... distorts the projection
-#include "glm.hpp"
+#include "glm/glm.hpp"
 
 #include "obj_Guardrail.hpp" // <-- remove
 #include "obj_Curbstone.hpp" // <-- remove

@@ -9,8 +9,8 @@
 
 //#include <math.h>
 //#define GLM_FORCE_RADIANS // disabled ... distorts the projection
-#include "glm.hpp" // is there an _ext ??
-#include <gtc/matrix_transform.hpp>
+#include "glm/glm.hpp" // is there an _ext ??
+#include <glm/gtc/matrix_transform.hpp>
 
 #define GLEW_STATIC
 #include <GL/glew.h>

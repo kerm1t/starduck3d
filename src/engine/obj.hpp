@@ -26,7 +26,7 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 #include <gl\gl.h>   // Header File For The OpenGL32 Library
 
 //#define GLM_FORCE_RADIANS // disabled ... distorts the projection
-#include "glm.hpp"
+#include "glm/glm.hpp"
 #include "math.h"
 
 #include "Vec3f.hxx"

@@ -8,6 +8,7 @@
 #include "imgui_impl_opengl3.h"
 
 #include "Timer.h"
+#include <glm/gtc/type_ptr.hpp> // f. value_ptr()
 
 // FPS
 // http://www.songho.ca/misc/timer/timer.html
@@ -153,7 +154,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   {
     holzstapel[ui].setRender(&m_render);
     holzstapel[ui].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
-    holzstapel[ui].Load(0.4f, 0.0f, Vec3f(-100+rand() % 200, -100+rand() % 200, 0.5f)); // scaled
+    holzstapel[ui].Load(0.4f, 0.0f, Vec3f(-100.0f+rand() % 200, -100.0f+rand() % 200, 0.5f)); // scaled
   }
 
   obj::CGL_ObjectWavefront car2(&m_render);
@@ -173,8 +174,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   barrier1.Load();
   for (unsigned int ui=1;ui<5;ui++)
   {
-    barrier1.PartsToVBOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
-    barrier1.PartsToVAOs(Vec3f((float)ui*1.0f, 0.0f, 0.0f));
+    barrier1.PartsToVBOs(Vec3f(10.0f+(float)ui*4.0f, 0.0f, 0.0f));
+    barrier1.PartsToVAOs(Vec3f(10.0f + (float)ui*4.0f, 0.0f, 0.0f));
   }
 
 
@@ -182,6 +183,41 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   assert(m_render.vVAOs.size()<m_render.VBOCOUNT);
 
   return 0;
+}
+
+// https://www.opengl.org/discussion_boards/showthread.php/126012-converting-window-coordinates-to-world-coordinates
+glm::vec3 proj::Proj::Mouse2Dto3D(int x, int y)
+{
+  GLint viewport[4]; //var to hold the viewport info
+  GLdouble modelview[16]; //var to hold the modelview info
+  GLdouble projection[16]; //var to hold the projection matrix info
+  GLdouble worldX, worldY, worldZ; //variables to hold world x,y,z coordinates
+
+  glGetDoublev(GL_MODELVIEW_MATRIX, modelview); //get the modelview info
+  glGetDoublev(GL_PROJECTION_MATRIX, projection); //get the projection matrix info
+  glGetIntegerv(GL_VIEWPORT, viewport); //get the viewport info
+
+  winX = (float)x;
+  winY = (float)viewport[3] - (float)y;
+  //  winZ = 1.0; // The near clip plane is at z = 0 and the far clip plane is at z = 1
+  glReadPixels(x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ); // http://nehe.gamedev.net/article/using_gluunproject/16013/
+
+                                                                         //get the world coordinates from the screen coordinates
+//  const float *p_Model = (const float*)glm::value_ptr(m_render.p_cam->Model);
+//  for (int i = 0; i < 16; ++i) modelview[i] = p_Model[i];
+//  const float *p_Persp = (const float*)glm::value_ptr(m_render.p_cam->Projection);
+//  for (int i = 0; i < 16; ++i) projection[i] = p_Persp[i];
+  gluUnProject(winX, winY, winZ, modelview, projection, viewport, &worldX, &worldY, &worldZ);
+
+  
+  m_render.Cursor.x = m_render.p_cam->Pos.x + worldX; // <-- OpenGL Cursor
+  m_render.Cursor.y = m_render.p_cam->Pos.y + worldY;
+  m_render.Cursor.z = 1.0;// worldZ;
+//  m_render.Cursor.r = 255;
+//  m_render.Cursor.g = 0;
+//  m_render.Cursor.b = 0;
+
+  return glm::vec3(worldX, worldY, worldZ);
 }
 
 int proj::Proj::DoIt()
@@ -260,6 +296,15 @@ int proj::Proj::DoIt()
   float vDir[3] = { m_render.p_cam->At.x,m_render.p_cam->At.y,m_render.p_cam->At.z };
   ImGui::InputFloat3("cam.dir", vDir);
   ImGui::SliderFloat("cam.y", &(float)m_render.f_camy, -3.0f, 3.0f);
+  if (io.MouseDown)
+  {
+    glm::vec3 mouse3d = Mouse2Dto3D(io.MousePos.x, io.MousePos.y);
+//    std::cout << mouse3d.x << "," << mouse3d.y << "," << mouse3d.z << std::endl;
+  }
+  float vCursor2D[3] = { winX,winY,winZ };
+  ImGui::InputFloat3("Cursor2d", vCursor2D);
+  float vCursor[3] = { m_render.Cursor.x,m_render.Cursor.y,m_render.Cursor.z };
+  ImGui::InputFloat3("Cursor", vCursor);
   ImGui::End();
 
   ImGui::Begin("Objects");

@@ -1,3 +1,6 @@
+2/21
+- perspective statt pos (im Shader) ändern, dann fkt. auch gluUnproject
+
 2/20
 - beliebig viele(!) Objekte laden --> VBOCOUNT
 - Perspektive: Im Fahrzeug, von aussen (beinhaltet Freiheitsgrade), Konfig je nach Fahrzeug

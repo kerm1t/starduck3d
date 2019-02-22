@@ -4,8 +4,8 @@
 
 #include "Vec3f.hxx"
 #define GLM_FORCE_RADIANS // <-- strange!
-#include "glm.hpp"
-#include <gtc/matrix_transform.hpp>
+#include "glm/glm.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "stb_font_arial_10_usascii.inl"
 static stb_fontchar fontdata[STB_SOMEFONT_NUM_CHARS];
@@ -559,6 +559,16 @@ void proj::Render::DrawVAOs_NEU()
 //  glUseProgram(program);
 
   GLenum err = GL_NO_ERROR;
+
+  // Cursor
+  glPointSize(12.0);
+  {
+//    Cursor = { 1.0,1.0,1.0 };
+    glVertexPointer(3, GL_FLOAT, sizeof(glm::vec3), &Cursor);
+    glm::vec3 col = { 1.0,1.0,1.0 };
+    glColorPointer(3, GL_UNSIGNED_BYTE, sizeof(glm::vec3), &col); // r + size(3)
+    glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(1));
+  }
 
   // draw Scene + Objects
   unsigned int ui_start = 1;
