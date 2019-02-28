@@ -1,3 +1,8 @@
+2/27
+- texture loading based upon vt existance in .obj, not on map_Kd in .mtl
++ .mtl ignore trailing spaces
++ can load Spnza scene (has issues)
+
 2/21
 - perspective statt pos (im Shader) ändern, dann fkt. auch gluUnproject
 

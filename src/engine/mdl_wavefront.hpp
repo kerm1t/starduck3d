@@ -4,7 +4,7 @@
 //
 // from:  http://www.opengl-tutorial.org/beginners-tutorials/tutorial-7-model-loading/
 //
-// OBJ file format, s. http://paulbourke.net/dataformats/obj/
+// OBJ file format, s. http://paulbourke.net/dataformats/obj/, http://www.cs.utah.edu/~boulos/cs3505/obj_spec.pdf
 // MTL file format, s.below
 //
 // Syntax:
@@ -133,6 +133,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       {
         std::getline(file,line);
         line.erase(std::remove(line.begin(), line.end(), '\t'), line.end()); // remove TAB's
+        line.erase(std::remove(line.begin(), line.end(), ' '), line.end()); // remove Spaces
 
         if (line.compare(0,6,"newmtl") == 0)
         {
@@ -186,7 +187,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           sscanf(line.c_str(), "illum %d\n", &illum);
           material.illum = illum;
         }
-        else if (line.compare(0,6,"map_Kd") == 0)
+        else if (line.compare(0,6,"map_Kd") == 0) // 2do: map_Ka
         {
           sscanf(line.c_str(), "map_Kd %s\n", buf);
           material.map_Kd = buf;
@@ -288,8 +289,10 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       std::string line;
 
 //      std::fill(temp_object, temp_object + 255, 0); // init with "0"
+//      bool b_FirstPart = true;
+      std::fill(temp_object, temp_object + 255, 0); // init with "0"
+      bool b_NewPart = false;
 
-      bool b_FirstPart = true;
       while (file.good())
       {
         std::getline(file,line);
@@ -319,6 +322,19 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         }
         else if (line.compare(0,2,"v ") == 0)
         {
+          if (b_NewPart == true)
+          {
+            if (strlen(temp_object) == 0) strcpy(temp_object, mtllib); // Hack!
+            AddPart(out_v_CParts,
+              temp_object, temp_material, v_Mat,
+              temp_vertices,
+              temp_uvs,
+              temp_normals,
+              vertexIndices,
+              uvIndices,
+              normalIndices);
+          }
+          b_NewPart = false;
           glm::vec3 vertex;
           sscanf(line.c_str(), "v %f %f %f\n", &vertex.x, &vertex.z, &vertex.y);
           vertex = vertex * fScale; // Blender-OBJ tuning
@@ -340,7 +356,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         }
         else if (line.compare(0,6,"usemtl") == 0)
         {
-          if (b_FirstPart == true)
+/*          if (b_FirstPart == true)
           {
           }
           else
@@ -356,11 +372,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               normalIndices);
           }
           b_FirstPart = false;
-          sscanf(line.c_str(), "usemtl %s\n", temp_material);
+*/          sscanf(line.c_str(), "usemtl %s\n", temp_material);
         }
         else if (line[0] == 'f') // face -- indices of v=vertices,vt=texture_uv,vn=normals
         {
 //          b_NewPart = true;
+          b_NewPart = true;
           unsigned int v[4], vt[4], vn[4];
           // a) 4 indices * v/vt/vn (textured)
           int matches = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d\n",
@@ -391,8 +408,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           }
           else
           {
-            // b) 4 indices * v//vn (colored)
-            int matches = sscanf(line.c_str(), "f %d//%d %d//%d %d//%d %d//%d\n", &v[0],&vn[0],&v[1],&vn[1],&v[2],&vn[2],&v[3],&vn[3]);
+            // b) 4 indices * v/vt (textured)
+            int matches = sscanf(line.c_str(), "f %d/%d %d/%d %d/%d %d/%d\n", &v[0],&vt[0],&v[1],&vt[1],&v[2],&vt[2],&v[3],&vt[3]);
             if (matches == 8)
             {
               // 0 +--+ 1
@@ -404,83 +421,106 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               vertexIndices.push_back(v[1]);
               vertexIndices.push_back(v[2]);
               vertexIndices.push_back(v[3]);
-              normalIndices.push_back(vn[0]);
-              normalIndices.push_back(vn[1]);
-              normalIndices.push_back(vn[3]);
-              normalIndices.push_back(vn[1]);
-              normalIndices.push_back(vn[2]);
-              normalIndices.push_back(vn[3]);
+              uvIndices.push_back(vt[0]);
+              uvIndices.push_back(vt[1]);
+              uvIndices.push_back(vt[3]);
+              uvIndices.push_back(vt[1]);
+              uvIndices.push_back(vt[2]);
+              uvIndices.push_back(vt[3]);
             }
             else
             {
-              // c) 4 indices * v (only vertices, e.g. ...)
-              int matches = sscanf(line.c_str(), "f %d %d %d %d\n", &v[0],&v[1],&v[2],&v[3]);
-              if (matches == 4)
+              // b) 4 indices * v//vn (colored)
+              int matches = sscanf(line.c_str(), "f %d//%d %d//%d %d//%d %d//%d\n", &v[0], &vn[0], &v[1], &vn[1], &v[2], &vn[2], &v[3], &vn[3]);
+              if (matches == 8)
               {
+                // 0 +--+ 1
+                //   | /|
+                // 3 +/-+ 2
                 vertexIndices.push_back(v[0]);
                 vertexIndices.push_back(v[1]);
                 vertexIndices.push_back(v[3]);
                 vertexIndices.push_back(v[1]);
                 vertexIndices.push_back(v[2]);
                 vertexIndices.push_back(v[3]);
+                normalIndices.push_back(vn[0]);
+                normalIndices.push_back(vn[1]);
+                normalIndices.push_back(vn[3]);
+                normalIndices.push_back(vn[1]);
+                normalIndices.push_back(vn[2]);
+                normalIndices.push_back(vn[3]);
               }
               else
               {
-                // d) 3 indices v/vt/vn
-                int matches = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d\n", &v[0],&vt[0],&vn[0],&v[1],&vt[1],&vn[1],&v[2],&vt[2],&vn[2]);
-                if (matches == 9)
+                // c) 4 indices * v (only vertices, e.g. ...)
+                int matches = sscanf(line.c_str(), "f %d %d %d %d\n", &v[0], &v[1], &v[2], &v[3]);
+                if (matches == 4)
                 {
                   vertexIndices.push_back(v[0]);
                   vertexIndices.push_back(v[1]);
+                  vertexIndices.push_back(v[3]);
+                  vertexIndices.push_back(v[1]);
                   vertexIndices.push_back(v[2]);
-                  uvIndices    .push_back(vt[0]);
-                  uvIndices    .push_back(vt[1]);
-                  uvIndices    .push_back(vt[2]);
-                  normalIndices.push_back(vn[0]);
-                  normalIndices.push_back(vn[1]);
-                  normalIndices.push_back(vn[2]);
+                  vertexIndices.push_back(v[3]);
                 }
                 else
                 {
-                  // e) 3 indices v//vn (not textured)
-                  int matches = sscanf(line.c_str(), "f %d//%d %d//%d %d//%d\n", &v[0],&vn[0],&v[1],&vn[1],&v[2],&vn[2]);
-                  if (matches == 6)
+                  // d) 3 indices v/vt/vn
+                  int matches = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d\n", &v[0], &vt[0], &vn[0], &v[1], &vt[1], &vn[1], &v[2], &vt[2], &vn[2]);
+                  if (matches == 9)
                   {
                     vertexIndices.push_back(v[0]);
                     vertexIndices.push_back(v[1]);
                     vertexIndices.push_back(v[2]);
+                    uvIndices.push_back(vt[0]);
+                    uvIndices.push_back(vt[1]);
+                    uvIndices.push_back(vt[2]);
                     normalIndices.push_back(vn[0]);
                     normalIndices.push_back(vn[1]);
                     normalIndices.push_back(vn[2]);
                   }
                   else
                   {
-                    // f) 3 indices v/vt, no normals
-                    int matches = sscanf(line.c_str(), "f %d/%d %d/%d %d/%d\n", &v[0],&vt[0],&v[1],&vt[1],&v[2],&vt[2]);
+                    // e) 3 indices v//vn (not textured)
+                    int matches = sscanf(line.c_str(), "f %d//%d %d//%d %d//%d\n", &v[0], &vn[0], &v[1], &vn[1], &v[2], &vn[2]);
                     if (matches == 6)
                     {
                       vertexIndices.push_back(v[0]);
                       vertexIndices.push_back(v[1]);
                       vertexIndices.push_back(v[2]);
-                      normalIndices.push_back(vt[0]);
-                      normalIndices.push_back(vt[1]);
-                      normalIndices.push_back(vt[2]);
+                      normalIndices.push_back(vn[0]);
+                      normalIndices.push_back(vn[1]);
+                      normalIndices.push_back(vn[2]);
                     }
                     else
                     {
-                      // g) 3 indices * v (only vertices, e.g. ...)
-                      int matches = sscanf(line.c_str(), "f %d %d %d\n", &v[0], &v[1], &v[2]);
-                      if (matches == 3)
+                      // f) 3 indices v/vt, no normals
+                      int matches = sscanf(line.c_str(), "f %d/%d %d/%d %d/%d\n", &v[0], &vt[0], &v[1], &vt[1], &v[2], &vt[2]);
+                      if (matches == 6)
                       {
                         vertexIndices.push_back(v[0]);
                         vertexIndices.push_back(v[1]);
                         vertexIndices.push_back(v[2]);
+                        uvIndices.push_back(vt[0]);
+                        uvIndices.push_back(vt[1]);
+                        uvIndices.push_back(vt[2]);
                       }
                       else
                       {
-                        // printf("File can't be read by our simple parser : ( Try exporting with other options\n");
-                        assert(false);
-                        return false;
+                        // g) 3 indices * v (only vertices, e.g. ...)
+                        int matches = sscanf(line.c_str(), "f %d %d %d\n", &v[0], &v[1], &v[2]);
+                        if (matches == 3)
+                        {
+                          vertexIndices.push_back(v[0]);
+                          vertexIndices.push_back(v[1]);
+                          vertexIndices.push_back(v[2]);
+                        }
+                        else
+                        {
+                          // printf("File can't be read by our simple parser : ( Try exporting with other options\n");
+                          assert(false);
+                          return false;
+                        }
                       }
                     }
                   }

@@ -34,7 +34,8 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 #include "proj_render.h"     // besser: proj_ext...
 
 #include "mdl_wavefront.hpp" // load model
-#include "img_bitmap.hpp"    // load texture
+#include "img_bitmap.hpp"    // load texture (.bmp)
+#include "img_any.h"         // load texture (.jpg,.png,...)
 
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx    
@@ -272,7 +273,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       {
         sObjectDirectory = "";
       }
-
+/*
       CBMPLoader ldrBMP;
       for (unsigned int ui = 0; ui < v_parts.size(); ui++)
       {
@@ -289,6 +290,25 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           // Farbe --> VBO "on the fly" bauen, s. PartsToVBO()
         }
       }
+*/
+      CIMGLoader ldrIMG;
+      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
+      {
+        if (v_parts[ui].b_textured)
+        {
+          //          GLuint idGLTexture;
+          assert(sObjectDirectory.compare("") != 0);
+          std::string sTextureFullpath = sObjectDirectory + "\\" + v_parts[ui].s_Texture;
+          v_parts[ui].idGLTexture = ldrIMG.loadIMG(sTextureFullpath.c_str());
+          p_render->vGLTexture.push_back(v_parts[ui].idGLTexture); // redundant!
+        }
+        else
+        {
+          // Farbe --> VBO "on the fly" bauen, s. PartsToVBO()
+        }
+      }
+
+
     }
   }; // class CObjectWavefront
 
