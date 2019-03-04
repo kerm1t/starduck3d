@@ -1,3 +1,7 @@
+3/3
+- Texturen stimmen nicht mehr (hängt nicht mit IMG loadeer zusammen, scheint eher ein Problem des .OBJ loaders zu sein)
+- Texturen nicht mehrfach laden, Bsp.: Sponza, Kamen.jpg (3x)
+ 
 2/27
 - texture loading based upon vt existance in .obj, not on map_Kd in .mtl
 + .mtl ignore trailing spaces

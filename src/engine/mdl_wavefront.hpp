@@ -1,6 +1,7 @@
 // -------------------------------------------------------
 //
 // Read Wavefront Obj file (e.g. exported with Blender)
+// uses state machine
 //
 // from:  http://www.opengl-tutorial.org/beginners-tutorials/tutorial-7-model-loading/
 //
@@ -48,6 +49,8 @@
 
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx    
+  enum state { os_none, os_v, os_f, os_usemtl };
+
   class CMaterial; // forward declaration
   class CPart
   {
@@ -234,6 +237,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         {
           unsigned int uvIndex = uvIndices[i];
           glm::vec2 uv = temp_uvs[uvIndex-1];
+          uv.y = 1.0 - uv.y; // hack for imgANY loader
           part.uvs.push_back(uv);
         }
         else
@@ -267,8 +271,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     bool loadOBJParts(const char * path,
       std::vector <CPart> & out_v_CParts, float fScale = 1.0f, float fZ = 0.0f)
     {
-      uint16 nPartsRead = 0;
-      uint16 nPartsWritten = 0;
+//      uint16 nPartsRead = 0;
+//      uint16 nPartsWritten = 0;
+      state objstate = os_none;
 
       printf("Loading OBJ file %s...\n", path);
 
@@ -291,7 +296,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 //      std::fill(temp_object, temp_object + 255, 0); // init with "0"
 //      bool b_FirstPart = true;
       std::fill(temp_object, temp_object + 255, 0); // init with "0"
-      bool b_NewPart = false;
+//      bool b_NewPart = false;
 
       while (file.good())
       {
@@ -322,7 +327,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         }
         else if (line.compare(0,2,"v ") == 0)
         {
-          if (b_NewPart == true)
+//          if (b_NewPart == true)
+          if ((objstate != os_none) && (objstate != os_v))
           {
             if (strlen(temp_object) == 0) strcpy(temp_object, mtllib); // Hack!
             AddPart(out_v_CParts,
@@ -334,7 +340,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               uvIndices,
               normalIndices);
           }
-          b_NewPart = false;
+          objstate = os_v;
+//          b_NewPart = false;
           glm::vec3 vertex;
           sscanf(line.c_str(), "v %f %f %f\n", &vertex.x, &vertex.z, &vertex.y);
           vertex = vertex * fScale; // Blender-OBJ tuning
@@ -356,12 +363,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         }
         else if (line.compare(0,6,"usemtl") == 0)
         {
-/*          if (b_FirstPart == true)
+// -------------------------------------------------------
+// if I comment in the following part,
+// there will be an access violation in the Sponza part 36
+// -------------------------------------------------------
+/*          if (objstate == os_f)
           {
-          }
-          else
-          {
-//            if (strlen(temp_object) == 0) strcpy(temp_object, mtllib); // Hack!
             AddPart(out_v_CParts,
               temp_object, temp_material, v_Mat,
               temp_vertices,
@@ -371,13 +378,14 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               uvIndices,
               normalIndices);
           }
-          b_FirstPart = false;
-*/          sscanf(line.c_str(), "usemtl %s\n", temp_material);
+*/          objstate = os_usemtl;
+          sscanf(line.c_str(), "usemtl %s\n", temp_material);
         }
         else if (line[0] == 'f') // face -- indices of v=vertices,vt=texture_uv,vn=normals
         {
+          objstate = os_f;
 //          b_NewPart = true;
-          b_NewPart = true;
+//          b_NewPart = true;
           unsigned int v[4], vt[4], vn[4];
           // a) 4 indices * v/vt/vn (textured)
           int matches = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d\n",

@@ -46,7 +46,9 @@ add_executable(starduck WIN32
     src/engine/camera.hpp
     src/engine/img_bitmap.hpp
     src/engine/img_DDS.hpp
-    src/engine/mdl_OBJ.hpp
+    src/engine/img_any.h
+    src/engine/img_any.cpp
+    src/engine/mdl_wavefront.hpp
     src/engine/obj.hpp
     src/engine/obj_curbstone.hpp
     src/engine/obj_groundplane.hpp
