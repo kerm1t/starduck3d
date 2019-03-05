@@ -271,8 +271,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     bool loadOBJParts(const char * path,
       std::vector <CPart> & out_v_CParts, float fScale = 1.0f, float fZ = 0.0f)
     {
-//      uint16 nPartsRead = 0;
-//      uint16 nPartsWritten = 0;
       state objstate = os_none;
 
       printf("Loading OBJ file %s...\n", path);
@@ -293,10 +291,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
       std::string line;
 
-//      std::fill(temp_object, temp_object + 255, 0); // init with "0"
-//      bool b_FirstPart = true;
       std::fill(temp_object, temp_object + 255, 0); // init with "0"
-//      bool b_NewPart = false;
 
       while (file.good())
       {
@@ -327,7 +322,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         }
         else if (line.compare(0,2,"v ") == 0)
         {
-//          if (b_NewPart == true)
           if ((objstate != os_none) && (objstate != os_v))
           {
             if (strlen(temp_object) == 0) strcpy(temp_object, mtllib); // Hack!
@@ -339,9 +333,11 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               vertexIndices,
               uvIndices,
               normalIndices);
+//      vertexIndices.clear(); // check parts' size with & without
+//      uvIndices.clear();     // check parts' size with & without
+//      normalIndices.clear(); // check parts' size with & without
           }
           objstate = os_v;
-//          b_NewPart = false;
           glm::vec3 vertex;
           sscanf(line.c_str(), "v %f %f %f\n", &vertex.x, &vertex.z, &vertex.y);
           vertex = vertex * fScale; // Blender-OBJ tuning
@@ -367,9 +363,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 // if I comment in the following part,
 // there will be an access violation in the Sponza part 36
 // -------------------------------------------------------
-/*          if (objstate == os_f)
+          if (objstate == os_f)
           {
-            AddPart(out_v_CParts,
+/*            AddPart(out_v_CParts,
               temp_object, temp_material, v_Mat,
               temp_vertices,
               temp_uvs,
@@ -377,15 +373,13 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               vertexIndices,
               uvIndices,
               normalIndices);
-          }
-*/          objstate = os_usemtl;
+*/          }
+          objstate = os_usemtl;
           sscanf(line.c_str(), "usemtl %s\n", temp_material);
         }
         else if (line[0] == 'f') // face -- indices of v=vertices,vt=texture_uv,vn=normals
         {
           objstate = os_f;
-//          b_NewPart = true;
-//          b_NewPart = true;
           unsigned int v[4], vt[4], vn[4];
           // a) 4 indices * v/vt/vn (textured)
           int matches = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d\n",
