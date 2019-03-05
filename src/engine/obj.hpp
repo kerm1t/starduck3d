@@ -296,7 +296,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       {
         if (v_parts[ui].b_textured)
         {
-          //          GLuint idGLTexture;
+//          GLuint idGLTexture;
           assert(sObjectDirectory.compare("") != 0);
           std::string sTextureFullpath = sObjectDirectory + "\\" + v_parts[ui].s_Texture;
           v_parts[ui].idGLTexture = ldrIMG.loadIMG(sTextureFullpath.c_str());
