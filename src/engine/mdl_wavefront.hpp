@@ -208,9 +208,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       std::vector <glm::vec3> & temp_vertices,
       std::vector <glm::vec2> & temp_uvs,
       std::vector <glm::vec3> & temp_normals,
-      std::vector <unsigned int> & vertexIndices,
-      std::vector <unsigned int> & uvIndices,
-      std::vector <unsigned int> & normalIndices)
+      std::vector <unsigned int> & face_v,
+      std::vector <unsigned int> & face_vt,
+      std::vector <unsigned int> & face_vn)
     {
       CPart part;
       part.name       = p_tmp_Obj;
@@ -228,14 +228,14 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       part.b_textured = (part.s_Texture.size() > 0);
 
       // For each vertex of each triangle
-      for (unsigned int i=0; i<vertexIndices.size(); i++)
+      for (unsigned int i=0; i<face_v.size(); i++)
       {
-        unsigned int vertexIndex = vertexIndices[i];
+        unsigned int vertexIndex = face_v[i];
         glm::vec3 vertex = temp_vertices[vertexIndex-1];
         part.vertices.push_back(vertex);
         if (part.b_textured)
         {
-          unsigned int uvIndex = uvIndices[i];
+          unsigned int uvIndex = face_vt[i];
           glm::vec2 uv = temp_uvs[uvIndex-1];
           uv.y = 1.0 - uv.y; // hack for imgANY loader
           part.uvs.push_back(uv);
@@ -244,20 +244,20 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         {
           // depending on illum
 //          part.cols.push_back(part.Kd); // ...try... (Ks, Kd, how to combine??)
-          unsigned int normalIndex = normalIndices[i];
+          unsigned int normalIndex = face_vn[i];
           float f = glm::dot(part.Ka,temp_normals[normalIndex - 1]);
           part.cols.push_back(f * part.Kd + part.Ks); // a bisserl gehackt hier, aber tut's erstmal
         }
         if (temp_normals.size() > 0) // 2017-07-24, hack
         {
-          unsigned int normalIndex = normalIndices[i];
+          unsigned int normalIndex = face_vn[i];
           glm::vec3 normal = temp_normals[normalIndex-1];
           part.normals.push_back(normal);
         }
       }
-      vertexIndices.clear(); // check parts' size with & without
-      uvIndices.clear();     // check parts' size with & without
-      normalIndices.clear(); // check parts' size with & without
+      face_v.clear();   // check parts' size with & without
+      face_vt.clear();  // check parts' size with & without
+      face_vn.clear();  // check parts' size with & without
       out_v_CParts.push_back(part);
     }
 
@@ -283,7 +283,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       std::vector <glm::vec3> temp_vertices;
       std::vector <glm::vec2> temp_uvs;
       std::vector <glm::vec3> temp_normals;
-      std::vector <unsigned int> vertexIndices, uvIndices, normalIndices; // = face
+      std::vector <unsigned int> face_v, face_vt, face_vn; // indices
 
       std::ifstream file;
       file.open(path);
@@ -330,9 +330,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               temp_vertices,
               temp_uvs,
               temp_normals,
-              vertexIndices,
-              uvIndices,
-              normalIndices);
+              face_v,
+              face_vt,
+              face_vn);
 //      vertexIndices.clear(); // check parts' size with & without
 //      uvIndices.clear();     // check parts' size with & without
 //      normalIndices.clear(); // check parts' size with & without
@@ -370,9 +370,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               temp_vertices,
               temp_uvs,
               temp_normals,
-              vertexIndices,
-              uvIndices,
-              normalIndices);
+              face_v,
+              face_vt,
+              face_vn);
 */          }
           objstate = os_usemtl;
           sscanf(line.c_str(), "usemtl %s\n", temp_material);
@@ -389,24 +389,24 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
             // 0 +--+ 1
             //   | /|
             // 3 +/-+ 2
-            vertexIndices.push_back(v[0]);
-            vertexIndices.push_back(v[1]);
-            vertexIndices.push_back(v[3]);
-            vertexIndices.push_back(v[1]);
-            vertexIndices.push_back(v[2]);
-            vertexIndices.push_back(v[3]);
-            uvIndices    .push_back(vt[0]);
-            uvIndices    .push_back(vt[1]);
-            uvIndices    .push_back(vt[3]);
-            uvIndices    .push_back(vt[1]);
-            uvIndices    .push_back(vt[2]);
-            uvIndices    .push_back(vt[3]);
-            normalIndices.push_back(vn[0]);
-            normalIndices.push_back(vn[1]);
-            normalIndices.push_back(vn[3]);
-            normalIndices.push_back(vn[1]);
-            normalIndices.push_back(vn[2]);
-            normalIndices.push_back(vn[3]);
+            face_v. push_back(v[0]);
+            face_v. push_back(v[1]);
+            face_v. push_back(v[3]);
+            face_v. push_back(v[1]);
+            face_v. push_back(v[2]);
+            face_v. push_back(v[3]);
+            face_vt.push_back(vt[0]);
+            face_vt.push_back(vt[1]);
+            face_vt.push_back(vt[3]);
+            face_vt.push_back(vt[1]);
+            face_vt.push_back(vt[2]);
+            face_vt.push_back(vt[3]);
+            face_vn.push_back(vn[0]);
+            face_vn.push_back(vn[1]);
+            face_vn.push_back(vn[3]);
+            face_vn.push_back(vn[1]);
+            face_vn.push_back(vn[2]);
+            face_vn.push_back(vn[3]);
           }
           else
           {
@@ -417,18 +417,18 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               // 0 +--+ 1
               //   | /|
               // 3 +/-+ 2
-              vertexIndices.push_back(v[0]);
-              vertexIndices.push_back(v[1]);
-              vertexIndices.push_back(v[3]);
-              vertexIndices.push_back(v[1]);
-              vertexIndices.push_back(v[2]);
-              vertexIndices.push_back(v[3]);
-              uvIndices.push_back(vt[0]);
-              uvIndices.push_back(vt[1]);
-              uvIndices.push_back(vt[3]);
-              uvIndices.push_back(vt[1]);
-              uvIndices.push_back(vt[2]);
-              uvIndices.push_back(vt[3]);
+              face_v. push_back(v[0]);
+              face_v. push_back(v[1]);
+              face_v. push_back(v[3]);
+              face_v. push_back(v[1]);
+              face_v. push_back(v[2]);
+              face_v. push_back(v[3]);
+              face_vt.push_back(vt[0]);
+              face_vt.push_back(vt[1]);
+              face_vt.push_back(vt[3]);
+              face_vt.push_back(vt[1]);
+              face_vt.push_back(vt[2]);
+              face_vt.push_back(vt[3]);
             }
             else
             {
@@ -439,18 +439,18 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
                 // 0 +--+ 1
                 //   | /|
                 // 3 +/-+ 2
-                vertexIndices.push_back(v[0]);
-                vertexIndices.push_back(v[1]);
-                vertexIndices.push_back(v[3]);
-                vertexIndices.push_back(v[1]);
-                vertexIndices.push_back(v[2]);
-                vertexIndices.push_back(v[3]);
-                normalIndices.push_back(vn[0]);
-                normalIndices.push_back(vn[1]);
-                normalIndices.push_back(vn[3]);
-                normalIndices.push_back(vn[1]);
-                normalIndices.push_back(vn[2]);
-                normalIndices.push_back(vn[3]);
+                face_v. push_back(v[0]);
+                face_v. push_back(v[1]);
+                face_v. push_back(v[3]);
+                face_v. push_back(v[1]);
+                face_v. push_back(v[2]);
+                face_v. push_back(v[3]);
+                face_vn.push_back(vn[0]);
+                face_vn.push_back(vn[1]);
+                face_vn.push_back(vn[3]);
+                face_vn.push_back(vn[1]);
+                face_vn.push_back(vn[2]);
+                face_vn.push_back(vn[3]);
               }
               else
               {
@@ -458,12 +458,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
                 int matches = sscanf(line.c_str(), "f %d %d %d %d\n", &v[0], &v[1], &v[2], &v[3]);
                 if (matches == 4)
                 {
-                  vertexIndices.push_back(v[0]);
-                  vertexIndices.push_back(v[1]);
-                  vertexIndices.push_back(v[3]);
-                  vertexIndices.push_back(v[1]);
-                  vertexIndices.push_back(v[2]);
-                  vertexIndices.push_back(v[3]);
+                  face_v.push_back(v[0]);
+                  face_v.push_back(v[1]);
+                  face_v.push_back(v[3]);
+                  face_v.push_back(v[1]);
+                  face_v.push_back(v[2]);
+                  face_v.push_back(v[3]);
                 }
                 else
                 {
@@ -471,15 +471,15 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
                   int matches = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d\n", &v[0], &vt[0], &vn[0], &v[1], &vt[1], &vn[1], &v[2], &vt[2], &vn[2]);
                   if (matches == 9)
                   {
-                    vertexIndices.push_back(v[0]);
-                    vertexIndices.push_back(v[1]);
-                    vertexIndices.push_back(v[2]);
-                    uvIndices.push_back(vt[0]);
-                    uvIndices.push_back(vt[1]);
-                    uvIndices.push_back(vt[2]);
-                    normalIndices.push_back(vn[0]);
-                    normalIndices.push_back(vn[1]);
-                    normalIndices.push_back(vn[2]);
+                    face_v. push_back(v[0]);
+                    face_v. push_back(v[1]);
+                    face_v. push_back(v[2]);
+                    face_vt.push_back(vt[0]);
+                    face_vt.push_back(vt[1]);
+                    face_vt.push_back(vt[2]);
+                    face_vn.push_back(vn[0]);
+                    face_vn.push_back(vn[1]);
+                    face_vn.push_back(vn[2]);
                   }
                   else
                   {
@@ -487,12 +487,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
                     int matches = sscanf(line.c_str(), "f %d//%d %d//%d %d//%d\n", &v[0], &vn[0], &v[1], &vn[1], &v[2], &vn[2]);
                     if (matches == 6)
                     {
-                      vertexIndices.push_back(v[0]);
-                      vertexIndices.push_back(v[1]);
-                      vertexIndices.push_back(v[2]);
-                      normalIndices.push_back(vn[0]);
-                      normalIndices.push_back(vn[1]);
-                      normalIndices.push_back(vn[2]);
+                      face_v. push_back(v[0]);
+                      face_v. push_back(v[1]);
+                      face_v. push_back(v[2]);
+                      face_vn.push_back(vn[0]);
+                      face_vn.push_back(vn[1]);
+                      face_vn.push_back(vn[2]);
                     }
                     else
                     {
@@ -500,12 +500,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
                       int matches = sscanf(line.c_str(), "f %d/%d %d/%d %d/%d\n", &v[0], &vt[0], &v[1], &vt[1], &v[2], &vt[2]);
                       if (matches == 6)
                       {
-                        vertexIndices.push_back(v[0]);
-                        vertexIndices.push_back(v[1]);
-                        vertexIndices.push_back(v[2]);
-                        uvIndices.push_back(vt[0]);
-                        uvIndices.push_back(vt[1]);
-                        uvIndices.push_back(vt[2]);
+                        face_v. push_back(v[0]);
+                        face_v. push_back(v[1]);
+                        face_v. push_back(v[2]);
+                        face_vt.push_back(vt[0]);
+                        face_vt.push_back(vt[1]);
+                        face_vt.push_back(vt[2]);
                       }
                       else
                       {
@@ -513,9 +513,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
                         int matches = sscanf(line.c_str(), "f %d %d %d\n", &v[0], &v[1], &v[2]);
                         if (matches == 3)
                         {
-                          vertexIndices.push_back(v[0]);
-                          vertexIndices.push_back(v[1]);
-                          vertexIndices.push_back(v[2]);
+                          face_v.push_back(v[0]);
+                          face_v.push_back(v[1]);
+                          face_v.push_back(v[2]);
                         }
                         else
                         {
@@ -549,9 +549,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         temp_vertices,
         temp_uvs,
         temp_normals,
-        vertexIndices,
-        uvIndices,
-        normalIndices);
+        face_v,
+        face_vt,
+        face_vn);
 
       return true;
     }

@@ -1,4 +1,5 @@
 3/4
+- fix OBJ-loader: v_Mat shall be used to load textures
 
 3/3
 - Texturen stimmen nicht mehr (hängt nicht mit IMG loadeer zusammen, scheint eher ein Problem des .OBJ loaders zu sein)
