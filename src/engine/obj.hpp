@@ -238,6 +238,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   class CGL_ObjectWavefront : public CGL_Abstr_ObjectLoaded
   {
   public:
+    std::vector <CMaterial> v_mat;
     CGL_ObjectWavefront() {}; // default constructor
     CGL_ObjectWavefront(proj::Render * p_rnd)
     {     // <-- inline, sonst Linker error!
@@ -261,7 +262,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     void LoadParts(float fScale = 1.0f, float fZ = 0.0f) // load OBJ 'n texture
     {
       CLoader_OBJ ldr;
-      bool res = ldr.loadOBJParts(sObjectFullpath.c_str(), v_parts, fScale, fZ);
+      // i) load geometry and material list
+      bool res = ldr.loadOBJParts(sObjectFullpath.c_str(), v_mat, v_parts, fScale, fZ);
       assert(res == true);
 
       const size_t last_slash_idx = sObjectFullpath.rfind('\\');
@@ -273,34 +275,34 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       {
         sObjectDirectory = "";
       }
-/*
-      CBMPLoader ldrBMP;
-      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
+
+      // ii) load textures from MAT-list
+      CIMGLoader ldrIMG;
+      for (unsigned int ui = 0; ui < v_mat.size(); ui++)
       {
-        if (v_parts[ui].b_textured)
+        assert(sObjectDirectory.compare("") != 0);
+        if (!v_mat[ui].map_Kd.empty())
         {
-//          GLuint idGLTexture;
-          assert(sObjectDirectory.compare("") != 0);
-          std::string sTextureFullpath = sObjectDirectory + "\\" + v_parts[ui].s_Texture;
-          v_parts[ui].idGLTexture = ldrBMP.loadBMP_custom(sTextureFullpath.c_str());
-          p_render->vGLTexture.push_back(v_parts[ui].idGLTexture); // redundant!
-        }
-        else
-        {
-          // Farbe --> VBO "on the fly" bauen, s. PartsToVBO()
+          std::string sTextureFullpath = sObjectDirectory + "\\" + v_mat[ui].map_Kd;
+          // Uffz, aus irgendwelchen Gruenden kann die folgende Textur nicht geladen werden
+          if (v_mat[ui].map_Kd.compare("VRATA_KO.JPG")==0) sTextureFullpath = sObjectDirectory + "\\" + "Vrata_kr.jpg";
+          v_mat[ui].idGLTexture = ldrIMG.loadIMG(sTextureFullpath.c_str());
+          p_render->vGLTexture.push_back(v_mat[ui].idGLTexture); // redundant!
         }
       }
-*/
-      CIMGLoader ldrIMG;
-      for (unsigned int ui = 0; ui < v_parts.size(); ui++)
+
+      // iii) assign Texture-ID's to Parts
+      for (unsigned int i = 0; i < v_parts.size(); i++)
       {
-        if (v_parts[ui].b_textured)
+        if (v_parts[i].b_textured)
         {
-//          GLuint idGLTexture;
-          assert(sObjectDirectory.compare("") != 0);
-          std::string sTextureFullpath = sObjectDirectory + "\\" + v_parts[ui].s_Texture;
-          v_parts[ui].idGLTexture = ldrIMG.loadIMG(sTextureFullpath.c_str());
-          p_render->vGLTexture.push_back(v_parts[ui].idGLTexture); // redundant!
+          for (unsigned int j = 0; j < v_mat.size(); j++)
+          {
+            if (v_parts[i].s_Material.compare(v_mat[j].s_Material)==0)
+            {
+              v_parts[i].idGLTexture = v_mat[j].idGLTexture;
+            }
+          }
         }
         else
         {

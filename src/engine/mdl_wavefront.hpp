@@ -102,6 +102,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
        10   Casts shadows onto invisible surfaces
     */
     std::string map_Kd; // texture's filename
+    GLuint idGLTexture;
 
     void Init()
     {
@@ -268,7 +269,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       ... load "parts"
       provide parts with appropriate Material (set pointer)
     */
-    bool loadOBJParts(const char * path,
+    bool loadOBJParts(const char * path, std::vector <CMaterial> & v_Mat,
       std::vector <CPart> & out_v_CParts, float fScale = 1.0f, float fZ = 0.0f)
     {
       state objstate = os_none;
@@ -279,7 +280,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       char mtllib[255];
       char temp_material[255];
 
-      std::vector <CMaterial> v_Mat;
+//      std::vector <CMaterial> v_Mat;
       std::vector <glm::vec3> temp_vertices;
       std::vector <glm::vec2> temp_uvs;
       std::vector <glm::vec3> temp_normals;
@@ -365,7 +366,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 // -------------------------------------------------------
           if (objstate == os_f)
           {
-/*            AddPart(out_v_CParts,
+            AddPart(out_v_CParts,
               temp_object, temp_material, v_Mat,
               temp_vertices,
               temp_uvs,
@@ -373,7 +374,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               face_v,
               face_vt,
               face_vn);
-*/          }
+          }
           objstate = os_usemtl;
           sscanf(line.c_str(), "usemtl %s\n", temp_material);
         }
@@ -500,9 +501,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
                       int matches = sscanf(line.c_str(), "f %d/%d %d/%d %d/%d\n", &v[0], &vt[0], &v[1], &vt[1], &v[2], &vt[2]);
                       if (matches == 6)
                       {
-                        face_v. push_back(v[0]);
-                        face_v. push_back(v[1]);
-                        face_v. push_back(v[2]);
+                        face_v.push_back(v[0]);
+                        face_v.push_back(v[1]);
+                        face_v.push_back(v[2]);
                         face_vt.push_back(vt[0]);
                         face_vt.push_back(vt[1]);
                         face_vt.push_back(vt[2]);
