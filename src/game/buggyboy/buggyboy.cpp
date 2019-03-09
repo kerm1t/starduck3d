@@ -49,7 +49,7 @@ static float lastTime = 0.0f;                   // This will hold the time from 
 
 bool b_WM_resized = false;
 bool b_program_stopped = false;
-
+bool b_add_obj = false;
 
 void CalculateFrameRate()
 {
@@ -66,8 +66,19 @@ void CalculateFrameRate()
 // s. http://stackoverflow.com/questions/9833852/opengl-game-loop-multithreading
 void RenderThread(void *args)
 {
+  // Renderloop now
   while ((true) && (!b_program_stopped)) // do not interfere with freeing of ressources (Imgui, ...)
   {
+    if (b_add_obj)
+    {
+      int nVAOs = m_proj.m_render.vVAOs.size();
+      m_proj.holzstapel[m_proj.n_holz_gestapelt].setRender(&m_proj.m_render);
+      m_proj.holzstapel[m_proj.n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
+      m_proj.holzstapel[m_proj.n_holz_gestapelt++].Load(0.4f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f)); // scaled
+      m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+      b_add_obj = false;
+    }
+
     if (GetAsyncKeyState(VK_UP))
     {
       m_cam.MoveFwd(1.0f/25.0f);
@@ -318,6 +329,31 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         int yPosRelative = raw->data.mouse.lLastY;
         mouse_x += xPosRelative;
         mouse_y += yPosRelative;
+
+        // https://www.gamedev.net/forums/topic/655198-raw-input-mouse-problem/
+        // Mouse Left: Add Object only, when not over IMGui element while clicking
+        bool downState = (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) > 0;
+        bool upState = (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) > 0;
+        if (downState == true && upState == false)
+        {
+          mouse_left = 1;
+        }
+        if (upState == true)
+        {
+          mouse_left = 0;
+        }
+        if (mouse_left == 1)
+        {
+          b_add_obj = true;
+          // hat nicht funktioniert, hier Objekte hinzuzufügen.
+          // habe jetzt in den Renderthread verschoben, klack, schon hat's funktioniert
+/*          int nVAOs = m_proj.m_render.vVAOs.size();
+          m_proj.holzstapel[m_proj.n_holz_gestapelt].setRender(&m_proj.m_render);
+          m_proj.holzstapel[m_proj.n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
+          m_proj.holzstapel[m_proj.n_holz_gestapelt++].Load(0.4f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f)); // scaled
+          m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+*/        }
+        // Mouse Left: Add Object only, when not over IMGui element while clicking
       }
     }
     break;
@@ -355,13 +391,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   int wmId, wmEvent;
   int zDelta;
-  int pt_x,pt_y;
+//  int pt_x,pt_y;
 
   glm::vec3 vVehDirNorm,vVehDirOrth;
 
   ImGui_WndProcHandler(hWnd, message, wParam, lParam);
 //  ImGuiIO& io = ImGui::GetIO();
-
+//  int nVAOs;
   switch (message)
   {
     // ----------------------------------------------------------------------------
@@ -393,8 +429,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
   case WM_MOUSEMOVE:
     // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645616(v=vs.85).aspx
-    pt_x = GET_X_LPARAM(lParam); // LOWORD u. HIWORD fkt. nicht bei mehreren Monitoren!
-    pt_y = GET_Y_LPARAM(lParam);
+//    pt_x = GET_X_LPARAM(lParam); // LOWORD u. HIWORD fkt. nicht bei mehreren Monitoren!
+//    pt_y = GET_Y_LPARAM(lParam);
 //    mouse_x = pt_x;
 //    mouse_y = pt_y;
 //    io.MousePos = ImVec2(pt_x, pt_y);
@@ -402,7 +438,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_LBUTTONDOWN:
     mouse_left = 1;
 //    io.MouseDown[0] = true;
-    break;
+/*    nVAOs = m_proj.m_render.vVAOs.size();
+    m_proj.holzstapel[m_proj.n_holz_gestapelt].setRender(&m_proj.m_render);
+    m_proj.holzstapel[m_proj.n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
+    m_proj.holzstapel[m_proj.n_holz_gestapelt++].Load(0.4f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f)); // scaled
+    m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+*/    break;
   case WM_LBUTTONUP:
     mouse_left = 0;
 //    io.MouseDown[0] = false;

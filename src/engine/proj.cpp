@@ -149,14 +149,15 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  holzstapel.sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
 //  holzstapel.Load(0.4f, 0.0f, Vec3f(rand() % 100, rand() % 100, 0.5f)); // scaled
 
-#define N_HOLZSTAPEL 40
-  obj::CGL_ObjectWavefront holzstapel[N_HOLZSTAPEL];
-  for (unsigned int ui = 0; ui < N_HOLZSTAPEL; ui++)
+//#define N_HOLZSTAPEL (40+20) // temp: 20 can be set later by Mouseklick
+//  obj::CGL_ObjectWavefront holzstapel[N_HOLZSTAPEL];
+  for (unsigned int ui = 0; ui < 0; ui++)
   {
     holzstapel[ui].setRender(&m_render);
     holzstapel[ui].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
     holzstapel[ui].Load(0.4f, 0.0f, Vec3f(-100.0f+rand() % 200, -100.0f+rand() % 200, 0.5f)); // scaled
   }
+  n_holz_gestapelt = 0;
 
   obj::CGL_ObjectWavefront car2(&m_render);
 //  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
@@ -178,11 +179,13 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
     barrier1.PartsToVBOs(Vec3f(10.0f+(float)ui*4.0f, 0.0f, 0.0f));
     barrier1.PartsToVAOs(Vec3f(10.0f + (float)ui*4.0f, 0.0f, 0.0f));
   }
-
+/* currently loads too long
   obj::CGL_ObjectWavefront sponza(&m_render);
   sponza.sObjectFullpath = "..\\data\\sponza\\sponza.obj";
+//  sponza.sObjectFullpath = "..\\..\\sponza\\sponza.obj";
   sponza.Load(1.0f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
-
+  */
+  err = glGetError();
 
   assert(m_render.vVAOs.size()<m_render.VBOCOUNT);
 
@@ -214,21 +217,23 @@ glm::vec3 proj::Proj::Mouse2Dto3D(int x, int y)
   gluUnProject(winX, winY, winZ, modelview, projection, viewport, &worldX, &worldY, &worldZ);
 
   
-//  m_render.Cursor.x = m_render.p_cam->Pos.x + worldX; // <-- OpenGL Cursor
-//  m_render.Cursor.y = m_render.p_cam->Pos.y + worldY;
-//  m_render.Cursor.z = 1.0;// worldZ;
+  m_render.Cursor.x = m_render.p_cam->At.x + worldX; // <-- OpenGL Cursor
+  m_render.Cursor.y = m_render.p_cam->At.y + worldY;
+  m_render.Cursor.z = 0.1f;// worldZ;
 //  m_render.Cursor.r = 255;
 //  m_render.Cursor.g = 0;
 //  m_render.Cursor.b = 0;
-  m_render.Cursor.x = worldX; // <-- OpenGL Cursor
-  m_render.Cursor.y = worldY;
-  m_render.Cursor.z = worldZ;
+//  m_render.Cursor.x = worldX; // <-- OpenGL Cursor
+//  m_render.Cursor.y = worldY;
+//  m_render.Cursor.z = worldZ;
 
   return glm::vec3(worldX, worldY, worldZ);
 }
 
 int proj::Proj::DoIt()
 {
+  GLenum err = GL_NO_ERROR;
+
   timer.stop();
   timer.start();
 
@@ -267,6 +272,7 @@ int proj::Proj::DoIt()
   }
 
   m_render.DrawVAOs_NEU();          // Draw The Scene
+  err = glGetError();
 
 
 
@@ -318,12 +324,13 @@ int proj::Proj::DoIt()
   static int selected = -1;
   if (ImGui::TreeNode("Obj's rendered"))
   {
-    ImGui::Columns(4, "cols"); // no. of columns
+    ImGui::Columns(5, "cols"); // no. of columns
     ImGui::Separator();
     ImGui::Text("#"); ImGui::NextColumn();
     ImGui::Text("Obj."); ImGui::NextColumn();
     ImGui::Text("#Vtx"); ImGui::NextColumn();
     ImGui::Text("Pos"); ImGui::NextColumn();
+    ImGui::Text("idTxt"); ImGui::NextColumn();
     ImGui::Separator();
     for (int i = 0; i < m_render.vVAOs.size(); i++)
     {
@@ -331,6 +338,7 @@ int proj::Proj::DoIt()
       ImGui::Text(m_render.vVAOs[i].Name.c_str()); ImGui::NextColumn();
       ImGui::Text("%d",m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
       ImGui::Text("%.2f,%.2f,%.2f",m_render.vVAOs[i].vPos.x, m_render.vVAOs[i].vPos.y, m_render.vVAOs[i].vPos.z); ImGui::NextColumn();
+      ImGui::Text("%d", m_render.vVAOs[i].ui_idTexture); ImGui::NextColumn();
     }
     ImGui::Columns(1);
     ImGui::Separator();
@@ -342,6 +350,7 @@ int proj::Proj::DoIt()
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   // --------- IMGUI ---------
 
+  err = glGetError();
 
   SwapBuffers(m_render.hDC);    // Swap Buffers (Double Buffering)
 

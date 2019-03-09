@@ -1,10 +1,19 @@
+3/8
++ interactive object placement
+- bounding boxen zeichnen
+  -> physics Sicht zeichnen
+
+3/5
+- generate houses (procedurally)
+- Sponza Türen und Fenster Texturen werden nicht richtig gemapped
+
 3/4
-- fix OBJ-loader: v_Mat shall be used to load textures
++ fix OBJ-loader: v_Mat shall be used to load textures
 
 3/3
-- Texturen stimmen nicht mehr (hängt nicht mit IMG loadeer zusammen, scheint eher ein Problem des .OBJ loaders zu sein)
+- Texturen stimmen nicht mehr (hängt nicht mit IMG loader zusammen, scheint eher ein Problem des .OBJ loaders zu sein)
 - Texturen nicht mehrfach laden, Bsp.: Sponza, Kamen.jpg (3x)
-- fix usmtl + AddPart: man darf nicht clearen
+- fix usemtl + AddPart: man darf nicht clearen
 
 2/27
 - texture loading based upon vt existance in .obj, not on map_Kd in .mtl
