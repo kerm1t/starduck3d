@@ -129,6 +129,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     void PartsToVBOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
     {
       GLenum err = GL_NO_ERROR;
+      err = glGetError(); // 3/8/2019 - when adding at draw time, I got an error 1282 here and object not shown
+                          //            thus moved the Obj.load to Renderthread (before drawing) and ... worked!!
 
       unsigned int ui_idVBO = p_render->vVAOs.size();
 
@@ -185,7 +187,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         if ((err = glGetError()) != GL_NO_ERROR)
         {
           // Process/log the error.
-          ui = 1;
+//          ui = 1;
         }
       }
     }
