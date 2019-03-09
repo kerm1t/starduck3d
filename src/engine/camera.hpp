@@ -214,7 +214,7 @@ public:
     float thetaRAD = m_x * mouselook_RAD;
     DirMouse[1] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD); // DirM...[1] ?
     DirMouse[0] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD); // DirM...[0] ?
-    DirMouse[2] = -sin(m_z * mouselook_RAD / aspect);
+    DirMouse[2] = -sin(m_z * mouselook_RAD);// / aspect);
 
     At = Pos + DirMouse;
 // Problem: hier gibt es eine Rückkopplung    Dir = At - Pos; // 2019-02-03
