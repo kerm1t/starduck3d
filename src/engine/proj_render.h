@@ -100,6 +100,7 @@ namespace proj
 
 //    void get_xyz_Hack(int iT, float &x, float &y, float &z, float &xto, float &yto, float &zto);
 
+    void Bind_NEW__VBOs_to_VAOs(int ui); // AHck!!
     void Bind_VBOs_to_VAOs();
     void DrawVAOs_NEU();
 
