@@ -13,7 +13,7 @@
 
 //#include <stdio.h>
 
-GLuint CIMGLoader::loadIMG(const char * imagepath)
+GLuint CIMGLoader::loadIMG(const char * imagepath, bool bTransparent)
 {
   int w;
   int h;
@@ -35,7 +35,10 @@ GLuint CIMGLoader::loadIMG(const char * imagepath)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
   // Give the image to OpenGL
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, data); // tut's ??
+  if (bTransparent)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data); // tut's ??
+  else
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, data); // tut's ??
 
   free(data);
 

@@ -5,6 +5,7 @@
 #include "obj_Trafficsign.hpp" // <-- move to proj (or even scene) later
 #include "obj_Moving.hpp"
 #include "obj_Groundplane.hpp"
+#include "obj_billboard.hpp"
 
 
 #include "proj_render.h"

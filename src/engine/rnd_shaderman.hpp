@@ -72,13 +72,18 @@ public:
       "uniform sampler2D myTexSampler;\n" // <-- hier hatte ich das Semikolon vergessen
       "uniform int col_tex;\n"            // 0 = color, 1 = texture
       "in vec3 fragColor;\n"
-      "out vec3 outColor;\n"              // <-- texture
+      "out vec4 outColor;\n"              // <-- texture
       "void main()\n"
       "{\n"
       "  if (col_tex==0)\n"
-      "    outColor = vec3(fragColor);\n"
+      "    outColor = vec4(vec3(fragColor),1.0);\n"
       "  else\n"
-      "    outColor = texture(myTexSampler, UV).rgb;\n" // texture2D ist deprecated
+      "  {"
+      "    outColor = texture(myTexSampler, UV);\n" // texture2D ist deprecated
+//s. https://learnopengl.com/Advanced-OpenGL/Blending
+      "    if (outColor.a < 0.1)" // transparent
+      "      discard;"
+      "  }"
       "}"
     };
 #endif

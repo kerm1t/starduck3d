@@ -63,7 +63,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 { 
   proj::c_VAO vao;
   CBMPLoader ldrBMP;
-
+  CIMGLoader ldrIMG;
 
   m_render.FPS(); // <-- wenn ich das ins VAO fülle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
                   //     beim LoadObjects(s.u.) call
@@ -95,6 +95,15 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_road_vert4.bmp"));
   m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_water.bmp"));
 
+
+
+//  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\buggyboy\\flag.bmp"));
+  m_render.vGLTexture.push_back(ldrIMG.loadIMG("..\\data\\buggyboy\\flag_t.png", true));
+  // a) place billboard here, as it needs texture id = 4 -> 2do: simplify tex-ID
+  obj::CBillboard bb;
+  bb.p_render = &m_render;
+  vao = bb.Create(10.0f, 10.0f, 0.0f);
+  m_render.vVAOs.push_back(vao);
 
 
   // ii) Load VAOs depending on scene
@@ -170,6 +179,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   car3.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep_openair.obj";
   car3.Load(0.4f, 0.0f, Vec3f(10.0f, 3.0f, 0.0f)); // scaled
 
+// b) place billboard here .. ok
 
   obj::CGL_ObjectWavefront barrier1(&m_render);
   barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
@@ -185,6 +195,9 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  sponza.sObjectFullpath = "..\\..\\sponza\\sponza.obj";
   sponza.Load(1.0f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
   */
+
+  // c) place billboard here: invisible
+
   err = glGetError();
 
   assert(m_render.vVAOs.size()<m_render.VBOCOUNT);

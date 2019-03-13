@@ -78,7 +78,7 @@ public:
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     // Give the image to OpenGL
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data); // hier gibt es Schwierigkeiten mit .bmp,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data); // hier gibt es Schwierigkeiten mit .bmp,
 
     delete data;
 

@@ -7,5 +7,5 @@
 class CIMGLoader
 {
 public:
-  GLuint loadIMG(const char * imagepath);
+  GLuint loadIMG(const char * imagepath, bool bTransparent = false);
 };

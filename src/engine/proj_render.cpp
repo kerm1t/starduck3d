@@ -775,12 +775,12 @@ void proj::Render::DrawVAOs_NEU()
   glVertexAttribPointer(sh1_attr_pos, 3, GL_FLOAT, false, 0, 0); // vertex_data is a float*, 3 per vertex, representing the position of each vertex
   // num_vertices is the number of verts in your vertex_data.
   // index_data is an array of unsigned int offsets into vertex_data.
-//  glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, NULL);
 // ---------------------------------------------------------------------------------
 // https://www.gamedev.net/forums/topic/659810-gldrawelements-isnt-drawing-anything/
 // You cant just replace it with DrawArrays, they work differently.
 //  DrawArrays needs a vertex buffer(or more), DrawElements also needs an index buffer.
 // ---------------------------------------------------------------------------------
+//  glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, NULL);
   glDrawArrays(GL_POINTS, 0, 1);
   glDisableVertexAttribArray(sh1_attr_pos);
   glDisableVertexAttribArray(sh1_attr_col);

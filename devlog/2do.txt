@@ -1,3 +1,10 @@
+3/13
+- fix billboard placement nOK after barriers
+
+3/9
+- cleanup -> branch
+- Schatten: Shadow Mapping ShadowPass -> RenderPass
+
 3/8
 + interactive object placement
 - bounding boxen zeichnen
@@ -121,7 +128,7 @@ https://www.funstockretro.co.uk/news/throwback-thursday-buggy-boy/
 - Barken von der Seite andersfarbig
 - Editor: verschiedene Strecken (Road, Wasser, Tunnel, ...)
 - Editor: Streckenabschnitte zusammenfuehren (Anfang + Ende)
-- Billboards
++ Billboards
 - Road Seiten auswerten (nicht ueberfahrbar)
 - Textur-Richtung, s. ...vert.bmp
 - Strecke einblenden und die Position zeigen!

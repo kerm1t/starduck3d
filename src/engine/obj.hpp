@@ -98,6 +98,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   public:
     proj::Render * p_render;
 
+    // a) colored
     void ToVBO(uint32 vCount, const GLvoid * p_coords, const GLvoid * p_colors)
     {
       assert(vCount > 0);
@@ -112,6 +113,22 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       glGenBuffers(1, &p_render->colorBuffer[ui_idVBO]);
       glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO]);
       glBufferData(GL_ARRAY_BUFFER, vCount * 3 * sizeof(GLfloat), p_colors, GL_STATIC_DRAW);
+    }
+    // b) textured
+    void ToVBOTex(uint32 vCount, const GLvoid * p_coords, const glm::vec2 * p_uv)
+    {
+      assert(vCount > 0);
+      // ---------------------------
+      // >>> now Push to OpenGL! >>>
+      // ---------------------------
+      unsigned int ui_idVBO = p_render->vVAOs.size();
+      glGenBuffers(1, &p_render->positionBuffer[ui_idVBO]); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+      glBindBuffer(GL_ARRAY_BUFFER, p_render->positionBuffer[ui_idVBO]);
+      glBufferData(GL_ARRAY_BUFFER, vCount * 3 * sizeof(GLfloat), p_coords, GL_STATIC_DRAW);
+
+      glGenBuffers(1, &p_render->uvBuffer[ui_idVBO]);
+      glBindBuffer(GL_ARRAY_BUFFER, p_render->uvBuffer[ui_idVBO]);
+      glBufferData(GL_ARRAY_BUFFER, vCount * sizeof(glm::vec2), p_uv, GL_STATIC_DRAW);
     }
   };
 
