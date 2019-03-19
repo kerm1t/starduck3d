@@ -161,7 +161,7 @@ void proj::Render::Init_Textures()
 // HACK!!!
 void proj::Render::Bind_NEW__VBOs_to_VAOs(int ui) // s. http://www.arcsynthesis.org/gltut/Positioning/Tutorial%2005.html
 {
-  GLuint gi;
+//  GLuint gi;
   GLenum err = glGetError();
   for (unsigned int iVAO = ui; iVAO < vVAOs.size(); iVAO++)
   {

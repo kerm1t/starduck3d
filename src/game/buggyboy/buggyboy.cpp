@@ -76,6 +76,10 @@ void RenderThread(void *args)
       m_proj.holzstapel[m_proj.n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
       m_proj.holzstapel[m_proj.n_holz_gestapelt++].Load(0.4f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f)); // scaled
       m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+//      obj::CBillboard bb;
+//      bb.p_render = &m_proj.m_render;
+//      proj::c_VAO vao = bb.Create(10.0f, 10.0f, 0.0f);
+//      m_proj.m_render.vVAOs.push_back(vao);
       b_add_obj = false;
     }
 

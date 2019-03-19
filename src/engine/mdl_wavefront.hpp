@@ -238,7 +238,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         {
           unsigned int uvIndex = face_vt[i];
           glm::vec2 uv = temp_uvs[uvIndex-1];
-          uv.y = 1.0 - uv.y; // hack for imgANY loader
+          uv.y = 1.0f - uv.y; // hack for imgANY loader
           part.uvs.push_back(uv);
         }
         else

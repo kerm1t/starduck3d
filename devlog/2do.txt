@@ -1,4 +1,5 @@
 3/13
+- physics: den Teil der Strecke detektieren, auf dem sich das ego gerade befindet
 - fix billboard placement nOK after barriers
 
 3/9
@@ -140,7 +141,7 @@ https://www.funstockretro.co.uk/news/throwback-thursday-buggy-boy/
 
 
 2018-09-22
-- ego Fahrzeug (Jeep) steuern + positionieren
++ ego Fahrzeug (Jeep) steuern + positionieren
 - framerate im debug ~800 FPS im release > 1000
   bricht jedoch auf dem SONY in beiden targets auf bis zu 6-20 FPS ein
 - vertikale Mausbewegung nOK

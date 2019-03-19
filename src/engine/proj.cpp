@@ -98,13 +98,15 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 
 //  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\buggyboy\\flag.bmp"));
-  m_render.vGLTexture.push_back(ldrIMG.loadIMG("..\\data\\buggyboy\\flag_t.png", true));
+  m_render.vGLTexture.push_back(ldrIMG.loadIMG("..\\data\\buggyboy\\banner_t.png", true));
   // a) place billboard here, as it needs texture id = 4 -> 2do: simplify tex-ID
   obj::CBillboard bb;
   bb.p_render = &m_render;
   vao = bb.Create(10.0f, 10.0f, 0.0f);
   m_render.vVAOs.push_back(vao);
 
+  vao = bb.Create(20.0f, 10.0f, 0.0f);
+  m_render.vVAOs.push_back(vao);
 
   // ii) Load VAOs depending on scene
   m_scenebuilder.p_render = &m_render;
@@ -149,11 +151,11 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   room.Load(0.003f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
   vObjects.push_back(room);
   */
-/*
+
   obj::CGL_ObjectWavefront anton(&m_render);
   anton.sObjectFullpath = "..\\data\\virtualroad\\erstes_projekt2.obj";
   anton.Load(4.4f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
-*/
+
 //  obj::CGL_ObjectWavefront holzstapel(&m_render);
 //  holzstapel.sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
 //  holzstapel.Load(0.4f, 0.0f, Vec3f(rand() % 100, rand() % 100, 0.5f)); // scaled
@@ -243,6 +245,26 @@ glm::vec3 proj::Proj::Mouse2Dto3D(int x, int y)
   return glm::vec3(worldX, worldY, worldZ);
 }
 
+int proj::Proj::PlayerPos()
+{
+  float dist_min = 9999.9f;
+  float dist;
+  int iTrack_nearest = -1;
+  for (int i = 0; i < m_scene.trajectory_len; i++)
+  {
+    glm::vec3 v3 = glm::vec3(m_scene.m_SceneLoader.m_c_Trajectory[i].s_Pos.rl_X,
+                             m_scene.m_SceneLoader.m_c_Trajectory[i].s_Pos.rl_Y,
+                             0.0f);
+    dist = glm::length(v3 - m_render.Cursor);
+    if (dist < dist_min)
+    {
+      dist_min = dist;
+      iTrack_nearest = i;
+    }
+  }
+  return iTrack_nearest;
+}
+
 int proj::Proj::DoIt()
 {
   GLenum err = GL_NO_ERROR;
@@ -306,6 +328,9 @@ int proj::Proj::DoIt()
     FPS += m_render.aFPS[i];
   }FPS = FPS / FPS_LOWPASS;
   ImGui::Text("%.0f FPS", FPS);
+  static int viewmode;
+  ImGui::RadioButton("Std",     &viewmode, 0);
+  ImGui::RadioButton("Physics", &viewmode, 1);
   static bool b_wireframe;
   ImGui::Checkbox("wireframe", &b_wireframe);
   ImGui::Checkbox("culling", &m_render.b_culling);
@@ -322,9 +347,11 @@ int proj::Proj::DoIt()
   float vDir[3] = { m_render.p_cam->At.x,m_render.p_cam->At.y,m_render.p_cam->At.z };
   ImGui::InputFloat3("cam.dir", vDir);
   ImGui::SliderFloat("cam.y", &(float)m_render.f_camy, -3.0f, 3.0f);
+  int pp = PlayerPos();
+  ImGui::Text("Track nearest: %d", pp);
   if (io.MouseDown)
   {
-    glm::vec3 mouse3d = Mouse2Dto3D(io.MousePos.x, io.MousePos.y);
+    glm::vec3 mouse3d = Mouse2Dto3D((int)io.MousePos.x, (int)io.MousePos.y);
 //    std::cout << mouse3d.x << "," << mouse3d.y << "," << mouse3d.z << std::endl;
   }
   float vCursor2D[3] = { winX,winY,winZ };
@@ -345,7 +372,7 @@ int proj::Proj::DoIt()
     ImGui::Text("Pos"); ImGui::NextColumn();
     ImGui::Text("idTxt"); ImGui::NextColumn();
     ImGui::Separator();
-    for (int i = 0; i < m_render.vVAOs.size(); i++)
+    for (unsigned int i = 0; i < m_render.vVAOs.size(); i++)
     {
       ImGui::Text("%d",i); ImGui::NextColumn();
       ImGui::Text(m_render.vVAOs[i].Name.c_str()); ImGui::NextColumn();
