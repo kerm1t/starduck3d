@@ -64,6 +64,7 @@ void CalculateFrameRate()
 
 // OpenGL calls moved to own thread
 // s. http://stackoverflow.com/questions/9833852/opengl-game-loop-multithreading
+// ... this also means that you can't call any OpenGL functions from the windowing thread
 void RenderThread(void *args)
 {
   // Renderloop now

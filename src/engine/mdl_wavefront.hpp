@@ -45,6 +45,8 @@
 #include "glm/glm.hpp"
 #include "../common/types.h"
 
+#include "geometry.hpp"
+
 // blender model from:  http://www.tutorialsforblender3d.com/Models/index_Models.html
 
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
@@ -122,6 +124,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   class CLoader_OBJ
   {
   public:
+    s_AABB aabb;
     bool loadMaterials(const char * path, std::vector <CMaterial> & out_v_CMaterials)
     {
       uint16 nMaterialsRead = 0;
@@ -234,6 +237,15 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         unsigned int vertexIndex = face_v[i];
         glm::vec3 vertex = temp_vertices[vertexIndex-1];
         part.vertices.push_back(vertex);
+
+        // span bbox
+        if ((vertex.x < aabb.min_point.x) ||
+            (vertex.y < aabb.min_point.y) ||
+            (vertex.z < aabb.min_point.z)) aabb.min_point = vertex;
+        if ((vertex.x > aabb.max_point.x) ||
+            (vertex.y > aabb.max_point.y) ||
+            (vertex.z > aabb.max_point.z)) aabb.max_point = vertex;
+
         if (part.b_textured)
         {
           unsigned int uvIndex = face_vt[i];

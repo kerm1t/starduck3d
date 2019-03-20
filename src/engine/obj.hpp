@@ -37,9 +37,10 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 #include "img_bitmap.hpp"    // load texture (.bmp)
 #include "img_any.h"         // load texture (.jpg,.png,...)
 
+#include "geometry.hpp"
+
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx    
-
 
 
   class CObject
@@ -75,6 +76,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     bool bHasParts;
     glm::vec3 position;
     //    glm::vec3 direction; // position - prev.position
+    
+    s_AABB aabb;
 
     CObject()
     {
@@ -284,6 +287,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       // i) load geometry and material list
       bool res = ldr.loadOBJParts(sObjectFullpath.c_str(), v_mat, v_parts, fScale, fZ);
       assert(res == true);
+      
+      aabb = ldr.aabb;
 
       const size_t last_slash_idx = sObjectFullpath.rfind('\\');
       if (std::string::npos != last_slash_idx)

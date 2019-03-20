@@ -1,5 +1,8 @@
 3/13
-- physics: den Teil der Strecke detektieren, auf dem sich das ego gerade befindet
+- physics: den Teil der Strecke zeichnen, auf dem sich das ego gerade befindet
+
+3/13
++ physics: den Teil der Strecke detektieren, auf dem sich das ego gerade befindet
 - fix billboard placement nOK after barriers
 
 3/9
