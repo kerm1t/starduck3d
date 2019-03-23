@@ -6,6 +6,7 @@
 #include "obj_Moving.hpp"
 #include "obj_Groundplane.hpp"
 #include "obj_billboard.hpp"
+#include "obj_simple.hpp"
 
 
 #include "proj_render.h"
@@ -28,6 +29,8 @@ namespace proj
     proj::M3uLoader m_m3u; // to load a series of scenes
 
     obj::CGroundplane m_groundplane;
+
+    obj::CCube m_cube;
 
     proj::Scene m_scene;
 

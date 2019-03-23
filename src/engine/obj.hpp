@@ -39,6 +39,8 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 
 #include "geometry.hpp"
 
+//#include "obj_simple.hpp"    // bboxes
+
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx    
 
@@ -288,7 +290,17 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       bool res = ldr.loadOBJParts(sObjectFullpath.c_str(), v_mat, v_parts, fScale, fZ);
       assert(res == true);
       
+
+      // BBox
       aabb = ldr.aabb;
+
+/*      obj::CCube m_cube;
+      m_cube.p_render = p_render;
+      //  vao = m_cube.Create(0,0,0);
+      proj::c_VAO vao = m_cube.Create(aabb.min_point, aabb.max_point);
+      p_render->vVAOs.push_back(vao);
+      */
+
 
       const size_t last_slash_idx = sObjectFullpath.rfind('\\');
       if (std::string::npos != last_slash_idx)
@@ -333,7 +345,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           // Farbe --> VBO "on the fly" bauen, s. PartsToVBO()
         }
       }
-
 
     }
   }; // class CObjectWavefront

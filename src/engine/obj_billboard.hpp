@@ -62,7 +62,7 @@ namespace obj
       billy.ui_idTexture = 4;
       return billy;
     }
-  }; // class Groundplane
+  }; // class CBillboard
 
 }
 

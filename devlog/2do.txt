@@ -1,4 +1,14 @@
-3/13
+3/22
+- Drahtgitter (GL_LINES) statt GL_TRIANGLE zeichnen : zusätzlich!
+noch besser: https://computergraphics.stackexchange.com/questions/1664/how-to-render-the-wireframe-of-a-cube-without-the-diagonals-on-the-faces
+- Continental Logo zu einer Art Werkzeugbox, dafür: nach vorne holen
+
+3/20
++ BBox berechnen
+- BBox zeichnen
+- BBox collisioncheck
+
+3/18
 - physics: den Teil der Strecke zeichnen, auf dem sich das ego gerade befindet
 
 3/13
