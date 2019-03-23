@@ -83,12 +83,12 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   vao = m_groundplane.Create();
   m_render.vVAOs.push_back(vao);
 
-/*
+
+  // test bbox, 2do: wireframe e.g. GL_LINESTRIP
   m_cube.p_render = &m_render;
-//  vao = m_cube.Create(0,0,0);
   vao = m_cube.Create({ 0,0,0 }, {2,2,2});
   m_render.vVAOs.push_back(vao);
-*/
+
 
   // i) Load Scene VAOs
   m_scene.Load();

@@ -95,7 +95,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     }
   };
 
-
   // from here objects are interwoven with OpenGL (-> VBO / VAO)
 
   class CGL_Object : public CObject
@@ -136,6 +135,52 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       glBufferData(GL_ARRAY_BUFFER, vCount * sizeof(glm::vec2), p_uv, GL_STATIC_DRAW);
     }
   };
+
+  class CCube2 : public CGL_Object  /// hack! same as CCube in obj_simple, proposal: make obj.hpp und obj_GL.hpp, neeee, doch nicht
+  {
+  public:
+    //    proj::Render * p_render;
+
+    proj::c_VAO Create(std::string name, glm::vec3 min, glm::vec3 max)
+    {
+      std::vector<glm::vec3> coords;
+      coords.push_back({ min.x,min.y,min.z });
+      coords.push_back({ min.x,max.y,min.z });
+      coords.push_back({ max.x,max.y,min.z });
+
+      coords.push_back({ min.x,min.y,min.z });
+      coords.push_back({ max.x,max.y,min.z });
+      coords.push_back({ max.x,min.y,min.z });
+
+      coords.push_back({ min.x,min.y,max.z });
+      coords.push_back({ min.x,max.y,max.z });
+      coords.push_back({ max.x,max.y,max.z });
+
+      coords.push_back({ min.x,min.y,max.z });
+      coords.push_back({ max.x,max.y,max.z });
+      coords.push_back({ max.x,min.y,max.z });
+
+      uint32 vCount = 12;
+
+      std::vector<glm::vec3> cols;
+      for (int i = 0; i < vCount; i++)
+      {
+        cols.push_back({ 1.0f, 1.0f, 1.0f }); // r,g,b
+      }
+
+      // ---------------------------
+      // >>> now Push to OpenGL! >>>
+      // ---------------------------
+      ToVBO(vCount, &coords[0], &cols[0]);
+
+      proj::c_VAO cube;
+      cube.t_Shade = proj::SHADER_COLOR_FLAT;
+      cube.Name = name;
+      cube.uiVertexCount = vCount;
+      return cube;
+    }
+  }; // class CCube2
+
 
   class CGL_ObjectParts : public CGL_Object // ist per default private, dann Variablen nicht zugänglich
   {
@@ -254,7 +299,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     std::string sObjectDirectory;
 
     virtual void Load(float, float, Vec3f) = 0;  // includes ToVBO, ToVAO
-    virtual void LoadParts(float, float) = 0;    // load OBJ 'n texture
+    virtual void LoadParts(float, float, Vec3f) = 0;    // load OBJ 'n texture
   };
 
 
@@ -278,28 +323,30 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
     void Load(float fScale = 1.0f, float fZ = 0.0f, Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f)) // load OBJ 'n texture
     {
-      LoadParts(fScale, fZ);
+      LoadParts(fScale, fZ, vPos);
       PartsToVBOs(vPos);
       PartsToVAOs(vPos);
     }
 
-    void LoadParts(float fScale = 1.0f, float fZ = 0.0f) // load OBJ 'n texture
+    void LoadParts(float fScale = 1.0f, float fZ = 0.0f, Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f)) // load OBJ 'n texture
     {
       CLoader_OBJ ldr;
       // i) load geometry and material list
       bool res = ldr.loadOBJParts(sObjectFullpath.c_str(), v_mat, v_parts, fScale, fZ);
       assert(res == true);
-      
+
+
 
       // BBox
       aabb = ldr.aabb;
+      aabb.min_point += glm::vec3(vPos.x, vPos.y, vPos.z);
+      aabb.max_point += glm::vec3(vPos.x, vPos.y, vPos.z);
 
-/*      obj::CCube m_cube;
+      obj::CCube2 m_cube;
       m_cube.p_render = p_render;
-      //  vao = m_cube.Create(0,0,0);
-      proj::c_VAO vao = m_cube.Create(aabb.min_point, aabb.max_point);
+      proj::c_VAO vao = m_cube.Create("bbox", aabb.min_point, aabb.max_point);
       p_render->vVAOs.push_back(vao);
-      */
+
 
 
       const size_t last_slash_idx = sObjectFullpath.rfind('\\');
@@ -346,7 +393,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         }
       }
 
-    }
+    } // LoadParts
+
+
   }; // class CObjectWavefront
 
 

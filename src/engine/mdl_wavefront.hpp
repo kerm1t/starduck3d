@@ -239,12 +239,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         part.vertices.push_back(vertex);
 
         // span bbox
-        if ((vertex.x < aabb.min_point.x) ||
-            (vertex.y < aabb.min_point.y) ||
-            (vertex.z < aabb.min_point.z)) aabb.min_point = vertex;
-        if ((vertex.x > aabb.max_point.x) ||
-            (vertex.y > aabb.max_point.y) ||
-            (vertex.z > aabb.max_point.z)) aabb.max_point = vertex;
+        if (vertex.x < aabb.min_point.x) aabb.min_point.x = vertex.x; // min
+        if (vertex.y < aabb.min_point.y) aabb.min_point.y = vertex.y;
+        if (vertex.z < aabb.min_point.z) aabb.min_point.z = vertex.z;
+        if (vertex.x > aabb.max_point.x) aabb.max_point.x = vertex.x; // max
+        if (vertex.y > aabb.max_point.y) aabb.max_point.y = vertex.y;
+        if (vertex.z > aabb.max_point.z) aabb.max_point.z = vertex.z;
 
         if (part.b_textured)
         {

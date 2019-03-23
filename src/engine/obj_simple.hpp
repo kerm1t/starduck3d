@@ -11,33 +11,8 @@ namespace obj
   public:
     //    proj::Render * p_render;
 
-//    proj::c_VAO Create(GLfloat x, GLfloat y, GLfloat z)
     proj::c_VAO Create(glm::vec3 min, glm::vec3 max)
     {
-/*      std::vector<GLfloat> coords;
-      float w = 2.0f;
-      float h = 2.0f;
-      float whalf = w / 2.0f;
-      // 3D
-      coords.push_back(x + whalf); coords.push_back(y); coords.push_back(z);
-      coords.push_back(x - whalf); coords.push_back(y); coords.push_back(z);
-      coords.push_back(x - whalf); coords.push_back(y); coords.push_back(z + h);
-
-      coords.push_back(x + whalf); coords.push_back(y); coords.push_back(z);
-      coords.push_back(x - whalf); coords.push_back(y); coords.push_back(z + h);
-      coords.push_back(x + whalf); coords.push_back(y); coords.push_back(z + h);
-
-      float r = 1.0f;
-      float g = 1.0f;
-      float b = 1.0f;
-      std::vector<GLfloat> cols;
-      for (int i = 0; i < 6; i++)
-      {
-        cols.push_back(r); cols.push_back(g); cols.push_back(b);
-      }
-
-      uint32 vCount = 6;
-*/
       std::vector<glm::vec3> coords;
       coords.push_back({ min.x,min.y,min.z });
       coords.push_back({ min.x,max.y,min.z });
@@ -57,13 +32,10 @@ namespace obj
       
       uint32 vCount = 12;
 
-      float r = 1.0f;
-      float g = 1.0f;
-      float b = 1.0f;
       std::vector<glm::vec3> cols;
       for (int i = 0; i < vCount; i++)
       {
-        cols.push_back({ r,g,b });
+        cols.push_back({ 1.0f, 1.0f, 1.0f }); // r,g,b
       }
 
       // ---------------------------
@@ -77,7 +49,7 @@ namespace obj
       cube.uiVertexCount = vCount;
       return cube;
     }
-  }; // class Groundplane
+  }; // class CCube
 
 }
 
