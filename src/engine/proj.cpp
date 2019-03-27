@@ -86,11 +86,11 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.vVAOs.push_back(vao);
 
 
-  // test bbox, 2do: wireframe e.g. GL_LINESTRIP
+/*  // test bbox, 2do: wireframe e.g. GL_LINESTRIP
   m_cube.p_render = &m_render;
   vao = m_cube.Create({ 0,0,0 }, {2,2,2});
   m_render.vVAOs.push_back(vao);
-
+  */
 
   // i) Load Scene VAOs
   m_scene.Load();
@@ -112,9 +112,11 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   bb.p_render = &m_render;
   vao = bb.Create(10.0f, 10.0f, 0.0f);
   m_render.vVAOs.push_back(vao);
+  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
 
   vao = bb.Create(20.0f, 10.0f, 0.0f);
   m_render.vVAOs.push_back(vao);
+  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
 
   // ii) Load VAOs depending on scene
   m_scenebuilder.p_render = &m_render;
@@ -170,35 +172,42 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 //#define N_HOLZSTAPEL (40+20) // temp: 20 can be set later by Mouseklick
 //  obj::CGL_ObjectWavefront holzstapel[N_HOLZSTAPEL];
-  for (unsigned int ui = 0; ui < 0; ui++)
+/*  for (unsigned int ui = 0; ui < 20; ui++)
   {
     holzstapel[ui].setRender(&m_render);
     holzstapel[ui].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
     holzstapel[ui].Load(0.4f, 0.0f, Vec3f(-100.0f+rand() % 200, -100.0f+rand() % 200, 0.5f)); // scaled
   }
   n_holz_gestapelt = 0;
+*/
 
   obj::CGL_ObjectWavefront car2(&m_render);
 //  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
 //  car2.Load(.6f, 0.0f, Vec3f(20.0f, 6.0f, 0.7f)); // scaled
   car2.sObjectFullpath = "..\\data\\virtualroad\\lowpoly_jeep3\\jeep.obj";
   car2.Load(.6f, 0.0f, Vec3f(20.0f, 6.0f, 0.7f)); // scaled
+  vObjects.push_back(car2); // 2do: wieviel Speicherverbrauch?
 
 
   obj::CGL_ObjectWavefront car3(&m_render);
   car3.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep_openair.obj";
   car3.Load(0.4f, 0.0f, Vec3f(10.0f, 3.0f, 0.0f)); // scaled
+  vObjects.push_back(car3); // 2do: wieviel Speicherverbrauch?
 
 // b) place billboard here .. ok
 
   obj::CGL_ObjectWavefront barrier1(&m_render);
   barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
-  barrier1.Load();
+  barrier1.Load(1.0f,0.0f,Vec3f(0.0f,0.0f,0.0f));
+  vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
   for (unsigned int ui=1;ui<5;ui++)
   {
+//    barrier1.setPos()
     barrier1.PartsToVBOs(Vec3f(10.0f+(float)ui*4.0f, 0.0f, 0.0f));
     barrier1.PartsToVAOs(Vec3f(10.0f + (float)ui*4.0f, 0.0f, 0.0f));
+//    vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
   }
+
 /* currently loads too long
   obj::CGL_ObjectWavefront sponza(&m_render);
   sponza.sObjectFullpath = "..\\data\\sponza\\sponza.obj";
@@ -316,7 +325,7 @@ int proj::Proj::DoIt()
 
 
 
-  hit_object_id = m_phys.collision_check();
+  hit_object_id = m_phys.collision_check(vObjects, m_render.Cursor);
 
 
 
@@ -336,12 +345,6 @@ int proj::Proj::DoIt()
   ImGui::Text("Hallo Anton.");
   ImGui::Text("mouse: %f,%f",io.MousePos.x,io.MousePos.y);
   ImGui::Text("loaded: %s", m_scene.c_Scene.c_str());
-  float FPS = 1000.0f / (float)timer.getElapsedTimeInMilliSec();
-  m_render.aFPS[m_render.idxFPS++ % FPS_LOWPASS] = FPS;
-  FPS = 0.0; for (int i = 0; i < FPS_LOWPASS; i++) {
-    FPS += m_render.aFPS[i];
-  }FPS = FPS / FPS_LOWPASS;
-  ImGui::Text("%.0f FPS", FPS);
   static int viewmode;
   ImGui::RadioButton("Std",     &viewmode, 0);
   ImGui::RadioButton("Physics", &viewmode, 1);
@@ -361,10 +364,6 @@ int proj::Proj::DoIt()
   float vDir[3] = { m_render.p_cam->At.x,m_render.p_cam->At.y,m_render.p_cam->At.z };
   ImGui::InputFloat3("cam.dir", vDir);
   ImGui::SliderFloat("cam.y", &(float)m_render.f_camy, -3.0f, 3.0f);
-  
-  int pp = m_phys.PlayerPos(m_scene, m_render.Cursor);
-  ImGui::Text("Track nearest: %d", pp);
-  ImGui::Text("Hit object: %d", hit_object_id);
 
 
   if (io.MouseDown)
@@ -378,14 +377,24 @@ int proj::Proj::DoIt()
   ImGui::InputFloat3("Cursor", vCursor);
   ImGui::End();
 
-  ImGui::Begin("Objects");
+
+
+  ImGui::Begin("Render");
+
+  float FPS = 1000.0f / (float)timer.getElapsedTimeInMilliSec();
+  m_render.aFPS[m_render.idxFPS++ % FPS_LOWPASS] = FPS;
+  FPS = 0.0; for (int i = 0; i < FPS_LOWPASS; i++) {
+    FPS += m_render.aFPS[i];
+  }FPS = FPS / FPS_LOWPASS;
+  ImGui::Text("%.0f FPS", FPS);
+
   static int selected = -1;
-  if (ImGui::TreeNode("Obj's rendered"))
+  if (ImGui::TreeNode("Obj's (VAOs!) rendered"))
   {
     ImGui::Columns(5, "cols"); // no. of columns
     ImGui::Separator();
     ImGui::Text("#"); ImGui::NextColumn();
-    ImGui::Text("Obj."); ImGui::NextColumn();
+    ImGui::Text("VAO"); ImGui::NextColumn();  // 2do: show object
     ImGui::Text("#Vtx"); ImGui::NextColumn();
     ImGui::Text("Pos"); ImGui::NextColumn();
     ImGui::Text("idTxt"); ImGui::NextColumn();
@@ -402,6 +411,42 @@ int proj::Proj::DoIt()
     ImGui::Separator();
     ImGui::TreePop();
   }
+  ImGui::End();
+
+  
+  
+  ImGui::Begin("Physics");
+  
+  int pp = m_phys.player_scene_pos(m_scene, m_render.Cursor);
+  ImGui::Text("Track nearest: %d", pp);
+  std::string s_obj = "";
+  if (hit_object_id >= 0) s_obj = vObjects[hit_object_id].name;
+  ImGui::Text("Hit object: %d (%s)", hit_object_id, s_obj.c_str());
+  
+  //  static int selected = -1;
+  if (ImGui::TreeNode("Obj's collision checked"))
+  {
+    ImGui::Columns(2, "cols"); // no. of columns
+    ImGui::Separator();
+    ImGui::Text("#"); ImGui::NextColumn();
+    ImGui::Text("VAO"); ImGui::NextColumn();  // 2do: show object
+//    ImGui::Text("#Vtx"); ImGui::NextColumn();
+//    ImGui::Text("Pos"); ImGui::NextColumn();
+//    ImGui::Text("idTxt"); ImGui::NextColumn();
+    ImGui::Separator();
+    for (unsigned int i = 0; i < vObjects.size(); i++)
+    {
+      ImGui::Text("%d", i); ImGui::NextColumn();
+      ImGui::Text(vObjects[i].name.c_str()); ImGui::NextColumn();
+//      ImGui::Text("%d", m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
+//      ImGui::Text("%.2f,%.2f,%.2f", m_render.vVAOs[i].vPos.x, m_render.vVAOs[i].vPos.y, m_render.vVAOs[i].vPos.z); ImGui::NextColumn();
+//      ImGui::Text("%d", m_render.vVAOs[i].ui_idTexture); ImGui::NextColumn();
+    }
+    ImGui::Columns(1);
+    ImGui::Separator();
+    ImGui::TreePop();
+  }
+//  ImGui::SetNextTreeNodeOpen(true);
   ImGui::End();
 
   ImGui::Render();

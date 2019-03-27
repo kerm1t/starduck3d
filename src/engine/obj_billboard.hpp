@@ -8,10 +8,16 @@ namespace obj
   class CBillboard : public CGL_Object
   {
   public:
+//    static int idbb;
     //    proj::Render * p_render;
 
     proj::c_VAO Create(GLfloat x, GLfloat y, GLfloat z)
     {
+      this->name = "billboard";
+      // 2do: durchfahrbare billboards (Flaggen) und nicht durchfahrbare
+      //      das ist hier beim collisioncheck erstmal unerheblich
+      //      ich will zumindest wissen, ob das Billboard durchfahren wurde
+
       std::vector<GLfloat> coords;
       float w = 2.0f;
       float h = 2.0f;
@@ -24,6 +30,22 @@ namespace obj
       coords.push_back(x + whalf); coords.push_back(y); coords.push_back(z);
       coords.push_back(x - whalf); coords.push_back(y); coords.push_back(z+h);
       coords.push_back(x + whalf); coords.push_back(y); coords.push_back(z+h);
+
+
+
+      // bbox : ydim = 0.5f  ================== 2do: put into (abstract CGL_object class)
+      this->aabb.min_point = glm::vec3(x - whalf, y-0.5f, z);
+      this->aabb.max_point = glm::vec3(x + whalf, y+0.5f, z+h);
+
+#if(B_ADD_BBOX_VAO == 1)
+      obj::CCube2 m_cube;
+      m_cube.p_render = p_render;
+      proj::c_VAO vao = m_cube.Create("bbox", aabb.min_point, aabb.max_point);
+      p_render->vVAOs.push_back(vao);
+#endif
+      // ================== 2do: put into (abstract CGL_object class)
+
+
 
       std::vector<glm::vec2> uv;
 /*      uv.push_back({1.0f, 0.0f});

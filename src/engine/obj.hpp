@@ -41,6 +41,8 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 
 //#include "obj_simple.hpp"    // bboxes
 
+#define B_ADD_BBOX_VAO 1 // 0 | 1
+
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx    
 
@@ -74,7 +76,14 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       pf_Col[nCol++] = C.g;
       pf_Col[nCol++] = C.b;
     }
+
+    void set_pos(glm::vec3 pos)
+    {
+    }
+
   public:
+    std::string name;
+    
     bool bHasParts;
     glm::vec3 position;
     //    glm::vec3 direction; // position - prev.position
@@ -99,6 +108,21 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
   class CGL_Object : public CObject
   {
+  protected:
+/*    void set_aabb(glm::vec3 min, glm::vec3 max, bool b_create_VAO)
+    {
+      aabb.min_point = min;
+      aabb.max_point = max;
+      if (b_create_VAO)
+      {
+        obj::CCube2 m_cube;
+        m_cube.p_render = p_render;
+        proj::c_VAO vao = m_cube.Create("bbox", aabb.min_point, aabb.max_point);
+        p_render->vVAOs.push_back(vao);
+      }
+    }
+    */
+
   public:
     proj::Render * p_render;
 
@@ -143,6 +167,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
     proj::c_VAO Create(std::string name, glm::vec3 min, glm::vec3 max)
     {
+      this->name = name;
+
       std::vector<glm::vec3> coords;
       coords.push_back({ min.x,min.y,min.z });
       coords.push_back({ min.x,max.y,min.z });
@@ -263,6 +289,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     {
       // --> die infos erstmal am Objekt speichern !?
       uint16 nParts = (uint16)v_parts.size();
+
+      if (nParts > 0) this->name = v_parts[0].name;
+
       for (uint16 ui = 0; ui < nParts; ui++)
       {
         proj::c_VAO vao;
@@ -336,17 +365,20 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       assert(res == true);
 
 
-
       // BBox
       aabb = ldr.aabb;
       aabb.min_point += glm::vec3(vPos.x, vPos.y, vPos.z);
       aabb.max_point += glm::vec3(vPos.x, vPos.y, vPos.z);
 
+#if(B_ADD_BBOX_VAO == 1)
       obj::CCube2 m_cube;
       m_cube.p_render = p_render;
       proj::c_VAO vao = m_cube.Create("bbox", aabb.min_point, aabb.max_point);
       p_render->vVAOs.push_back(vao);
+#endif
 
+//      set_aabb(ldr.aabb.min_point + glm::vec3(vPos.x, vPos.y, vPos.z),
+//               ldr.aabb.max_point + glm::vec3(vPos.x, vPos.y, vPos.z), true);
 
 
       const size_t last_slash_idx = sObjectFullpath.rfind('\\');

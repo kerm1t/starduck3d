@@ -1,9 +1,13 @@
+3/26
+- bbox f. Tunnel
+
 3/22
 - loader beschleunigen, i.e. ganzes file laden
 - Anton's village in kleinere Objekte aufteilen, sonst riesige BBox
 - Maussteuerung vertikal
 - Drahtgitter (GL_LINES) statt GL_TRIANGLE zeichnen : zusätzlich!
 noch besser: https://computergraphics.stackexchange.com/questions/1664/how-to-render-the-wireframe-of-a-cube-without-the-diagonals-on-the-faces
+  ODER: glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); abschnittsweise zeichnen als TRIANGLES, LINES etc.
 - Continental Logo zu einer Art Werkzeugbox, dafür: nach vorne holen
 
 3/20

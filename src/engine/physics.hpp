@@ -17,7 +17,7 @@ namespace proj
   public:
 
     // not allowed to have just a function in h class, needs to be inside a class!
-    int PlayerPos(proj::Scene scene, glm::vec3 Cursor)
+    int player_scene_pos(proj::Scene scene, glm::vec3 Cursor)
     {
       float dist_min = 9999.9f;
       float dist;
@@ -38,10 +38,19 @@ namespace proj
     } // PlayerPos
 
     // return 0 = no collision | otherwise index of object
-    int collision_check()
+    int collision_check(std::vector <obj::CObject> vobj, glm::vec3 Cursor)
     {
-      for (unsigned int i=0; i<)
-      return 1;
+      int i_obj_bump = -1;
+      for (unsigned int i = 0; i < vobj.size(); i++)
+      {
+        if (
+            (Cursor.x > vobj[i].aabb.min_point.x) && (Cursor.x < vobj[i].aabb.max_point.x)
+         && (Cursor.y > vobj[i].aabb.min_point.y) && (Cursor.y < vobj[i].aabb.max_point.y)
+//         && (Cursor.z > vobj[i].aabb.min_point.z) && (Cursor.z < vobj[i].aabb.max_point.z)
+          )
+          i_obj_bump = i;
+      }
+      return i_obj_bump;
     }
 
   }; // class physics
