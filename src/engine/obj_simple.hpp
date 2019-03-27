@@ -33,7 +33,7 @@ namespace obj
       uint32 vCount = 12;
 
       std::vector<glm::vec3> cols;
-      for (int i = 0; i < vCount; i++)
+      for (unsigned int i = 0; i < vCount; i++)
       {
         cols.push_back({ 1.0f, 1.0f, 1.0f }); // r,g,b
       }

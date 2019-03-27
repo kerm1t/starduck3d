@@ -13,6 +13,9 @@
 #include "proj_m3uloader.hpp"
 #include "proj_scenebuilder.hpp"
 
+#include "physics.hpp"
+
+
 namespace proj
 {
   class Proj
@@ -53,6 +56,10 @@ namespace proj
 
     proj::Render m_render;
 
+    proj::physics m_phys;
+
+    int hit_object_id;
+
     /* ===== FUNCTIONS ===== */
 
     int Init();
@@ -63,7 +70,7 @@ namespace proj
     /* ===== FUNCTIONS ===== */
 
 //    void LoadMoving();
-    int PlayerPos();
+///    int PlayerPos();
 
     GLfloat winX, winY, winZ; //variables to hold screen x,y,z coordinates
     glm::vec3 Mouse2Dto3D(int x, int y); // 2do: move to editor.hpp

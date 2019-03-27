@@ -32,6 +32,8 @@ int proj::Proj::Init()
 
   vTrajPosprev = glm::vec3(0.0f,0.0f,0.0f);
 
+  hit_object_id = 0;
+
   return 0;
 }
 
@@ -157,11 +159,11 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   room.Load(0.003f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
   vObjects.push_back(room);
   */
-
+/*
   obj::CGL_ObjectWavefront anton(&m_render);
   anton.sObjectFullpath = "..\\data\\virtualroad\\erstes_projekt2.obj";
   anton.Load(4.4f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
-
+*/
 //  obj::CGL_ObjectWavefront holzstapel(&m_render);
 //  holzstapel.sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
 //  holzstapel.Load(0.4f, 0.0f, Vec3f(rand() % 100, rand() % 100, 0.5f)); // scaled
@@ -251,7 +253,7 @@ glm::vec3 proj::Proj::Mouse2Dto3D(int x, int y)
   return glm::vec3(worldX, worldY, worldZ);
 }
 
-int proj::Proj::PlayerPos()
+/*int proj::Proj::PlayerPos()
 {
   float dist_min = 9999.9f;
   float dist;
@@ -269,7 +271,7 @@ int proj::Proj::PlayerPos()
     }
   }
   return iTrack_nearest;
-}
+}*/
 
 int proj::Proj::DoIt()
 {
@@ -312,6 +314,12 @@ int proj::Proj::DoIt()
 //    }
   }
 
+
+
+  hit_object_id = m_phys.collision_check();
+
+
+
   m_render.DrawVAOs_NEU();          // Draw The Scene
   err = glGetError();
 
@@ -353,8 +361,12 @@ int proj::Proj::DoIt()
   float vDir[3] = { m_render.p_cam->At.x,m_render.p_cam->At.y,m_render.p_cam->At.z };
   ImGui::InputFloat3("cam.dir", vDir);
   ImGui::SliderFloat("cam.y", &(float)m_render.f_camy, -3.0f, 3.0f);
-  int pp = PlayerPos();
+  
+  int pp = m_phys.PlayerPos(m_scene, m_render.Cursor);
   ImGui::Text("Track nearest: %d", pp);
+  ImGui::Text("Hit object: %d", hit_object_id);
+
+
   if (io.MouseDown)
   {
     glm::vec3 mouse3d = Mouse2Dto3D((int)io.MousePos.x, (int)io.MousePos.y);

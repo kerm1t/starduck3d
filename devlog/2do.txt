@@ -1,4 +1,5 @@
 3/22
+- loader beschleunigen, i.e. ganzes file laden
 - Anton's village in kleinere Objekte aufteilen, sonst riesige BBox
 - Maussteuerung vertikal
 - Drahtgitter (GL_LINES) statt GL_TRIANGLE zeichnen : zusätzlich!
