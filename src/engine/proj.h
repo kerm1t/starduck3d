@@ -72,6 +72,8 @@ namespace proj
 //    void LoadMoving();
 ///    int PlayerPos();
 
+    int Load_Scene_Objs();
+
     GLfloat winX, winY, winZ; //variables to hold screen x,y,z coordinates
     glm::vec3 Mouse2Dto3D(int x, int y); // 2do: move to editor.hpp
 

@@ -15,6 +15,10 @@
 // Windows --> (also doch lieber GlfW benutzen)
 Timer timer;
 
+#include <iostream>  // file io
+#include <fstream>
+
+
 proj::Proj::Proj()
 {
 }
@@ -61,6 +65,59 @@ int proj::Proj::Init()
 }
 */
 
+// Tokenizer, https://stackoverflow.com/questions/53849/how-do-i-tokenize-a-string-in-c
+std::vector<std::string> split(const char *str, char c = ' ')
+{
+  std::vector<std::string> result;
+
+  do
+  {
+    const char *begin = str;
+
+    while (*str != c && *str)
+      str++;
+
+    result.push_back(std::string(begin, str));
+  } while (0 != *str++);
+
+  return result;
+}
+
+int proj::Proj::Load_Scene_Objs()
+{
+  std::ifstream file("obj.txt");
+  std::string line;
+
+  int nobjs = 0;
+  if (file)
+  {
+    while (std::getline(file, line))
+    {
+      std::vector<std::string> tokens = split(line.c_str(), ',');
+      std::string sobj = tokens[0];
+      glm::vec3 pos;
+      pos.x = atof(tokens[1].c_str());
+      pos.y = atof(tokens[2].c_str());
+      pos.z = atof(tokens[3].c_str());
+
+      // ===== 2do: move outside =====
+      int nVAOs = m_render.vVAOs.size();
+      holzstapel[n_holz_gestapelt].setRender(&m_render);
+      holzstapel[n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
+      holzstapel[n_holz_gestapelt].Load(0.4f, 0.0f, Vec3f(pos.x, pos.y, pos.z)); // scaled
+//      m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+      vObjects.push_back(holzstapel[n_holz_gestapelt]); // 2do: wieviel Speicherverbrauch?
+      n_holz_gestapelt++;
+      // ===== 2do: move outside =====
+
+      nobjs++;
+    }
+    file.close();
+  }
+  return nobjs;
+}
+
+
 int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|B}O's to be able to manipulate 'em later
 { 
   proj::c_VAO vao;
@@ -79,7 +136,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.Triangles_to_VBO(Vec3f( 9.0f,3.0f,0.5f));
   m_render.Triangles_to_VBO(Vec3f(12.0f,6.0f,0.5f));
   m_render.Triangles_to_VBO(Vec3f(14.0f,6.0f,0.5f));
-  
+
 
   m_groundplane.p_render = &m_render;
   vao = m_groundplane.Create();
@@ -97,6 +154,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.p_Scene = &m_scene;
   m_render.Scene_to_VBO();
 
+
+  Load_Scene_Objs();
 
 
 //  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\road_tex_256x256.bmp"));

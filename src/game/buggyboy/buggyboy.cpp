@@ -16,6 +16,9 @@
 
 #include <process.h> // _beginthread
 
+#include <iostream>  // file io
+#include <fstream>
+
 #define MAX_LOADSTRING 100
 
 // Globale Variablen:
@@ -79,6 +82,11 @@ void RenderThread(void *args)
       m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
       m_proj.vObjects.push_back(m_proj.holzstapel[m_proj.n_holz_gestapelt]); // 2do: wieviel Speicherverbrauch?
       m_proj.n_holz_gestapelt++;
+      
+      std::ofstream myfile;
+      myfile.open("obj.txt", std::ios::app);
+      myfile << "planken," << m_proj.m_render.Cursor.x << "," << m_proj.m_render.Cursor.y << "," << 0.0f << "\n";
+      myfile.close();
 
 //      obj::CBillboard bb;
 //      bb.p_render = &m_proj.m_render;

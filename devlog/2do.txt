@@ -1,3 +1,11 @@
+3/29
+- nur noch 120 FPS (vorher ca. 700-800), Möglichkeit, Objekte nicht zu rendern per Mausklick
+- verschiedene Objekte laden
+- verschiedene Objekte platzieren
+
+3/27
++ Objekte aus .ini Datei laden
+
 3/26
 - bbox f. Tunnel
 
@@ -13,7 +21,7 @@ noch besser: https://computergraphics.stackexchange.com/questions/1664/how-to-re
 3/20
 + BBox berechnen
 (+) BBox zeichnen, (mehr schlecht als recht)
-- BBox collisioncheck
++ BBox collisioncheck
 
 3/18
 - physics: den Teil der Strecke zeichnen, auf dem sich das ego gerade befindet
@@ -28,7 +36,7 @@ noch besser: https://computergraphics.stackexchange.com/questions/1664/how-to-re
 
 3/8
 + interactive object placement
-- bounding boxen zeichnen
++ bounding boxen zeichnen
   -> physics Sicht zeichnen
 
 3/5

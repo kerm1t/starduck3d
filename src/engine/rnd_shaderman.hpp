@@ -148,8 +148,8 @@ public:
       "void main()\n"
       "{\n"
       "  UV = (vp_clipspace+1.0) * 0.5;\n"
-      "  gl_Position = vec4(vp_clipspace.x, vp_clipspace.y, 0.0, 1.0);\n"
-      "  gl_Position.xy *= 0.5;\n"
+      "  gl_Position = vec4(vp_clipspace.x, vp_clipspace.y, 0.5, 1.0);\n"
+      "  gl_Position.xy *= 0.5;\n" // scale to half of screen
       "}"
     };
     const GLchar * fshd_src_FPS[] = {
