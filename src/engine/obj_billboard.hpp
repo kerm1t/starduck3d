@@ -81,7 +81,8 @@ namespace obj
       billy.t_Shade = proj::SHADER_TEXTURE;
       billy.Name = "billyboard";
       billy.uiVertexCount = vCount;
-      billy.ui_idTexture = 4;
+//      billy.ui_idTexture = 4;
+      billy.ui_idTexture = p_render->tex_map.find("tx_Banner")->second;
       return billy;
     }
   }; // class CBillboard

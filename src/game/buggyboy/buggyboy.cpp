@@ -75,7 +75,7 @@ void RenderThread(void *args)
   {
     if (b_add_obj)
     {
-      int nVAOs = m_proj.m_render.vVAOs.size();
+/*      int nVAOs = m_proj.m_render.vVAOs.size();
       m_proj.holzstapel[m_proj.n_holz_gestapelt].setRender(&m_proj.m_render);
       m_proj.holzstapel[m_proj.n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
       m_proj.holzstapel[m_proj.n_holz_gestapelt].Load(0.4f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f)); // scaled
@@ -87,11 +87,12 @@ void RenderThread(void *args)
       myfile.open("obj.txt", std::ios::app);
       myfile << "planken," << m_proj.m_render.Cursor.x << "," << m_proj.m_render.Cursor.y << "," << 0.0f << "\n";
       myfile.close();
+      */
+      obj::CBillboard bb;
+      bb.p_render = &m_proj.m_render;
+      proj::c_VAO vao = bb.Create(10.0f, 10.0f, 0.0f);
+      m_proj.m_render.vVAOs.push_back(vao);
 
-//      obj::CBillboard bb;
-//      bb.p_render = &m_proj.m_render;
-//      proj::c_VAO vao = bb.Create(10.0f, 10.0f, 0.0f);
-//      m_proj.m_render.vVAOs.push_back(vao);
       b_add_obj = false;
     }
 
@@ -123,11 +124,6 @@ void RenderThread(void *args)
     if (bCamStickToTrack)
     {
       // Camera fixed to vehicle
-      glm::vec3 vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
-      glm::float32 fZtmp = m_cam.Pos[2];
-      m_cam.Pos    = m_proj.m_moving[1].position - vVehDirNorm*12.0f;
-      m_cam.Pos[2] = fZtmp;
-      m_cam.At     = m_proj.m_moving[1].position;
     }
     else
     {
@@ -491,9 +487,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case 37: // ARROW-LEFT
       if (bCamStickToTrack)
       {
-        vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
-        vVehDirOrth = glm::vec3(-vVehDirNorm[1],vVehDirNorm[0],vVehDirNorm[2]);
-        m_proj.m_moving[1].Move(vVehDirOrth*0.2f);
       }
       else
       {
@@ -503,9 +496,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case 39: // ARROW-RIGHT
       if (bCamStickToTrack)
       {
-        vVehDirNorm = glm::normalize(m_proj.m_moving[1].direction);
-        vVehDirOrth = glm::vec3(-vVehDirNorm[1],vVehDirNorm[0],vVehDirNorm[2]);
-        m_proj.m_moving[1].Move(-vVehDirOrth*0.2f);
       }
       else
       {

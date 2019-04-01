@@ -43,7 +43,7 @@ namespace proj
     proj::CSceneBuilder m_scenebuilder; // <-- add to the scene: Guardrails / Curbstones
 
     // moving
-    obj::Moving m_moving[2];
+//    obj::Moving m_moving[2];
 //    obj::CObject car[2];
 
 #define N_HOLZSTAPEL (40+20) // temp: 20 can be set later by Mouseklick

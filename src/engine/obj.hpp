@@ -402,7 +402,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           // Uffz, aus irgendwelchen Gruenden kann die folgende Textur nicht geladen werden
           if (v_mat[ui].map_Kd.compare("VRATA_KO.JPG")==0) sTextureFullpath = sObjectDirectory + "\\" + "Vrata_kr.jpg";
           v_mat[ui].idGLTexture = ldrIMG.loadIMG(sTextureFullpath.c_str());
-          p_render->vGLTexture.push_back(v_mat[ui].idGLTexture); // redundant!
+//          p_render->vGLTexture.push_back(v_mat[ui].idGLTexture); // redundant!
+          p_render->tex_map.insert(std::pair<std::string, GLuint>(sTextureFullpath, v_mat[ui].idGLTexture));
         }
       }
 

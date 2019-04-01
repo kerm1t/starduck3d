@@ -498,8 +498,10 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
 */
     vao.t_Shade = SHADER_TEXTURE;
     std::string sTex = rc_Param.m_Textures[iLine];
-    if (sTex.compare("texWater;") == 0) vao.ui_idTexture = TEX_WATER;
-    if (sTex.compare("texRoad;") == 0) vao.ui_idTexture = TEX_ROADSURFACE;
+//    if (sTex.compare("texWater;") == 0) vao.ui_idTexture = TEX_WATER;
+//    if (sTex.compare("texRoad;") == 0) vao.ui_idTexture = TEX_ROADSURFACE;
+    if (sTex.compare("texWater;") == 0) vao.ui_idTexture = tex_map.find("tx_Water")->second;
+    if (sTex.compare("texRoad;") == 0) vao.ui_idTexture = tex_map.find("tx_Road")->second;
 
     vao.uiVertexCount = vCount*3;
     vVAOs.push_back(vao);
@@ -700,7 +702,8 @@ void proj::Render::DrawVAOs_NEU()
 // Fehler 1282 auf NVidia
 // Ideen: rendern im Wireframe - hilft nicht --> konnte die Textur nicht geladen werden?
 // ----------------------
-      glBindTexture(GL_TEXTURE_2D, vGLTexture[vVAOs[ui].ui_idTexture-1]); // TEXTURE_ID shall be > 0 !     (-1!!)
+//      glBindTexture(GL_TEXTURE_2D, vGLTexture[vVAOs[ui].ui_idTexture-1]); // TEXTURE_ID shall be > 0 !     (-1!!)
+      glBindTexture(GL_TEXTURE_2D, vVAOs[ui].ui_idTexture); // TEXTURE_ID shall be > 0 !     (-1!!)
       err = glGetError();
       
       if (ui == 0) // hack!!

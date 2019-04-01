@@ -8,6 +8,8 @@
 #include "obj_moving.hpp"
 //#include "obj.hpp"
 
+#include <map>
+
 namespace proj
 {
   class Render: public ShaderMan
@@ -28,6 +30,8 @@ namespace proj
     // =================
     // objects shall store VAO-id und Texture-id
     //		std::vector <obj::CObject> * p_vObjects;
+
+    std::map < std::string, GLuint> tex_map;
 
     //        c_Texture aTextures[TEXCOUNT];
     //		std::vector<c_Texture> vTextures;
