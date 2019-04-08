@@ -1,10 +1,13 @@
+4/1
+(+) Mausbutton nur auswerten, wenn im Fenster
+
 3/31
 - release und debug build unterschiedlich
   => release: kann billboards aus obj.txt laden
   => debug: Fehler, kann nur planken (holzstapel) aus obj.txt laden
             sonst: vector subscript out of range
             ahso, der Zugriff auf die Textur per festem Index überschreitet die Array Größe
-- Texturen richtig handeln: per map (schneller als unsorted_map)
++ Texturen richtig handlen: per map (schneller als unsorted_map)
 
 3/29
 - nur noch 120 FPS (vorher ca. 700-800), Möglichkeit, Objekte nicht zu rendern per Mausklick

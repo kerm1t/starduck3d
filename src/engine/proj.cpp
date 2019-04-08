@@ -25,7 +25,7 @@ Timer timer;
 #define VBOADD_SCENE_OBJS 1     // load from obj.txt
 #define VBOADD_BILLBOARDS 1     // shall be more than 1 type of billboard
 #define VBOADD_HOLZSTAPEL 1
-#define VBOADD_CONTICAR 0
+#define VBOADD_CONTICAR 1
 #define VBOADD_JEEP 1
 #define VBOADD_BARRIERS 1
 #define VBOADD_SPONZA 0
@@ -246,10 +246,10 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 #if (VBOADD_CONTICAR == 1)
   obj::CGL_ObjectWavefront car2(&m_render);
-//  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
-//  car2.Load(.6f, 0.0f, Vec3f(20.0f, 6.0f, 0.7f)); // scaled
-  car2.sObjectFullpath = "..\\data\\virtualroad\\lowpoly_jeep3\\jeep.obj";
+  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
   car2.Load(.6f, 0.0f, Vec3f(20.0f, 6.0f, 0.7f)); // scaled
+//  car2.sObjectFullpath = "..\\data\\virtualroad\\lowpoly_jeep3\\jeep.obj";
+//  car2.Load(.6f, 0.0f, Vec3f(20.0f, 6.0f, 0.7f)); // scaled
   vObjects.push_back(car2); // 2do: wieviel Speicherverbrauch?
 #endif
 

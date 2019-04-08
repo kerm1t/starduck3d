@@ -342,30 +342,35 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         mouse_x += xPosRelative;
         mouse_y += yPosRelative;
 
-        // https://www.gamedev.net/forums/topic/655198-raw-input-mouse-problem/
+        if ((xPosRelative > 0) && (yPosRelative > 0)) // hack! has to be inside Window!
+                                                      //       yet (0,0) cannot be klicked now, maybe fix that later
+        {
+          // https://www.gamedev.net/forums/topic/655198-raw-input-mouse-problem/
         // Mouse Left: Add Object only, when not over IMGui element while clicking
-        bool downState = (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) > 0;
-        bool upState = (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) > 0;
-        if (downState == true && upState == false)
-        {
-          mouse_left = 1;
+          bool downState = (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) > 0;
+          bool upState = (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) > 0;
+          if (downState == true && upState == false)
+          {
+            mouse_left = 1;
+          }
+          if (upState == true)
+          {
+            mouse_left = 0;
+          }
+          if (mouse_left == 1)
+          {
+            b_add_obj = true;
+            // hat nicht funktioniert, hier Objekte hinzuzufügen.
+            // habe jetzt in den Renderthread verschoben, klack, schon hat's funktioniert
+  /*          int nVAOs = m_proj.m_render.vVAOs.size();
+            m_proj.holzstapel[m_proj.n_holz_gestapelt].setRender(&m_proj.m_render);
+            m_proj.holzstapel[m_proj.n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
+            m_proj.holzstapel[m_proj.n_holz_gestapelt++].Load(0.4f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f)); // scaled
+            m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+  */
+          }
+          // Mouse Left: Add Object only, when not over IMGui element while clicking
         }
-        if (upState == true)
-        {
-          mouse_left = 0;
-        }
-        if (mouse_left == 1)
-        {
-          b_add_obj = true;
-          // hat nicht funktioniert, hier Objekte hinzuzufügen.
-          // habe jetzt in den Renderthread verschoben, klack, schon hat's funktioniert
-/*          int nVAOs = m_proj.m_render.vVAOs.size();
-          m_proj.holzstapel[m_proj.n_holz_gestapelt].setRender(&m_proj.m_render);
-          m_proj.holzstapel[m_proj.n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
-          m_proj.holzstapel[m_proj.n_holz_gestapelt++].Load(0.4f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f)); // scaled
-          m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
-*/        }
-        // Mouse Left: Add Object only, when not over IMGui element while clicking
       }
     }
     break;
