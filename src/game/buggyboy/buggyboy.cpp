@@ -132,7 +132,7 @@ void RenderThread(void *args)
 
       m_cam.change_Aspect(win_w,win_h);
       // mouse-move camera
-      m_cam.Look_with_Mouse(glm::vec2(mouse_x, mouse_y));
+      m_cam.Look_with_Mouse(glm::vec2(mouse_x, -5.0f + (float)mouse_y/(float)win_h*10.0f));
     }
 
     m_cam.update_View(); // View = Pos,At,Norm
@@ -339,8 +339,9 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
       {
         int xPosRelative = raw->data.mouse.lLastX;
         int yPosRelative = raw->data.mouse.lLastY;
-        mouse_x += xPosRelative;
-        mouse_y += yPosRelative;
+        mouse_x += xPosRelative; // we want this to be unlimited for rotation
+//        mouse_y += yPosRelative; ... we want this to be limited by the upper and lower screen, as used to look up / down
+                                 //    that is why this is set in regular WndProc() routine
 
         if ((xPosRelative > 0) && (yPosRelative > 0)) // hack! has to be inside Window!
                                                       //       yet (0,0) cannot be klicked now, maybe fix that later
@@ -449,7 +450,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 //    pt_x = GET_X_LPARAM(lParam); // LOWORD u. HIWORD fkt. nicht bei mehreren Monitoren!
 //    pt_y = GET_Y_LPARAM(lParam);
 //    mouse_x = pt_x;
-//    mouse_y = pt_y;
+    mouse_y = GET_Y_LPARAM(lParam);
 //    io.MousePos = ImVec2(pt_x, pt_y);
     break;
   case WM_LBUTTONDOWN:

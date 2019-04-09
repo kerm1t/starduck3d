@@ -7,7 +7,9 @@
 #include "stdafx.h"
 #pragma once
 
-//#include <math.h>
+#define _USE_MATH_DEFINES
+#include "math.h"
+
 //#define GLM_FORCE_RADIANS // disabled ... distorts the projection
 #include "glm/glm.hpp" // is there an _ext ??
 #include <glm/gtc/matrix_transform.hpp>
@@ -16,9 +18,8 @@
 #include <GL/glew.h>
 #include <gl\gl.h>    // Header File For The OpenGL32 Library
 #include <gl\glu.h>   // Header File For The GLu32 Library
-//#include "obj.hpp"
 
-//#define DEGTORAD ()
+#define DEGTORAD(x) (x * M_PI / 180.0f)
 
 class Camera
 {
@@ -61,22 +62,21 @@ public:
   glm::vec3 Dir;        // viewing direction
   glm::vec3 DirMouse;   // 
 
-  glm::float32 mouselook_DEG, mouselook_RAD; // e.g. 90.0f
+//  glm::float32 mouselook_DEG, mouselook_RAD; // e.g. 90.0f
 
   bool bStickToObject;
-//  obj::CObject& obj;
   int iStickToObj;
 
   Camera()
   {
     fovy_DEG =  60.0f;
-    fovy_RAD = fovy_DEG * 3.14159f/180.0f; // 2do, DEGTORAD, math.pi
+    fovy_RAD = DEGTORAD(fovy_DEG); // 2do, DEGTORAD, math.pi
     aspect   =   4.0f / 3.0f;
     zNear    =   0.5f; // do not clip near objects, e.g. when camera perspcetive "inside" car.
     zFar     = 100.0f;
 
-    mouselook_DEG = 180.0f;
-    mouselook_RAD = mouselook_DEG * 3.14159f/180.0f;
+//    mouselook_DEG = 180.0f;
+//    mouselook_RAD = DEGTORAD(mouselook_DEG);
 
     Pos[0] = 0.0f;
     Pos[1] = 0.0f;
@@ -194,27 +194,27 @@ public:
   void TurnLeft() // keep position
   {
     // 90 deg. left
-    float thetaRAD = -5.0f * 3.14159f/180.0f  /20.0f; // /50 war zu langsam
+    float thetaRAD = DEGTORAD(-5.0f)  /20.0f; // /50 war zu langsam
     Dir[0] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD);
     Dir[1] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD);
   }
   void TurnRight() // keep position
   {
-    float thetaRAD = 5.0f * 3.14159f/180.0f  /20.0f; // /50 war zu langsam
+    float thetaRAD = DEGTORAD(5.0f)  /20.0f; // /50 war zu langsam
     Dir[0] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD);
     Dir[1] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD);
   }
 
   void Look_with_Mouse(glm::vec2 mouse) // relative
   {
-    float m_x = mouse.x / 150.0f;
-    float m_z = mouse.y / 150.0f;
+    float m_x =  mouse.x / 150.0f;
+    float m_z = -mouse.y;
 
     // DirMouse anstatt Dir benutzen!
-    float thetaRAD = m_x * mouselook_RAD;
-    DirMouse[1] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD); // DirM...[1] ?
+    float thetaRAD = m_x;// * mouselook_RAD;
     DirMouse[0] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD); // DirM...[0] ?
-    DirMouse[2] = -sin(m_z * mouselook_RAD);// / aspect);
+    DirMouse[1] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD); // DirM...[1] ?
+    DirMouse[2] = m_z;// *mouselook_RAD);// / aspect);
 
     At = Pos + DirMouse;
 // Problem: hier gibt es eine Rückkopplung    Dir = At - Pos; // 2019-02-03
