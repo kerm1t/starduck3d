@@ -18,13 +18,15 @@ Timer timer;
 #include <iostream>  // file io
 #include <fstream>
 
+#define VBOADD_CURBSTONE 1
+#define VBOADD_GUARDRAIL 1
 #define VBOADD_TRAFFICSIGNS 1
 #define VBOADD_REDCAR 0
 #define VBOADD_CONFERENCEROOM 0
 #define VBOADD_ANTONS_VILLAGE 0
-#define VBOADD_SCENE_OBJS 1     // load from obj.txt
+#define VBOADD_SCENE_OBJS 0     // load from obj.txt
 #define VBOADD_BILLBOARDS 1     // shall be more than 1 type of billboard
-#define VBOADD_HOLZSTAPEL 1
+#define VBOADD_20_RANDOM_HOLZSTAPEL 0
 #define VBOADD_CONTICAR 1
 #define VBOADD_JEEP 1
 #define VBOADD_BARRIERS 1
@@ -121,24 +123,15 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
                   //     beim LoadObjects(s.u.) call
 
 
-//  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp"));
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti",ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp")));
 
-
-  // DUMMY
-//  m_render.Triangles_to_VBO(Vec3f( 0.0f,0.0f,0.0f));
-//  m_render.Triangles_to_VBO(Vec3f( 9.0f,3.0f,0.5f));
-//  m_render.Triangles_to_VBO(Vec3f(12.0f,6.0f,0.5f));
-//  m_render.Triangles_to_VBO(Vec3f(14.0f,6.0f,0.5f));
 
 
   m_groundplane.p_render = &m_render;
   vao = m_groundplane.Create();
   m_render.vVAOs.push_back(vao);
 
-  //  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\virtualroad\\road_tex_256x256.bmp"));
-  //  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_road_vert4.bmp"));
-  //  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_water.bmp"));
+
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Road", ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_road_vert4.bmp")));
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Water", ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_water.bmp")));
 
@@ -151,7 +144,6 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 
 
-  //  m_render.vGLTexture.push_back(ldrIMG.loadIMG("..\\data\\buggyboy\\banner_t.png", true));
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Banner", ldrIMG.loadIMG("..\\data\\buggyboy\\banner_t.png", true)));
 
 
@@ -162,8 +154,6 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 
 #if (VBOADD_BILLBOARDS == 1)
-//  m_render.vGLTexture.push_back(ldrBMP.loadBMP_custom("..\\data\\buggyboy\\flag.bmp"));
-//  m_render.vGLTexture.push_back(ldrIMG.loadIMG("..\\data\\buggyboy\\banner_t.png", true));
 // a) place billboard here, as it needs texture id = 4 -> 2do: simplify tex-ID
   obj::CBillboard bb;
   bb.p_render = &m_render;
@@ -176,16 +166,17 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
 #endif
 
+
+
   // ii) Load VAOs depending on scene
   m_scenebuilder.p_render = &m_render;
   m_scenebuilder.p_scene = &m_scene;
 
-//#define CURBSTONE
-#ifdef GUARDRAIL
+#if (VBOADD_GUARDRAIL == 1)
   vao = m_scenebuilder.CreateGuardrails(); // "align" to road
   m_render.vVAOs.push_back(vao);
 #endif
-#ifdef CURBSTONE
+#if (VBOADD_CURBSTONE == 1)
   vao = m_scenebuilder.CreateCurbstones(); // "align" to road
   m_render.vVAOs.push_back(vao);
 #endif
@@ -205,7 +196,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.vVAOs.push_back(vao);
 #endif
 
- 
+
   GLenum err = glGetError();
 
 #if (VBOADD_REDCAR == 1)
@@ -232,7 +223,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  holzstapel.sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
 //  holzstapel.Load(0.4f, 0.0f, Vec3f(rand() % 100, rand() % 100, 0.5f)); // scaled
 
-#if (VBOADD_HOLZSTAPEL == 1)
+#if (VBOADD_20_RANDOM_HOLZSTAPEL == 1)
 //#define N_HOLZSTAPEL (40+20) // temp: 20 can be set later by Mouseklick
 //  obj::CGL_ObjectWavefront holzstapel[N_HOLZSTAPEL];
   for (unsigned int ui = 0; ui < 20; ui++)
@@ -284,7 +275,17 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   sponza.Load(1.0f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
 #endif
 
-  // c) place billboard here: invisible
+  // c) place billboard here: 1 of 2 is invisible (the 20,10 one)
+/*  obj::CBillboard bb;
+  bb.p_render = &m_render;
+  vao = bb.Create(10.0f, 10.0f, 0.0f);
+  m_render.vVAOs.push_back(vao);
+  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
+
+  vao = bb.Create(20.0f, 10.0f, 0.0f);
+  m_render.vVAOs.push_back(vao);
+  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
+  */
 
   err = glGetError();
 

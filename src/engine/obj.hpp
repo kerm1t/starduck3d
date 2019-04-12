@@ -2,6 +2,7 @@
 
 Generic class for 3d-Objects consisting of parts (C) anigators
 
+2019-03-xx  AABB added
 2017-05-27, VAO structure is parallel, VAO relates to a) simple object
                                                       b) part of ObjectLoaded
             moving is done on VAO

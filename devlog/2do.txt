@@ -1,3 +1,8 @@
+4/11
+- texRoad,texWater -> tx_Road, tx_Water, dann direktes Laden per Hash möglich
+- Editor: Cursor durch Hand o.Ä. ersetzen
+- Editor: Objekte drehen
+
 4/1
 (+) Mausbutton nur auswerten, wenn im Fenster
 

@@ -75,9 +75,6 @@ public:
     zNear    =   0.5f; // do not clip near objects, e.g. when camera perspcetive "inside" car.
     zFar     = 100.0f;
 
-//    mouselook_DEG = 180.0f;
-//    mouselook_RAD = DEGTORAD(mouselook_DEG);
-
     Pos[0] = 0.0f;
     Pos[1] = 0.0f;
     Pos[2] = 1.34f;

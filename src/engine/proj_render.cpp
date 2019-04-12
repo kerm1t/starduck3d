@@ -135,8 +135,7 @@ HDC proj::Render::GL_attach_to_DC(HWND hWnd)
   drivers.
   */
 
-  if (!(hRC=wglCreateContext(hDC))) // Are We Able To Get A Rendering Context?
-//  if (!(hRC=wglCreateContextAttribsARB(HDC hDC, HGLRC hshareContext, const int *attribList);
+  if (!(hRC=wglCreateContext(hDC)))
   {
     MessageBox(NULL,"Can't Create A GL Rendering Context.","ERROR",MB_OK|MB_ICONEXCLAMATION);
     return ERR_CONTEXT;
@@ -150,14 +149,7 @@ HDC proj::Render::GL_attach_to_DC(HWND hWnd)
   ReSizeGLScene(width, height); // Set Up Our Perspective GL Screen
   return hDC;
 }
-/*
-void proj::Render::Init_Textures()
-{
-  // s. proj.Init() ...
-  //    aTextures[0].fXWorld = 5.0f; // [m]
-  //    aTextures[0].fYWorld = 5.0f; // [m]
-}
-*/
+
 // HACK!!!
 void proj::Render::Bind_NEW__VBOs_to_VAOs(int ui) // s. http://www.arcsynthesis.org/gltut/Positioning/Tutorial%2005.html
 {
@@ -323,58 +315,6 @@ void proj::Render::FPS()
   vVAOs.push_back(fps);
 }
 
-// most simple VBO/VAO, just in case errors happen...
-void proj::Render::Triangles_to_VBO(Vec3f v3pos)
-{
-  unsigned int ui_idVBO = vVAOs.size();
-
-  // a) Object vertices + cols/texture
-#define COORDS_PER_VERTEX 3
-#define VERTICES_PER_TRI  3
-#define TRIANGLES         2
-#define TRI_COORDS        TRIANGLES*VERTICES_PER_TRI*COORDS_PER_VERTEX // 18 = 2 Triangles * 3 Vertices * 3 Coordinates
-
-  std::vector<GLfloat> coords;
-  coords.push_back(v3pos.x+ 0.6f); coords.push_back(v3pos.y+0.1f); coords.push_back(v3pos.z+0.0f);
-  coords.push_back(v3pos.x+ 0.9f); coords.push_back(v3pos.y+0.5f); coords.push_back(v3pos.z+0.0f); 
-  coords.push_back(v3pos.x+ 0.0f); coords.push_back(v3pos.y+0.7f); coords.push_back(v3pos.z+0.0f); 
-
-  coords.push_back(v3pos.x+-0.4f); coords.push_back(v3pos.y+0.1f); coords.push_back(v3pos.z+0.0f); 
-  coords.push_back(v3pos.x+ 0.4f); coords.push_back(v3pos.y+0.1f); coords.push_back(v3pos.z+0.0f); 
-  coords.push_back(v3pos.x+ 0.0f); coords.push_back(v3pos.y+0.7f); coords.push_back(v3pos.z+0.0f); 
-
-  std::vector<GLfloat> cols;
-  cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
-  cols.push_back(1.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
-  cols.push_back(0.0f); cols.push_back(1.0f); cols.push_back(0.0f); 
-
-  cols.push_back(0.0f); cols.push_back(0.0f); cols.push_back(1.0f); 
-  cols.push_back(0.0f); cols.push_back(0.0f); cols.push_back(1.0f); 
-  cols.push_back(0.0f); cols.push_back(0.0f); cols.push_back(1.0f); 
-
-  // b) store VAO props for OpenGL-drawing loop (and later manipulation, e.g. position change)
-  c_VAO tri;
-  tri.Name = "triangle";
-//  tri.b_moving = TRUE;
-  tri.t_Shade = SHADER_COLOR_FLAT;
-  tri.uiVertexCount = TRIANGLES*VERTICES_PER_TRI;
-  vVAOs.push_back(tri);
-
-  // ---------------------------
-  // >>> now Push to OpenGL! >>>
-  // ---------------------------
-  glGenBuffers(1, &positionBuffer[ui_idVBO]); // a) position-buffer
-  glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[ui_idVBO]);
-  glBufferData(GL_ARRAY_BUFFER, TRI_COORDS*sizeof(GLfloat), &coords[0], GL_STATIC_DRAW);
-
-  glGenBuffers(1, &colorBuffer[ui_idVBO]); // b) color-buffer
-  glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[ui_idVBO]);
-  glBufferData(GL_ARRAY_BUFFER, TRI_COORDS*sizeof(GLfloat), &cols[0], GL_STATIC_DRAW);
-
-  // uvbuffer = NULL, don't try to access it!
-  // ... after adding coords/cols, they can be forgotten
-}
-
 int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
 {
   unsigned int ui_idVBO = vVAOs.size();
@@ -484,22 +424,9 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
     // b) store VAO props for OpenGL-drawing loop (and later manipulation, e.g. position change)
     c_VAO vao;
     vao.Name = "seg";// aParts[iLine];
-/*    if (iLine==2) // 2do --> in der Scene-description speichern
-    {
-      vao.t_Shade = SHADER_TEXTURE;
-      vao.ui_idTexture = TEX_WATER;// TEX_ROADSURFACE;
-    }
-    else
-    {
-//      vao.t_Shade = SHADER_COLOR_FLAT;
-      vao.t_Shade = SHADER_TEXTURE;
-      vao.ui_idTexture = TEX_ROADSURFACE;
-    }
-*/
     vao.t_Shade = SHADER_TEXTURE;
     std::string sTex = rc_Param.m_Textures[iLine];
-//    if (sTex.compare("texWater;") == 0) vao.ui_idTexture = TEX_WATER;
-//    if (sTex.compare("texRoad;") == 0) vao.ui_idTexture = TEX_ROADSURFACE;
+    // 2do: texWater --> tx_Water
     if (sTex.compare("texWater;") == 0) vao.ui_idTexture = tex_map.find("tx_Water")->second;
     if (sTex.compare("texRoad;") == 0) vao.ui_idTexture = tex_map.find("tx_Road")->second;
 
@@ -529,40 +456,6 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
 
   return 0;
 }
-
-/* === Move objects ===
-http://www.arcsynthesis.org/gltut/positioning/Tut03%20A%20Better%20Way.html  <-- 2015-12-12, fkt. leider nicht mehr
-ist jetzt hier -->
-https://paroj.github.io/gltut/
-bzw. hier -->
-http://alfonse.bitbucket.org/oldtut/
-*/
-/*
-int proj::Render::DestroyScene_VBO()
-{
-glDeleteVertexArrays(2, &vertexArray[0]);
-glDeleteBuffers(2, &positionBuffer[0]);
-glDeleteBuffers(2, &colorBuffer[0]);
-//    glDeleteBuffers(2, &uvBuffer[0]);
-return 0;
-}
-*/
-/*
-void proj::Render::get_xyz_Hack(int iT, GLfloat &x, GLfloat &y, GLfloat &z, GLfloat &xto, GLfloat &yto, GLfloat &zto)
-{
-  SceneParam &rc_Param = m_Scene->m_SceneLoader;
-  x = rc_Param.m_c_Trajectory[iT].s_Pos.rl_X;  // 2do Vec3f ...
-  y = rc_Param.m_c_Trajectory[iT].s_Pos.rl_Y;
-  z = rc_Param.m_c_Trajectory[iT].s_Pos.rl_Z + 1.34f;
-  float xlook = rc_Param.m_c_Trajectory[iT+1].s_Pos.rl_X;
-  float ylook = rc_Param.m_c_Trajectory[iT+1].s_Pos.rl_Y;
-  float zlook = rc_Param.m_c_Trajectory[iT+1].s_Pos.rl_Z + 1.34f;
-  xto = xlook;//-x;
-  yto = ylook;//-y;
-  zto = zlook;//-z;
-}
-*/
-// int proj::Render::Egopos_and_Lookat()
 
 // rotate: https://www.opengl.org/discussion_boards/showthread.php/179290-Rotation-w-Rectangular-Pixels-(2D-VAO)
 
@@ -639,25 +532,17 @@ void proj::Render::DrawVAOs_NEU()
         ||
         ((p_cam->iStickToObj == 2) && (vVAOs[ui].Name.compare("Jeep_default") == 0)))
       {
-        //      glUniform3f(sh1_unif_offset, move.x,move.y,0.0f);
         glm::vec3 move; // hack, just a test for object movement
         move.x = p_cam->Pos.x - vVAOs[ui].vPos.x;
         move.y = p_cam->Pos.y - vVAOs[ui].vPos.y;
         glm::vec3 dir = p_cam->At - p_cam->Pos;
-        //      move.x += p_cam->Dir.x*3.0f; // dir is not updated currently, as it is only for objects moved, not for camera
-        //      move.y += p_cam->Dir.y*3.0f;
         move.x += dir.x*3.0f;
         move.y += dir.y*3.0f;
-        /// s.u.      glUniform3f(sh1_unif_offset, move.x, move.y, 0.0f);
-              // rotation
         glm::mat4 Model = glm::mat4(1.0f);
         glm::float32 f_VehRot_Z = -atan2(dir.x, dir.y);
         glm::float32 f_VehRot_Z_DEG = glm::degrees(f_VehRot_Z);
-        // translate
-  //      Model = glm::translate(Model, glm::vec3(move.x, move.y, 0));
-  // "steering the car" works only with first ranslation, then rotation
-  //      Model = glm::translate(Model, glm::vec3(p_cam->Pos.x + dir.x*3.0f, p_cam->Pos.y+dir.y*3.0f, 0));
-  //      Model = glm::translate(Model, glm::vec3(p_cam->Pos.x + dir.x*-0.5f, p_cam->Pos.y + dir.y*-0.5f, 0));
+        // "steering the car" works only with first ranslation, then rotation
+        // yet, there is a flickering problem!!
         Model = glm::translate(Model, glm::vec3(p_cam->Pos.x + dir.x*f_camy, p_cam->Pos.y + dir.y*f_camy, 0));
         Model = glm::rotate(Model, f_VehRot_Z_DEG, glm::vec3(0.0f, 0.0f, 1.0f)); // where x, y, z is axis of rotation (e.g. 0 1 0)
         p_cam->change_Model(Model);
@@ -669,25 +554,6 @@ void proj::Render::DrawVAOs_NEU()
       }
     }
 
-    if (vVAOs[ui].b_moving)
-    {
-      v3 = m_Moving[1]->position; // <-- Bewegung muss in einer eigenen loop erfolgen, da OpenGl nur bei neu malen bewegt (ala GLUT-Idle)
-      //    glUniform3f(offsetAttrib, v3.x, v3.y, v3.z);
-      //ROTATE (only after offset)
-      glm::mat4 Model = glm::mat4(1.0f);
-      // first translate
-      Model = glm::translate(Model,glm::vec3(v3.x,v3.y,v3.z));
-      // then rotate
-      // ! --> rotation is not "compatible" with offsetAttrib, that's why translation also done on Model matrix here
-      // s. http://stackoverflow.com/questions/9920624/glm-combine-rotation-and-translation
-      // Reihenfolge der Rotationen ist wichtig, s. http://gamedev.stackexchange.com/questions/73467/glm-rotating-combining-multiple-quaternions
-      glm::float32 f_VehRot_Z = -atan2(m_Moving[1]->direction[0],m_Moving[1]->direction[1]);
-      glm::float32 f_VehRot_Z_DEG = glm::degrees(f_VehRot_Z);
-      Model = glm::rotate(Model, f_VehRot_Z_DEG, glm::vec3(0.0f,0.0f,1.0f)); // where x, y, z is axis of rotation (e.g. 0 1 0)
-      //	glm::float32 f_VehTilt_DEG = 20.0f*abs(f_VehRot_Z);
-      //	Model = glm::rotate(Model, f_VehTilt_DEG, glm::vec3(0.0f,1.0f,0.0f)); // where x, y, z is axis of rotation (e.g. 0 1 0)
-      p_cam->change_Model(Model);
-    }
 
     if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -747,29 +613,21 @@ void proj::Render::DrawVAOs_NEU()
     }
   } // for ...
 
-    //  ---------------------------------------------------------------------------------------
-    //  glVertexAttribPointer is the current and preferred way of passing attributes to the GPU.
-    //  glVertexPointer is part of the old and deprecated fixed function pipeline and set openGL to use the VBO for the attribute.
-    //  ---------------------------------------------------------------------------------------
-    // Cursor
-
   err = glGetError();
 
+
+
+
+
+  //  ---------------------------------------------------------------------------------------
+  //  glVertexAttribPointer is the current and preferred way of passing attributes to the GPU.
+  //  glVertexPointer is part of the old and deprecated fixed function pipeline and set openGL to use the VBO for the attribute.
+  //  ---------------------------------------------------------------------------------------
+  // Cursor
   glPointSize(48.0);
-/* {
-    Cursor = { 5.0,2.0,2.0 };
-    glVertexPointer(3, GL_FLOAT, sizeof(glm::vec3), &Cursor);
-    glm::vec3 col = { 0.0,1.0f,1.0 };
-    glColorPointer(3, GL_FLOAT, sizeof(glm::vec3), &col); // r + size(3)
-    glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(1));
-  }
-  */
   GLfloat col[3] = { 0.0f, 1.0f, 0.0f };
-//  GLfloat cur[3] = { 5.0,2.0,2.0 };
   GLfloat cur[3] = { Cursor.x,Cursor.y,Cursor.z };
 
-//  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-//  glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[iVAO]);
   glEnableVertexAttribArray(sh1_attr_col); // Attribute indexes were received from calls to glGetAttribLocation, or passed into glBindAttribLocation.
   glEnableVertexAttribArray(sh1_attr_pos);
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3, col, GL_DYNAMIC_DRAW);

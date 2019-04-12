@@ -128,8 +128,6 @@ void RenderThread(void *args)
     else
     {
       // Camera user controlled
-//      m_proj.m_render.get_xyz_Hack(iT,m_cam.Pos[0],m_cam.Pos[1],m_cam.Pos[2],m_cam.At[0],m_cam.At[1],m_cam.At[2]);
-
       m_cam.change_Aspect(win_w,win_h);
       // mouse-move camera
       m_cam.Look_with_Mouse(glm::vec2(mouse_x, -5.0f + (float)mouse_y/(float)win_h*10.0f));
@@ -221,7 +219,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
   glewExperimental = GL_TRUE; // <-- Nutzen?
   glewInit(); // <-- takes a little time
-//  wglSwapIntervalEXT(1);
 
   m_proj.Init();  // <-- Texture erst nach glewInit() laden!!
                   // a) data loading + b) data description c) render.Init()
@@ -347,7 +344,7 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                                                       //       yet (0,0) cannot be klicked now, maybe fix that later
         {
           // https://www.gamedev.net/forums/topic/655198-raw-input-mouse-problem/
-        // Mouse Left: Add Object only, when not over IMGui element while clicking
+          // Mouse Left: Add Object only, when not over IMGui element while clicking
           bool downState = (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) > 0;
           bool upState = (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) > 0;
           if (downState == true && upState == false)
@@ -360,15 +357,9 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
           }
           if (mouse_left == 1)
           {
-            b_add_obj = true;
             // hat nicht funktioniert, hier Objekte hinzuzufügen.
             // habe jetzt in den Renderthread verschoben, klack, schon hat's funktioniert
-  /*          int nVAOs = m_proj.m_render.vVAOs.size();
-            m_proj.holzstapel[m_proj.n_holz_gestapelt].setRender(&m_proj.m_render);
-            m_proj.holzstapel[m_proj.n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
-            m_proj.holzstapel[m_proj.n_holz_gestapelt++].Load(0.4f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f)); // scaled
-            m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
-  */
+            b_add_obj = true;
           }
           // Mouse Left: Add Object only, when not over IMGui element while clicking
         }
@@ -413,13 +404,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   int wmId, wmEvent;
   int zDelta;
-//  int pt_x,pt_y;
 
   glm::vec3 vVehDirNorm,vVehDirOrth;
 
   ImGui_WndProcHandler(hWnd, message, wParam, lParam);
-//  ImGuiIO& io = ImGui::GetIO();
-//  int nVAOs;
+
   switch (message)
   {
     // ----------------------------------------------------------------------------
@@ -430,45 +419,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     // there is DirectX / DirectInput, but that requires additional "weapons" we don't want to use here
     // ----------------------------------------------------------------------------
 //  in ImGUI WndProcHandler gezogen, dort lässt sich mittels WantCaptureMouse der Fokus steuern
-/*  case WM_INPUT:
-  {
-    UINT dwSize = 40;
-    static BYTE lpb[40];
-    GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
-    RAWINPUT* raw = (RAWINPUT*)lpb;
-    if (raw->header.dwType == RIM_TYPEMOUSE)
-    {
-      int xPosRelative = raw->data.mouse.lLastX;
-      int yPosRelative = raw->data.mouse.lLastY;
-      mouse_x += xPosRelative;
-      mouse_y += yPosRelative;
-    }
-    break;
-  }*/
+//  case WM_INPUT: [...]
   case WM_MOUSEWHEEL: // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645617(v=vs.85).aspx
     zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
     if (zDelta > 0) m_cam.Pos.z += 0.5; else m_cam.Pos.z -= 0.5; 
     break;
   case WM_MOUSEMOVE:
-    // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645616(v=vs.85).aspx
-//    pt_x = GET_X_LPARAM(lParam); // LOWORD u. HIWORD fkt. nicht bei mehreren Monitoren!
-//    pt_y = GET_Y_LPARAM(lParam);
-//    mouse_x = pt_x;
-//    mouse_y = GET_Y_LPARAM(lParam);
-//    io.MousePos = ImVec2(pt_x, pt_y);
     break;
   case WM_LBUTTONDOWN:
     mouse_left = 1;
-//    io.MouseDown[0] = true;
-/*    nVAOs = m_proj.m_render.vVAOs.size();
-    m_proj.holzstapel[m_proj.n_holz_gestapelt].setRender(&m_proj.m_render);
-    m_proj.holzstapel[m_proj.n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
-    m_proj.holzstapel[m_proj.n_holz_gestapelt++].Load(0.4f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f)); // scaled
-    m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
-*/    break;
+    // OpenGL (add objects) only in Renderthread
+    break;
   case WM_LBUTTONUP:
     mouse_left = 0;
-//    io.MouseDown[0] = false;
     break;
   case WM_COMMAND:
     wmId    = LOWORD(wParam);
@@ -486,8 +449,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       return DefWindowProc(hWnd, message, wParam, lParam);
     }
     break;
-    //	case WM_PAINT:
-    // ... painting by OpenGL
+//  case WM_PAINT: ... painting by OpenGL
   case WM_KEYDOWN:
     switch (wParam)
     {
@@ -516,7 +478,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       m_proj.bPause = !(m_proj.bPause);
       break;
     case 87: // W
-//      m_proj.m_render.iWireframe = 1-m_proj.m_render.iWireframe;
       m_cam.MoveFwd(1.0f);
       break;
     case 65: // A
