@@ -11,6 +11,7 @@
 
 3/29
 - nur noch 120 FPS (vorher ca. 700-800), Möglichkeit, Objekte nicht zu rendern per Mausklick
+  -> vielleicht weil der Shader jetzt Transparenzen berechnen muss
 - verschiedene Objekte laden
 - verschiedene Objekte platzieren
 
@@ -23,7 +24,7 @@
 3/22
 - loader beschleunigen, i.e. ganzes file laden
 - Anton's village in kleinere Objekte aufteilen, sonst riesige BBox
-- Maussteuerung vertikal
++ Maussteuerung vertikal
 - Drahtgitter (GL_LINES) statt GL_TRIANGLE zeichnen : zusätzlich!
 noch besser: https://computergraphics.stackexchange.com/questions/1664/how-to-render-the-wireframe-of-a-cube-without-the-diagonals-on-the-faces
   ODER: glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); abschnittsweise zeichnen als TRIANGLES, LINES etc.
