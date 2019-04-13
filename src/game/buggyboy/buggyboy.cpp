@@ -75,23 +75,35 @@ void RenderThread(void *args)
   {
     if (b_add_obj)
     {
-/*      int nVAOs = m_proj.m_render.vVAOs.size();
-      m_proj.holzstapel[m_proj.n_holz_gestapelt].setRender(&m_proj.m_render);
+      int nVAOs = m_proj.m_render.vVAOs.size();
+
+/*      m_proj.holzstapel[m_proj.n_holz_gestapelt].setRender(&m_proj.m_render);
       m_proj.holzstapel[m_proj.n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
       m_proj.holzstapel[m_proj.n_holz_gestapelt].Load(0.4f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f)); // scaled
       m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
       m_proj.vObjects.push_back(m_proj.holzstapel[m_proj.n_holz_gestapelt]); // 2do: wieviel Speicherverbrauch?
       m_proj.n_holz_gestapelt++;
-      
-      std::ofstream myfile;
+  */    
+/*      std::ofstream myfile;
       myfile.open("obj.txt", std::ios::app);
       myfile << "planken," << m_proj.m_render.Cursor.x << "," << m_proj.m_render.Cursor.y << "," << 0.0f << "\n";
       myfile.close();
-      */
+  */    
       obj::CBillboard bb;
       bb.p_render = &m_proj.m_render;
-      proj::c_VAO vao = bb.Create(10.0f, 10.0f, 0.0f);
+//      proj::c_VAO vao = bb.Create(10.0f, 10.0f, 0.0f);
+      proj::c_VAO vao = bb.Create(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f);
       m_proj.m_render.vVAOs.push_back(vao);
+      m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+      m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
+      
+/*      obj::CGL_ObjectWavefront barrier1(&m_proj.m_render);
+      barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
+      barrier1.Load(1.0f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f));
+      m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+      m_proj.vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
+      */
+
 
       b_add_obj = false;
     }
@@ -339,8 +351,9 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         mouse_x += xPosRelative; // we want this to be unlimited for rotation
 //        mouse_y += yPosRelative; ... we want this to be limited by the upper and lower screen, as used to look up / down
                                  //    that is why this is set in regular WndProc() routine
+        mouse_y += yPosRelative; //... we want this to be limited by the upper and lower screen, as used to look up / down
 
-        if ((xPosRelative > 0) && (yPosRelative > 0)) // hack! has to be inside Window!
+//        if ((xPosRelative > 0) && (yPosRelative > 0)) // hack! has to be inside Window!
                                                       //       yet (0,0) cannot be klicked now, maybe fix that later
         {
           // https://www.gamedev.net/forums/topic/655198-raw-input-mouse-problem/
@@ -375,7 +388,7 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     io.MousePos = ImVec2((float)pt_x, (float)pt_y);
     if (!io.WantCaptureMouse)
     {
-      mouse_y = pt_y;
+//      mouse_y = pt_y;
     }
     break;
   case WM_LBUTTONDOWN:

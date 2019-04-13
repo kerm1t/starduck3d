@@ -70,7 +70,7 @@ public:
   Camera()
   {
     fovy_DEG =  60.0f;
-    fovy_RAD = DEGTORAD(fovy_DEG); // 2do, DEGTORAD, math.pi
+    fovy_RAD = (float)DEGTORAD(fovy_DEG); // 2do, DEGTORAD, math.pi
     aspect   =   4.0f / 3.0f;
     zNear    =   0.5f; // do not clip near objects, e.g. when camera perspcetive "inside" car.
     zFar     = 100.0f;
@@ -191,13 +191,13 @@ public:
   void TurnLeft() // keep position
   {
     // 90 deg. left
-    float thetaRAD = DEGTORAD(-5.0f)  /20.0f; // /50 war zu langsam
+    float thetaRAD = (float)DEGTORAD(-5.0f)  /20.0f; // /50 war zu langsam
     Dir[0] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD);
     Dir[1] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD);
   }
   void TurnRight() // keep position
   {
-    float thetaRAD = DEGTORAD(5.0f)  /20.0f; // /50 war zu langsam
+    float thetaRAD = (float)DEGTORAD(5.0f)  /20.0f; // /50 war zu langsam
     Dir[0] = Dir[0] * cos(thetaRAD) - Dir[1] * sin(thetaRAD);
     Dir[1] = Dir[0] * sin(thetaRAD) + Dir[1] * cos(thetaRAD);
   }

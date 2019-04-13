@@ -508,9 +508,9 @@ void proj::Render::DrawVAOs_NEU()
       glUseProgram(program); // 2/2/19 für jedes Objekt glUseProgram aufrufen?
     err = glGetError();
 
-    bool bMoved = false; // workaround, removed later
+//    bool bMoved = false; // workaround, removed later
 
-    if (
+/*    if (
       ((vVAOs[ui].vPos.x < -0.001f) || (vVAOs[ui].vPos.x > 0.001f)) ||
       ((vVAOs[ui].vPos.y < -0.001f) || (vVAOs[ui].vPos.y > 0.001f)) ||
       ((vVAOs[ui].vPos.z < -0.001f) || (vVAOs[ui].vPos.z > 0.001f))
@@ -522,7 +522,7 @@ void proj::Render::DrawVAOs_NEU()
       Model = glm::translate(Model,glm::vec3(vVAOs[ui].vPos.x,vVAOs[ui].vPos.y,vVAOs[ui].vPos.z));
       p_cam->change_Model(Model);
     }
-
+    */
     if (p_cam->iStickToObj > 0)
     {
       // ----------------
@@ -584,33 +584,26 @@ void proj::Render::DrawVAOs_NEU()
     err = glGetError();
     
     glBindVertexArray(vVertexArray[ui]); // <--- NVidia: hier Problem, wenn ui = 13 (beim ersten colorierten + texturierten Objekt!!)
-    
-    if (ui==0)
-    {
-//      glEnable(GL_BLEND);
-//      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
 
-    /*
-      wenn's hier crasht, dann ist der Fehler vermutlich vorher beim buffern passiert und
-      glGetError hätte etwas melden sollen!!
-    */
+
+    //  wenn's hier crasht, dann ist der Fehler vermutlich vorher beim buffern passiert und
+    //  glGetError hätte etwas melden sollen!!
+
 
     glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
     err = glGetError();                                     //     it can be either positionbuffer, colorbuffer or uvbuffer
                                                             //     if t_Shade == TEXTURE,
                                                             //     then colorbuffer is NULL and vice versa!
 
-    if (ui==0)
-    {
-//      glDisable(GL_BLEND);
-    }
+    glBindVertexArray(0); // 2019-04-13 unbind -> jetzt wird das letzte Objekt nicht mehr vom Cursor (s.u.) "überschrieben"
+                          //                      aber die Textur flackert
+
     if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    if (vVAOs[ui].b_moving || bMoved)
-    {
-      p_cam->reset_Model();
-    }
+//    if (vVAOs[ui].b_moving || bMoved)
+//    {
+//      p_cam->reset_Model();
+//    }
   } // for ...
 
   err = glGetError();
@@ -618,7 +611,7 @@ void proj::Render::DrawVAOs_NEU()
 
 
 
-
+/*
   //  ---------------------------------------------------------------------------------------
   //  glVertexAttribPointer is the current and preferred way of passing attributes to the GPU.
   //  glVertexPointer is part of the old and deprecated fixed function pipeline and set openGL to use the VBO for the attribute.
@@ -642,12 +635,13 @@ void proj::Render::DrawVAOs_NEU()
 //  DrawArrays needs a vertex buffer(or more), DrawElements also needs an index buffer.
 // ---------------------------------------------------------------------------------
 //  glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, NULL);
+//  glBindVertexArray(vVertexArray[ui]); // <--- NVidia: hier Problem, wenn ui = 13 (beim ersten colorierten + texturierten Objekt!!)
   glDrawArrays(GL_POINTS, 0, 1);
   glDisableVertexAttribArray(sh1_attr_pos);
   glDisableVertexAttribArray(sh1_attr_col);
   err = glGetError();
 
-
+*/
 
   //    if (b_PNG) FBO_to_PPM();
 }

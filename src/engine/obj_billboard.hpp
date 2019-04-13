@@ -64,11 +64,11 @@ namespace obj
       uv.push_back({ 0.0f, 0.0f });
       uv.push_back({ 1.0f, 0.0f });
 
-      std::vector<GLfloat> cols;
-      for (int i = 0; i < 6; i++)
-      {
-        cols.push_back(1.0f); cols.push_back(1.0f); cols.push_back(1.0f);
-      }
+//      std::vector<GLfloat> cols;
+//      for (int i = 0; i < 6; i++)
+//      {
+//        cols.push_back(1.0f); cols.push_back(1.0f); cols.push_back(1.0f);
+//      }
 
       uint32 vCount = 6;
       // ---------------------------
@@ -83,6 +83,7 @@ namespace obj
       billy.uiVertexCount = vCount;
 //      billy.ui_idTexture = 4;
       billy.ui_idTexture = p_render->tex_map.find("tx_Banner")->second;
+//      billy.vPos = Vec3f(x, y, z);
       return billy;
     }
   }; // class CBillboard
