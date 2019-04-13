@@ -508,9 +508,10 @@ void proj::Render::DrawVAOs_NEU()
       glUseProgram(program); // 2/2/19 für jedes Objekt glUseProgram aufrufen?
     err = glGetError();
 
-//    bool bMoved = false; // workaround, removed later
+// MOVED ???? ... wenn ich das ausschalte, werden billboards ok, aber barriers (+ Jeep) falsch gezeichnet
+    bool bMoved = false; // workaround, removed later
 
-/*    if (
+    if (
       ((vVAOs[ui].vPos.x < -0.001f) || (vVAOs[ui].vPos.x > 0.001f)) ||
       ((vVAOs[ui].vPos.y < -0.001f) || (vVAOs[ui].vPos.y > 0.001f)) ||
       ((vVAOs[ui].vPos.z < -0.001f) || (vVAOs[ui].vPos.z > 0.001f))
@@ -522,7 +523,8 @@ void proj::Render::DrawVAOs_NEU()
       Model = glm::translate(Model,glm::vec3(vVAOs[ui].vPos.x,vVAOs[ui].vPos.y,vVAOs[ui].vPos.z));
       p_cam->change_Model(Model);
     }
-    */
+// MOVED ???? ... wenn ich das ausschalte, werden billboards ok, aber barriers (+ Jeep) falsch gezeichnet
+
     if (p_cam->iStickToObj > 0)
     {
       // ----------------
@@ -600,10 +602,13 @@ void proj::Render::DrawVAOs_NEU()
 
     if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-//    if (vVAOs[ui].b_moving || bMoved)
-//    {
-//      p_cam->reset_Model();
-//    }
+// MOVED ???? ... wenn ich das ausschalte, werden billboards ok, aber barriers (+ Jeep) falsch gezeichnet
+    if (vVAOs[ui].b_moving || bMoved)
+    {
+      p_cam->reset_Model();
+    }
+// MOVED ???? ... wenn ich das ausschalte, werden billboards ok, aber barriers (+ Jeep) falsch gezeichnet
+
   } // for ...
 
   err = glGetError();

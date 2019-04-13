@@ -18,8 +18,8 @@ Timer timer;
 #include <iostream>  // file io
 #include <fstream>
 
-#define VBOADD_GROUNDPLANE 0
-#define VBOADD_SCENE 0
+#define VBOADD_GROUNDPLANE 1
+#define VBOADD_SCENE 1
 #define VBOADD_CURBSTONE 0
 #define VBOADD_GUARDRAIL 0
 #define VBOADD_TUNNEL 0
@@ -104,7 +104,7 @@ int proj::Proj::Load_Scene_Objs()
 */      // ===== 2do: move outside =====
       obj::CBillboard bb;
       bb.p_render = &m_render;
-      proj::c_VAO vao = bb.Create(pos.x, pos.y, pos.z);
+      proj::c_VAO vao = bb.Create("tx_Banner",pos.x, pos.y, pos.z);
       m_render.vVAOs.push_back(vao);
 
 
@@ -149,6 +149,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Banner", ldrIMG.loadIMG("..\\data\\buggyboy\\banner_t.png", true)));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Dawg", ldrIMG.loadIMG("..\\data\\buggyboy\\dawgman_transp.png", true)));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_DawK", ldrIMG.loadIMG("..\\data\\buggyboy\\dawgman_katja.png", true)));
 
 
 #if (VBOADD_SCENE_OBJS == 1)
@@ -284,19 +286,19 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   // c) place billboard here: das letzte wird nicht gezeichnet !?
   obj::CBillboard bb;
   bb.p_render = &m_render;
-  vao = bb.Create(10.0f, 10.0f, 0.0f);
+  vao = bb.Create("tx_Banner",10.0f, 10.0f, 0.0f);
   m_render.vVAOs.push_back(vao);
   vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
 
-  vao = bb.Create(20.0f, 10.0f, 0.0f);
+  vao = bb.Create("tx_Banner",20.0f, 10.0f, 0.0f);
   m_render.vVAOs.push_back(vao);
   vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
   
-  vao = bb.Create(30.0f, 10.0f, 0.0f);
+  vao = bb.Create("tx_Banner",30.0f, 10.0f, 0.0f);
   m_render.vVAOs.push_back(vao);
   vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
 
-  vao = bb.Create(40.0f, 10.0f, 0.0f);
+  vao = bb.Create("tx_Banner",40.0f, 10.0f, 0.0f);
   m_render.vVAOs.push_back(vao);
   vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
 

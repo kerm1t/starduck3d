@@ -42,7 +42,7 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 
 //#include "obj_simple.hpp"    // bboxes
 
-#define B_ADD_BBOX_VAO 1 // 0 | 1
+#define B_ADD_BBOX_VAO 0 // 0 | 1
 
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx    

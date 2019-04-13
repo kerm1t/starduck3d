@@ -11,7 +11,7 @@ namespace obj
 //    static int idbb;
     //    proj::Render * p_render;
 
-    proj::c_VAO Create(GLfloat x, GLfloat y, GLfloat z)
+    proj::c_VAO Create(std::string sTex, GLfloat x, GLfloat y, GLfloat z)
     {
       this->name = "billboard";
       // 2do: durchfahrbare billboards (Flaggen) und nicht durchfahrbare
@@ -23,19 +23,30 @@ namespace obj
       float h = 2.0f;
       float whalf = w / 2.0f;
       // 3D
-      coords.push_back(x+ whalf); coords.push_back(y); coords.push_back(z);
+/*      coords.push_back(x+ whalf); coords.push_back(y); coords.push_back(z);
       coords.push_back(x- whalf); coords.push_back(y); coords.push_back(z);
       coords.push_back(x- whalf); coords.push_back(y); coords.push_back(z+h);
 
       coords.push_back(x + whalf); coords.push_back(y); coords.push_back(z);
       coords.push_back(x - whalf); coords.push_back(y); coords.push_back(z+h);
       coords.push_back(x + whalf); coords.push_back(y); coords.push_back(z+h);
+      */
+      // 90 Grad
+      coords.push_back(x); coords.push_back(y + whalf); coords.push_back(z);
+      coords.push_back(x); coords.push_back(y - whalf); coords.push_back(z);
+      coords.push_back(x); coords.push_back(y - whalf); coords.push_back(z + h);
 
+      coords.push_back(x); coords.push_back(y + whalf); coords.push_back(z);
+      coords.push_back(x); coords.push_back(y - whalf); coords.push_back(z + h);
+      coords.push_back(x); coords.push_back(y + whalf); coords.push_back(z + h);
 
 
       // bbox : ydim = 0.5f  ================== 2do: put into (abstract CGL_object class)
-      this->aabb.min_point = glm::vec3(x - whalf, y-0.5f, z);
-      this->aabb.max_point = glm::vec3(x + whalf, y+0.5f, z+h);
+//      this->aabb.min_point = glm::vec3(x - whalf, y-0.5f, z);
+//      this->aabb.max_point = glm::vec3(x + whalf, y+0.5f, z+h);
+// 90 Grad
+      this->aabb.min_point = glm::vec3(x - 0.5f, y - whalf, z);
+      this->aabb.max_point = glm::vec3(x + 0.5f, y + whalf, z + h);
 
 #if(B_ADD_BBOX_VAO == 1)
       obj::CCube2 m_cube;
@@ -82,8 +93,9 @@ namespace obj
       billy.Name = "billyboard";
       billy.uiVertexCount = vCount;
 //      billy.ui_idTexture = 4;
-      billy.ui_idTexture = p_render->tex_map.find("tx_Banner")->second;
-//      billy.vPos = Vec3f(x, y, z);
+//      billy.ui_idTexture = p_render->tex_map.find("tx_Banner")->second;
+      billy.ui_idTexture = p_render->tex_map.find(sTex)->second;
+      //      billy.vPos = Vec3f(x, y, z);
       return billy;
     }
   }; // class CBillboard

@@ -1,3 +1,7 @@
+4/13
+- Jeep wird auf (0,0) gezeichnet, statt auf der richtigen Pos.
++ letztes Objekt wird nicht gezeichnet -> gelöst
+
 4/11
 - texRoad,texWater -> tx_Road, tx_Water, dann direktes Laden per Hash möglich
 - Editor: Cursor durch Hand o.Ä. ersetzen

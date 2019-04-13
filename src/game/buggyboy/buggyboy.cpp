@@ -54,6 +54,10 @@ bool b_WM_resized = false;
 bool b_program_stopped = false;
 bool b_add_obj = false;
 
+#define ED_OBJ_BILLBOARD 1
+#define ED_OBJ_BARRIER 2
+int editor_Obj = ED_OBJ_BILLBOARD;
+
 void CalculateFrameRate()
 {
   float currentTime = GetTickCount() * 0.001f;
@@ -89,20 +93,23 @@ void RenderThread(void *args)
       myfile << "planken," << m_proj.m_render.Cursor.x << "," << m_proj.m_render.Cursor.y << "," << 0.0f << "\n";
       myfile.close();
   */    
-      obj::CBillboard bb;
-      bb.p_render = &m_proj.m_render;
-//      proj::c_VAO vao = bb.Create(10.0f, 10.0f, 0.0f);
-      proj::c_VAO vao = bb.Create(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f);
-      m_proj.m_render.vVAOs.push_back(vao);
-      m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
-      m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
-      
-/*      obj::CGL_ObjectWavefront barrier1(&m_proj.m_render);
-      barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
-      barrier1.Load(1.0f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f));
-      m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
-      m_proj.vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
-      */
+      if (editor_Obj == ED_OBJ_BILLBOARD)
+      {
+        obj::CBillboard bb;
+        bb.p_render = &m_proj.m_render;
+        proj::c_VAO vao = bb.Create("tx_Banner",m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f);
+        m_proj.m_render.vVAOs.push_back(vao);
+        m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+        m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
+      }
+      if (editor_Obj == ED_OBJ_BARRIER)
+      {
+        obj::CGL_ObjectWavefront barrier1(&m_proj.m_render);
+        barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
+        barrier1.Load(1.0f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f));
+        m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+        m_proj.vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
+      }
 
 
       b_add_obj = false;
@@ -486,6 +493,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       {
         if (iT < m_proj.m_scene.trajectory_len-2) iT++; else iT = 0;
       }
+      break;
+    case 49: // 1
+    case 97: // 1 NUM
+      editor_Obj = ED_OBJ_BILLBOARD;
+      break;
+    case 50: // 2
+    case 98: // 2 NUM
+      editor_Obj = ED_OBJ_BARRIER;
       break;
     case 80: // P >> Pause ON/OFF
       m_proj.bPause = !(m_proj.bPause);
