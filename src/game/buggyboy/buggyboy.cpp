@@ -54,9 +54,11 @@ bool b_WM_resized = false;
 bool b_program_stopped = false;
 bool b_add_obj = false;
 
-#define ED_OBJ_BILLBOARD 1
-#define ED_OBJ_BARRIER 2
-int editor_Obj = ED_OBJ_BILLBOARD;
+#define ED_OBJ_BARRIER 1
+#define ED_OBJ_BB_BANNER 2
+#define ED_OBJ_BB_DAWG 3  // Bonus: Dawgman
+#define ED_OBJ_BB_DAWK 4  // Bonus: Dawgman (Katja)
+int editor_Obj = ED_OBJ_BB_BANNER;
 
 void CalculateFrameRate()
 {
@@ -93,11 +95,14 @@ void RenderThread(void *args)
       myfile << "planken," << m_proj.m_render.Cursor.x << "," << m_proj.m_render.Cursor.y << "," << 0.0f << "\n";
       myfile.close();
   */    
-      if (editor_Obj == ED_OBJ_BILLBOARD)
+      if ((editor_Obj == ED_OBJ_BB_BANNER) || (editor_Obj == ED_OBJ_BB_DAWG) || (editor_Obj == ED_OBJ_BB_DAWK))
       {
         obj::CBillboard bb;
         bb.p_render = &m_proj.m_render;
-        proj::c_VAO vao = bb.Create("tx_Banner",m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f);
+        proj::c_VAO vao;
+        if (editor_Obj == ED_OBJ_BB_BANNER) vao = bb.Create("tx_Banner", m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f);
+        else if (editor_Obj == ED_OBJ_BB_DAWG) vao = bb.Create("tx_Dawg", m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f);
+        else /*if (editor_Obj == ED_OBJ_BB_DAWK)*/ vao = bb.Create("tx_DawK", m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f);
         m_proj.m_render.vVAOs.push_back(vao);
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
@@ -114,14 +119,14 @@ void RenderThread(void *args)
 
       b_add_obj = false;
     }
-
+    float slowdown = 15.0f;
     if (GetAsyncKeyState(VK_UP))
     {
-      m_cam.MoveFwd(1.0f/25.0f);
+      m_cam.MoveFwd(1.0f / slowdown);
     }
     if (GetAsyncKeyState(VK_DOWN))
     {
-      m_cam.MoveBack(1.0f/50.0f);
+      m_cam.MoveBack(1.0f / slowdown);
     }
     if (GetAsyncKeyState(VK_LEFT))
     {
@@ -496,24 +501,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     case 49: // 1
     case 97: // 1 NUM
-      editor_Obj = ED_OBJ_BILLBOARD;
+      editor_Obj = ED_OBJ_BARRIER;
+      b_add_obj = true;
       break;
     case 50: // 2
     case 98: // 2 NUM
-      editor_Obj = ED_OBJ_BARRIER;
+      editor_Obj = ED_OBJ_BB_BANNER;
+      b_add_obj = true;
+      break;
+    case 51: // 3
+      editor_Obj = ED_OBJ_BB_DAWG;
+      b_add_obj = true;
+      break;
+    case 52: // 4
+      editor_Obj = ED_OBJ_BB_DAWK;
+      b_add_obj = true;
       break;
     case 80: // P >> Pause ON/OFF
       m_proj.bPause = !(m_proj.bPause);
       break;
     case 87: // W
-      m_cam.MoveFwd(1.0f);
+      m_cam.MoveFwd(0.3f);
       break;
     case 65: // A
-      m_cam.TurnLeft();
+//      m_cam.TurnLeft();
       m_cam.StrafeLeft();
       break;
     case 83: // S
-      m_cam.MoveBack(1.0f);
+      m_cam.MoveBack(0.3f);
       break;
     case 68: // D
       m_cam.StrafeRight();

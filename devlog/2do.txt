@@ -1,5 +1,5 @@
 4/13
-- Jeep wird auf (0,0) gezeichnet, statt auf der richtigen Pos.
++ Jeep wird auf (0,0) gezeichnet, statt auf der richtigen Pos.
 + letztes Objekt wird nicht gezeichnet -> gelöst
 
 4/11
@@ -22,7 +22,7 @@
 - nur noch 120 FPS (vorher ca. 700-800), Möglichkeit, Objekte nicht zu rendern per Mausklick
   -> vielleicht weil der Shader jetzt Transparenzen berechnen muss
 - verschiedene Objekte laden
-- verschiedene Objekte platzieren
++ verschiedene Objekte platzieren
 
 3/27
 + Objekte aus .ini Datei laden
@@ -49,7 +49,7 @@ noch besser: https://computergraphics.stackexchange.com/questions/1664/how-to-re
 
 3/13
 + physics: den Teil der Strecke detektieren, auf dem sich das ego gerade befindet
-- fix billboard placement nOK after barriers
++ fix billboard placement nOK after barriers
 
 3/9
 - cleanup -> branch
