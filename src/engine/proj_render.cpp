@@ -597,6 +597,13 @@ void proj::Render::DrawVAOs_NEU()
                                                             //     if t_Shade == TEXTURE,
                                                             //     then colorbuffer is NULL and vice versa!
 
+
+    glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
+    glLineWidth(5.0);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
     glBindVertexArray(0); // 2019-04-13 unbind -> jetzt wird das letzte Objekt nicht mehr vom Cursor (s.u.) "überschrieben"
                           //                      aber die Textur flackert
 
