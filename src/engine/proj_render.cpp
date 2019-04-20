@@ -28,6 +28,8 @@ proj::Render::Render() // constructor
 //  STB_SOMEFONT_CREATE(fontdata, fontpixels, STB_SOMEFONT_BITMAP_HEIGHT);
 
 //  Init_Textures();
+  b_solid = true;
+  b_wireframe = true; // 2do: only debugging: set to default
 }
 
 int proj::Render::Init()
@@ -556,8 +558,9 @@ void proj::Render::DrawVAOs_NEU()
       }
     }
 
+    glUniform1i(sh1_unif_wirecolor, 0); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
 
-    if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//    if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     if (vVAOs[ui].t_Shade == SHADER_TEXTURE)
     {
@@ -591,23 +594,32 @@ void proj::Render::DrawVAOs_NEU()
     //  wenn's hier crasht, dann ist der Fehler vermutlich vorher beim buffern passiert und
     //  glGetError hätte etwas melden sollen!!
 
+    if (b_solid)
+    {
+      glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+      err = glGetError();                                     //     it can be either positionbuffer, colorbuffer or uvbuffer
+                                                              //     if t_Shade == TEXTURE,
+                                                              //     then colorbuffer is NULL and vice versa!
 
-    glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
-    err = glGetError();                                     //     it can be either positionbuffer, colorbuffer or uvbuffer
-                                                            //     if t_Shade == TEXTURE,
-                                                            //     then colorbuffer is NULL and vice versa!
+      // if solid: draw wireframe in black
+      glUniform1i(sh1_unif_wirecolor, 1); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
+    }
+    else
+      glUniform1i(sh1_unif_wirecolor, 0); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
 
-
-    glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
-    glLineWidth(5.0);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    if (b_wireframe)
+    {
+      glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
+      glLineWidth(5.0);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 
     glBindVertexArray(0); // 2019-04-13 unbind -> jetzt wird das letzte Objekt nicht mehr vom Cursor (s.u.) "überschrieben"
                           //                      aber die Textur flackert
 
-    if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//    if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 // MOVED ???? ... wenn ich das ausschalte, werden billboards ok, aber barriers (+ Jeep) falsch gezeichnet
     if (vVAOs[ui].b_moving || bMoved)

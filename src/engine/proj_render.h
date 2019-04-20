@@ -75,6 +75,9 @@ namespace proj
     int idxFPS;
     bool b_splash_screen;
 
+    // global, i.e. not per object
+    bool b_solid;
+    bool b_wireframe;
     bool b_culling;
 
     // =============

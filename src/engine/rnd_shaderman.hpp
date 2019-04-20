@@ -22,6 +22,7 @@ public:
   GLuint sh1_attr_tex;      // uv
   // uniform
   GLuint sh1_unif_offset;   // <-- for object-movement
+  GLuint sh1_unif_wirecolor; // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
   GLuint sh1_unif_MVPMatrix;
   GLuint sh1_unif_sampler;  // sampler2D
   GLuint sh1_unif_col_tex;  // 0=col,1=tex
@@ -56,10 +57,14 @@ public:
       "out vec2 UV;\n"
       // colored
       "in vec3 color;\n"        // f.d. nicht texturierten, sondern Farbdreiecke
+      "uniform int wirecolor;\n"
       "out vec3 fragColor;\n"   // f.d. nicht texturierten, sondern Farbdreiecke
       "void main()\n"
       "{\n"
-      "  fragColor = color;\n"// f.d. nicht texturierten, sondern Farbdreiecke
+      "  if (wirecolor==1)\n"
+      "    fragColor = vec3(0.0,0.0,0.0);\n"
+      "  else\n"
+      "    fragColor = color;\n"// f.d. nicht texturierten, sondern Farbdreiecke
       "  vec4 totaloffset = vec4(offset.x, offset.y, offset.z, 0.0);\n"
       "  gl_Position = MVPMatrix * (vec4(position, 1.0) + totaloffset);\n" // totaloffset <-- fragementshader for movement! 
       "  UV = vertexUV;\n"
@@ -107,6 +112,7 @@ public:
 
     program = glCreateProgram(); // create empty program object
     glAttachShader(program, vertexShader); // attach shader
+    err = glGetError();
     glAttachShader(program, fragmentShader); // attach shader
     glLinkProgram (program); // link
     glUseProgram  (program); // install ... and use in the further runtime ...
@@ -121,6 +127,8 @@ public:
 
     // uniforms, 2do: die Variablen sollen nicht ...Attrib, sondern ...Uniform heissen!!
     sh1_unif_offset    = glGetUniformLocation(program, "offset");       // object movement
+    // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
+    sh1_unif_wirecolor = glGetUniformLocation(program, "wirecolor");
     sh1_unif_MVPMatrix = glGetUniformLocation(program, "MVPMatrix");    // camera movement
     sh1_unif_sampler   = glGetUniformLocation(program, "myTexSampler");
     sh1_unif_col_tex   = glGetUniformLocation(program, "col_tex");

@@ -379,9 +379,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               face_v,
               face_vt,
               face_vn);
-            //      vertexIndices.clear(); // check parts' size with & without
-            //      uvIndices.clear();     // check parts' size with & without
-            //      normalIndices.clear(); // check parts' size with & without
           }
           objstate = os_v;
           glm::vec3 vertex;
@@ -425,7 +422,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         }
         else if (tok[0] == "f") // face -- indices of v=vertices,vt=texture_uv,vn=normals
         {
-// ?          objstate = os_f;
+          objstate = os_f; // obj-reader state now "f"
           unsigned int v[255], vt[255], vn[255];
           unsigned int nVert = 0;
           enum facetype { VTN = 7, VT = 3, VN = 5, N = 4, T = 2, V = 1}; // bitfield: 0 == V, 1 == T, 2 == N
