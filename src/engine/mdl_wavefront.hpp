@@ -25,6 +25,7 @@
 //                               V,VT (e.g. normals in extra bumpmap)
 // s off (smooth shading off)
 //
+// maybe later replace with: https://github.com/syoyo/tinyobjloader
 // -------------------------------------------------------
 
 #include "stdafx.h"
@@ -125,6 +126,41 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   {
   public:
     s_AABB aabb;
+
+    // http://insanecoding.blogspot.com/2011/11/how-to-read-in-file-in-c.html
+    std::string load_fast(const char *filename)
+    {
+      std::ifstream in(filename, std::ios::in | std::ios::binary);
+      if (in)
+      {
+        std::string contents;
+        in.seekg(0, std::ios::end);
+        contents.resize(in.tellg());
+        in.seekg(0, std::ios::beg);
+        in.read(&contents[0], contents.size());
+        in.close();
+        return(contents);
+      }
+      throw(errno);
+    }
+    
+    std::vector<std::string> split(const char *str, char c = ' ')
+    {
+      std::vector<std::string> result;
+
+      do
+      {
+        const char *begin = str;
+
+        while (*str != c && *str)
+          str++;
+
+        result.push_back(std::string(begin, str));
+      } while (0 != *str++);
+
+      return result;
+    }
+
     bool loadMaterials(const char * path, std::vector <CMaterial> & out_v_CMaterials)
     {
       uint16 nMaterialsRead = 0;
@@ -281,12 +317,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       ... load "parts"
       provide parts with appropriate Material (set pointer)
     */
-    bool loadOBJParts(const char * path, std::vector <CMaterial> & v_Mat,
+    bool loadOBJParts(const char * filename, std::vector <CMaterial> & v_Mat,
       std::vector <CPart> & out_v_CParts, float fScale = 1.0f, float fZ = 0.0f)
     {
       state objstate = os_none;
 
-      printf("Loading OBJ file %s...\n", path);
+      printf("Loading OBJ file %s...\n", filename);
 
       char temp_object[255];
       char mtllib[255];
@@ -298,27 +334,24 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       std::vector <glm::vec3> temp_normals;
       std::vector <unsigned int> face_v, face_vt, face_vn; // indices
 
-      std::ifstream file;
-      file.open(path);
-      assert(file.good());
+      std::string file = load_fast(filename);
+      std::vector<std::string> lines = split(file.c_str(), '\n');
 
-      std::string line;
-
-      std::fill(temp_object, temp_object + 255, 0); // init with "0"
-
-      while (file.good())
+      for (int iln=0; iln < lines.size(); iln++)
       {
-        std::getline(file,line);
+        std::string line = lines[iln];
+
         if (line == "") continue;
 
-        if (line[0] == '#') // comment
+        std::vector<std::string> tok = split(line.c_str(), ' ');
+        if (tok[0] == "#") // comment
         {
           OutputDebugString(_T(line.c_str()));
           OutputDebugString(_T("\n"));
         }
-        else if (line.compare(0, 6, "mtllib") == 0)
+        else if (tok[0] == "mtllib")
         {
-          std::string s_path = path;
+          std::string s_path = filename;
           std::string s_dir;
           const size_t last_slash_idx = s_path.rfind('\\');
           if (std::string::npos != last_slash_idx)
@@ -327,13 +360,13 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           }
           sscanf(line.c_str(), "mtllib %s\n", &mtllib);
           char buf[255];
-          sprintf(buf,"%s\\%s",s_dir.c_str(),mtllib);
+          sprintf(buf, "%s\\%s", s_dir.c_str(), mtllib);
           // -------------------
           // Load Materials File
           // -------------------
           loadMaterials(buf, v_Mat);
         }
-        else if (line.compare(0,2,"v ") == 0)
+        else if (tok[0] == "v")
         {
           if ((objstate != os_none) && (objstate != os_v))
           {
@@ -346,9 +379,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               face_v,
               face_vt,
               face_vn);
-//      vertexIndices.clear(); // check parts' size with & without
-//      uvIndices.clear();     // check parts' size with & without
-//      normalIndices.clear(); // check parts' size with & without
+            //      vertexIndices.clear(); // check parts' size with & without
+            //      uvIndices.clear();     // check parts' size with & without
+            //      normalIndices.clear(); // check parts' size with & without
           }
           objstate = os_v;
           glm::vec3 vertex;
@@ -357,25 +390,25 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           vertex.z -= fZ;           // Blender-OBJ tuning
           temp_vertices.push_back(vertex);
         }
-        else if ((line[0] == 'v') && (line[1] == 't')) // Achtung, etwa 'vts' würde hier auch gelesen
+        else if (tok[0] == "vt")
         {
           glm::vec2 uv;
           sscanf(line.c_str(), "vt %f %f\n", &uv.x, &uv.y);
           //            uv.y = -uv.y; // Invert V coordinate since we will only use DDS texture, which are inverted. Remove if you want to use TGA or BMP loaders.
           temp_uvs.push_back(uv);
         }
-        else if ((line[0] == 'v') && (line[1] == 'n'))
+        else if (tok[0] == "vn")
         {
           glm::vec3 normal;
           sscanf(line.c_str(), "vn %f %f %f\n", &normal.x, &normal.y, &normal.z);
           temp_normals.push_back(normal);
         }
-        else if (line.compare(0,6,"usemtl") == 0)
+        else if (tok[0] == "usemtl")
         {
-// -------------------------------------------------------
-// if I comment in the following part,
-// there will be an access violation in the Sponza part 36
-// -------------------------------------------------------
+          // -------------------------------------------------------
+          // if I comment in the following part,
+          // there will be an access violation in the Sponza part 36
+          // -------------------------------------------------------
           if (objstate == os_f)
           {
             AddPart(out_v_CParts,
@@ -390,52 +423,81 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           objstate = os_usemtl;
           sscanf(line.c_str(), "usemtl %s\n", temp_material);
         }
-        else if (line[0] == 'f') // face -- indices of v=vertices,vt=texture_uv,vn=normals
+        else if (tok[0] == "f") // face -- indices of v=vertices,vt=texture_uv,vn=normals
         {
-          objstate = os_f;
-          unsigned int v[4], vt[4], vn[4];
-          // a) 4 indices * v/vt/vn (textured)
-          int matches = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d\n",
-            &v[0],&vt[0],&vn[0],&v[1],&vt[1],&vn[1],&v[2],&vt[2],&vn[2],&v[3],&vt[3],&vn[3]);
-          if (matches == 12)
+// ?          objstate = os_f;
+          unsigned int v[255], vt[255], vn[255];
+          unsigned int nVert = tok.size()-1;
+          enum facetype { VTN = 7, VT = 3, VN = 5, N = 4, T = 2, V = 1}; // bitfield: 0 == V, 1 == T, 2 == N
+          facetype ft;
+
+          for (int itok = 1; itok < tok.size(); itok++) // start from 1 as first tok is "f"
           {
-            // 0 +--+ 1
-            //   | /|
-            // 3 +/-+ 2
-            face_v. push_back(v[0]);
-            face_v. push_back(v[1]);
-            face_v. push_back(v[3]);
-            face_v. push_back(v[1]);
-            face_v. push_back(v[2]);
-            face_v. push_back(v[3]);
-            face_vt.push_back(vt[0]);
-            face_vt.push_back(vt[1]);
-            face_vt.push_back(vt[3]);
-            face_vt.push_back(vt[1]);
-            face_vt.push_back(vt[2]);
-            face_vt.push_back(vt[3]);
-            face_vn.push_back(vn[0]);
-            face_vn.push_back(vn[1]);
-            face_vn.push_back(vn[3]);
-            face_vn.push_back(vn[1]);
-            face_vn.push_back(vn[2]);
-            face_vn.push_back(vn[3]);
-          }
-          else
-          {
-            // b) 4 indices * v/vt (textured)
-            int matches = sscanf(line.c_str(), "f %d/%d %d/%d %d/%d %d/%d\n", &v[0],&vt[0],&v[1],&vt[1],&v[2],&vt[2],&v[3],&vt[3]);
-            if (matches == 8)
+            int matches = sscanf(tok[itok].c_str(), "%d/%d/%d", &v[itok-1], &vt[itok - 1], &vn[itok - 1]);
+            if (matches == 3)
             {
-              // 0 +--+ 1
-              //   | /|
-              // 3 +/-+ 2
-              face_v. push_back(v[0]);
-              face_v. push_back(v[1]);
-              face_v. push_back(v[3]);
-              face_v. push_back(v[1]);
-              face_v. push_back(v[2]);
-              face_v. push_back(v[3]);
+              ft = VTN;
+            }
+            else
+            {
+              int matches = sscanf(tok[itok].c_str(), "%d/%d", &v[itok - 1], &vt[itok - 1]);
+              if (matches == 2)
+              {
+                ft = VT;
+              }
+              else
+              {
+                int matches = sscanf(line.c_str(), "%d//%d", &v[itok - 1], &vn[itok - 1]);
+                if (matches == 2)
+                {
+                  ft = VN;
+                }
+                else
+                {
+                  int matches = sscanf(line.c_str(), "%d", &v[itok - 1]);
+                  if (matches == 1)
+                  {
+                    ft = V;
+                  }
+                }
+              }
+            }
+          } // for (int itok = 1; itok < tok.size(); itok++)
+
+          switch (nVert)
+          {
+          case 3:
+            if (ft & V)
+            {
+              face_v.push_back(v[0]);
+              face_v.push_back(v[1]);
+              face_v.push_back(v[2]);
+            }
+            if (ft & T)
+            {
+              face_vt.push_back(vt[0]);
+              face_vt.push_back(vt[1]);
+              face_vt.push_back(vt[2]);
+            }
+            if (ft & N)
+            {
+              face_vn.push_back(vn[0]);
+              face_vn.push_back(vn[1]);
+              face_vn.push_back(vn[2]);
+            }
+            break;
+          case 4:
+            if (ft & V)
+            {
+              face_v.push_back(v[0]);
+              face_v.push_back(v[1]);
+              face_v.push_back(v[3]);
+              face_v.push_back(v[1]);
+              face_v.push_back(v[2]);
+              face_v.push_back(v[3]);
+            }
+            if (ft & T)
+            {
               face_vt.push_back(vt[0]);
               face_vt.push_back(vt[1]);
               face_vt.push_back(vt[3]);
@@ -443,108 +505,134 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               face_vt.push_back(vt[2]);
               face_vt.push_back(vt[3]);
             }
-            else
+            if (ft & N)
             {
-              // b) 4 indices * v//vn (colored)
-              int matches = sscanf(line.c_str(), "f %d//%d %d//%d %d//%d %d//%d\n", &v[0], &vn[0], &v[1], &vn[1], &v[2], &vn[2], &v[3], &vn[3]);
-              if (matches == 8)
+              face_vn.push_back(vn[0]);
+              face_vn.push_back(vn[1]);
+              face_vn.push_back(vn[3]);
+              face_vn.push_back(vn[1]);
+              face_vn.push_back(vn[2]);
+              face_vn.push_back(vn[3]);
+            }
+            break;
+          default:
+            assert(false);
+          }
+/*          switch (ft)
+          {
+            case VTN:
+              if (nVert == 3)
               {
-                // 0 +--+ 1
-                //   | /|
-                // 3 +/-+ 2
-                face_v. push_back(v[0]);
-                face_v. push_back(v[1]);
-                face_v. push_back(v[3]);
-                face_v. push_back(v[1]);
-                face_v. push_back(v[2]);
-                face_v. push_back(v[3]);
-                face_vn.push_back(vn[0]);
-                face_vn.push_back(vn[1]);
-                face_vn.push_back(vn[3]);
-                face_vn.push_back(vn[1]);
-                face_vn.push_back(vn[2]);
-                face_vn.push_back(vn[3]);
+                face_v.push_back(v[i]);
+                face_vt.push_back(vt[i]);
+                face_vn.push_back(vn[i]);
+
+                face_v.push_back(v[i + 1]);
+                face_vt.push_back(vt[i + 1]);
+                face_vn.push_back(vn[i + 1]);
+
+                face_v.push_back(v[i + 2]);
+                face_vt.push_back(vt[i + 2]);
+                face_vn.push_back(vn[i + 2]);
               }
-              else
+                            for (unsigned int i = 0; i < nVert-2; i++)
               {
-                // c) 4 indices * v (only vertices, e.g. ...)
-                int matches = sscanf(line.c_str(), "f %d %d %d %d\n", &v[0], &v[1], &v[2], &v[3]);
-                if (matches == 4)
+                if (i % 2 == 0)
                 {
-                  face_v.push_back(v[0]);
-                  face_v.push_back(v[1]);
-                  face_v.push_back(v[3]);
-                  face_v.push_back(v[1]);
-                  face_v.push_back(v[2]);
-                  face_v.push_back(v[3]);
+                  face_v.push_back(v[i]);
+                  face_vt.push_back(vt[i]);
+                  face_vn.push_back(vn[i]);
+
+                  face_v.push_back(v[i + 1]);
+                  face_vt.push_back(vt[i + 1]);
+                  face_vn.push_back(vn[i + 1]);
+
+                  face_v.push_back(v[i + 2]);
+                  face_vt.push_back(vt[i + 2]);
+                  face_vn.push_back(vn[i + 2]);
                 }
                 else
                 {
-                  // d) 3 indices v/vt/vn
-                  int matches = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d\n", &v[0], &vt[0], &vn[0], &v[1], &vt[1], &vn[1], &v[2], &vt[2], &vn[2]);
-                  if (matches == 9)
-                  {
-                    face_v. push_back(v[0]);
-                    face_v. push_back(v[1]);
-                    face_v. push_back(v[2]);
-                    face_vt.push_back(vt[0]);
-                    face_vt.push_back(vt[1]);
-                    face_vt.push_back(vt[2]);
-                    face_vn.push_back(vn[0]);
-                    face_vn.push_back(vn[1]);
-                    face_vn.push_back(vn[2]);
-                  }
-                  else
-                  {
-                    // e) 3 indices v//vn (not textured)
-                    int matches = sscanf(line.c_str(), "f %d//%d %d//%d %d//%d\n", &v[0], &vn[0], &v[1], &vn[1], &v[2], &vn[2]);
-                    if (matches == 6)
-                    {
-                      face_v. push_back(v[0]);
-                      face_v. push_back(v[1]);
-                      face_v. push_back(v[2]);
-                      face_vn.push_back(vn[0]);
-                      face_vn.push_back(vn[1]);
-                      face_vn.push_back(vn[2]);
-                    }
-                    else
-                    {
-                      // f) 3 indices v/vt, no normals
-                      int matches = sscanf(line.c_str(), "f %d/%d %d/%d %d/%d\n", &v[0], &vt[0], &v[1], &vt[1], &v[2], &vt[2]);
-                      if (matches == 6)
-                      {
-                        face_v.push_back(v[0]);
-                        face_v.push_back(v[1]);
-                        face_v.push_back(v[2]);
-                        face_vt.push_back(vt[0]);
-                        face_vt.push_back(vt[1]);
-                        face_vt.push_back(vt[2]);
-                      }
-                      else
-                      {
-                        // g) 3 indices * v (only vertices, e.g. ...)
-                        int matches = sscanf(line.c_str(), "f %d %d %d\n", &v[0], &v[1], &v[2]);
-                        if (matches == 3)
-                        {
-                          face_v.push_back(v[0]);
-                          face_v.push_back(v[1]);
-                          face_v.push_back(v[2]);
-                        }
-                        else
-                        {
-                          // printf("File can't be read by our simple parser : ( Try exporting with other options\n");
-                          assert(false);
-                          return false;
-                        }
-                      }
-                    }
-                  }
+                  face_v.push_back(v[i]);
+                  face_vt.push_back(vt[i]);
+                  face_vn.push_back(vn[i]);
+
+                  face_v.push_back(v[i + 2]);
+                  face_vt.push_back(vt[i + 2]);
+                  face_vn.push_back(vn[i + 2]);
+
+                  face_v.push_back(v[i + 1]);
+                  face_vt.push_back(vt[i + 1]);
+                  face_vn.push_back(vn[i + 1]);
                 }
               }
-            }
+              break;
+            case VT:
+              for (unsigned int i = 0; i < nVert - 2; i++)
+              {
+                if (i % 2 == 0)
+                {
+                  face_v.push_back(v[i]);
+                  face_vt.push_back(vt[i]);
+
+                  face_v.push_back(v[i + 1]);
+                  face_vt.push_back(vt[i + 1]);
+
+                  face_v.push_back(v[i + 2]);
+                  face_vt.push_back(vt[i + 2]);
+                }
+                else
+                {
+                  face_v.push_back(v[i]);
+                  face_vt.push_back(vt[i]);
+
+                  face_v.push_back(v[i + 2]);
+                  face_vt.push_back(vt[i + 2]);
+
+                  face_v.push_back(v[i + 1]);
+                  face_vt.push_back(vt[i + 1]);
+                }
+              }
+              break;
+            case VN:
+              for (unsigned int i = 0; i < nVert - 2; i++)
+              {
+                if (i % 2 == 0)
+                {
+                  face_v.push_back(v[i]);
+                  face_vn.push_back(vn[i]);
+
+                  face_v.push_back(v[i + 1]);
+                  face_vn.push_back(vn[i + 1]);
+
+                  face_v.push_back(v[i + 2]);
+                  face_vn.push_back(vn[i + 2]);
+                }
+                else
+                {
+                  face_v.push_back(v[i]);
+                  face_vn.push_back(vn[i]);
+
+                  face_v.push_back(v[i + 2]);
+                  face_vn.push_back(vn[i + 2]);
+
+                  face_v.push_back(v[i + 1]);
+                  face_vn.push_back(vn[i + 1]);
+                }
+              }
+              break;
+            case V:
+              for (unsigned int i = 0; i < nVert - 2; i++)
+              {
+                face_v.push_back(v[i]);
+                face_v.push_back(v[i + 1]);
+                face_v.push_back(v[i + 2]);
+              }
+              break;
           }
-        }
-        else if ((line[0] == 'o') || (line[0] == 'g'))
+          */
+        } // if (tok[0] == "f")
+        else if ((tok[0] == "o") || (tok[0] == "g"))
         {
           int match = sscanf(line.c_str(), "o %s\n", temp_object);     // store object name
           if (match == 0) sscanf(line.c_str(), "g %s\n", temp_object); // store group name
@@ -555,7 +643,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           // [...]
         }
       }
-      file.close();
 
       AddPart(out_v_CParts,
         temp_object, temp_material, v_Mat,
