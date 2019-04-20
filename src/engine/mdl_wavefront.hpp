@@ -427,9 +427,11 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         {
 // ?          objstate = os_f;
           unsigned int v[255], vt[255], vn[255];
-          unsigned int nVert = tok.size()-1;
+          unsigned int nVert = 0;
           enum facetype { VTN = 7, VT = 3, VN = 5, N = 4, T = 2, V = 1}; // bitfield: 0 == V, 1 == T, 2 == N
           facetype ft;
+
+          assert(nVert < 256);
 
           for (int itok = 1; itok < tok.size(); itok++) // start from 1 as first tok is "f"
           {
@@ -437,6 +439,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
             if (matches == 3)
             {
               ft = VTN;
+              nVert++;
             }
             else
             {
@@ -444,20 +447,23 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               if (matches == 2)
               {
                 ft = VT;
+                nVert++;
               }
               else
               {
-                int matches = sscanf(line.c_str(), "%d//%d", &v[itok - 1], &vn[itok - 1]);
+                int matches = sscanf(tok[itok].c_str(), "%d//%d", &v[itok - 1], &vn[itok - 1]);
                 if (matches == 2)
                 {
                   ft = VN;
+                  nVert++;
                 }
                 else
                 {
-                  int matches = sscanf(line.c_str(), "%d", &v[itok - 1]);
+                  int matches = sscanf(tok[itok].c_str(), "%d", &v[itok - 1]);
                   if (matches == 1)
                   {
                     ft = V;
+                    nVert++;
                   }
                 }
               }
@@ -467,6 +473,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           switch (nVert)
           {
           case 3:
+//            break;
             if (ft & V)
             {
               face_v.push_back(v[0]);
@@ -487,6 +494,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
             }
             break;
           case 4:
+//            break;
             if (ft & V)
             {
               face_v.push_back(v[0]);
@@ -516,121 +524,72 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
             }
             break;
           default:
-            assert(false);
-          }
-/*          switch (ft)
-          {
-            case VTN:
-              if (nVert == 3)
+            // not 3 and not 4 vertices -> more than 5
+//            assert(false);
+// https://stackoverflow.com/questions/23723993/converting-quadriladerals-in-an-obj-file-into-triangles
+/*            int null = 0;
+            for (unsigned int i = 1; i < nVert-2; i++) // triangle fan
+            {
+              if (ft & V)
               {
+                face_v.push_back(v[null]);
                 face_v.push_back(v[i]);
+                face_v.push_back(v[i+1]);
+              }
+              if (ft & T)
+              {
+                face_vt.push_back(vt[null]);
                 face_vt.push_back(vt[i]);
+                face_vt.push_back(vt[i+1]);
+              }
+              if (ft & N)
+              {
+                face_vn.push_back(vn[null]);
                 face_vn.push_back(vn[i]);
-
-                face_v.push_back(v[i + 1]);
-                face_vt.push_back(vt[i + 1]);
-                face_vn.push_back(vn[i + 1]);
-
-                face_v.push_back(v[i + 2]);
-                face_vt.push_back(vt[i + 2]);
-                face_vn.push_back(vn[i + 2]);
+                face_vn.push_back(vn[i+1]);
               }
-                            for (unsigned int i = 0; i < nVert-2; i++)
+            }
+            */
+            if (ft & V)
+            {
+              face_v.push_back(v[0]);
+              face_v.push_back(v[1]);
+              face_v.push_back(v[2]);
+            }
+            if (ft & T)
+            {
+              face_vt.push_back(vt[0]);
+              face_vt.push_back(vt[1]);
+              face_vt.push_back(vt[2]);
+            }
+            if (ft & N)
+            {
+              face_vn.push_back(vn[0]);
+              face_vn.push_back(vn[1]);
+              face_vn.push_back(vn[2]);
+            }
+            for (unsigned int i = 3; i < nVert; ++i)
+            {
+              if (ft & V)
               {
-                if (i % 2 == 0)
-                {
-                  face_v.push_back(v[i]);
-                  face_vt.push_back(vt[i]);
-                  face_vn.push_back(vn[i]);
-
-                  face_v.push_back(v[i + 1]);
-                  face_vt.push_back(vt[i + 1]);
-                  face_vn.push_back(vn[i + 1]);
-
-                  face_v.push_back(v[i + 2]);
-                  face_vt.push_back(vt[i + 2]);
-                  face_vn.push_back(vn[i + 2]);
-                }
-                else
-                {
-                  face_v.push_back(v[i]);
-                  face_vt.push_back(vt[i]);
-                  face_vn.push_back(vn[i]);
-
-                  face_v.push_back(v[i + 2]);
-                  face_vt.push_back(vt[i + 2]);
-                  face_vn.push_back(vn[i + 2]);
-
-                  face_v.push_back(v[i + 1]);
-                  face_vt.push_back(vt[i + 1]);
-                  face_vn.push_back(vn[i + 1]);
-                }
-              }
-              break;
-            case VT:
-              for (unsigned int i = 0; i < nVert - 2; i++)
-              {
-                if (i % 2 == 0)
-                {
-                  face_v.push_back(v[i]);
-                  face_vt.push_back(vt[i]);
-
-                  face_v.push_back(v[i + 1]);
-                  face_vt.push_back(vt[i + 1]);
-
-                  face_v.push_back(v[i + 2]);
-                  face_vt.push_back(vt[i + 2]);
-                }
-                else
-                {
-                  face_v.push_back(v[i]);
-                  face_vt.push_back(vt[i]);
-
-                  face_v.push_back(v[i + 2]);
-                  face_vt.push_back(vt[i + 2]);
-
-                  face_v.push_back(v[i + 1]);
-                  face_vt.push_back(vt[i + 1]);
-                }
-              }
-              break;
-            case VN:
-              for (unsigned int i = 0; i < nVert - 2; i++)
-              {
-                if (i % 2 == 0)
-                {
-                  face_v.push_back(v[i]);
-                  face_vn.push_back(vn[i]);
-
-                  face_v.push_back(v[i + 1]);
-                  face_vn.push_back(vn[i + 1]);
-
-                  face_v.push_back(v[i + 2]);
-                  face_vn.push_back(vn[i + 2]);
-                }
-                else
-                {
-                  face_v.push_back(v[i]);
-                  face_vn.push_back(vn[i]);
-
-                  face_v.push_back(v[i + 2]);
-                  face_vn.push_back(vn[i + 2]);
-
-                  face_v.push_back(v[i + 1]);
-                  face_vn.push_back(vn[i + 1]);
-                }
-              }
-              break;
-            case V:
-              for (unsigned int i = 0; i < nVert - 2; i++)
-              {
+                face_v.push_back(v[i-3]);
+                face_v.push_back(v[i-1]);
                 face_v.push_back(v[i]);
-                face_v.push_back(v[i + 1]);
-                face_v.push_back(v[i + 2]);
               }
-              break;
-          }
-          */
+              if (ft & T)
+              {
+                face_vt.push_back(vt[i-3]);
+                face_vt.push_back(vt[i-1]);
+                face_vt.push_back(vt[i]);
+              }
+              if (ft & N)
+              {
+                face_vn.push_back(vn[i-3]);
+                face_vn.push_back(vn[i-1]);
+                face_vn.push_back(vn[i]);
+              }
+            }
+          } // switch (nVert)
         } // if (tok[0] == "f")
         else if ((tok[0] == "o") || (tok[0] == "g"))
         {
