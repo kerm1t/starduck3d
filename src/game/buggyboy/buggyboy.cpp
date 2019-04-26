@@ -130,11 +130,11 @@ void RenderThread(void *args)
     }
     if (GetAsyncKeyState(VK_LEFT))
     {
-      m_cam.TurnLeft();
+      m_cam.StrafeLeft(1.0f / 30.0f);
     }
     if (GetAsyncKeyState(VK_RIGHT))
     {
-      m_cam.TurnRight();
+      m_cam.StrafeRight(1.0f / 30.0f);
     }
 
     if (b_WM_resized)
@@ -525,13 +525,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     case 65: // A
 //      m_cam.TurnLeft();
-      m_cam.StrafeLeft();
+      m_cam.StrafeLeft(0.1f);
       break;
     case 83: // S
       m_cam.MoveBack(0.3f);
       break;
     case 68: // D
-      m_cam.StrafeRight();
+      m_cam.StrafeRight(0.1f);
       break;
     }
     break;

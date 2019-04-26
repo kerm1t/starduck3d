@@ -176,15 +176,15 @@ public:
     Pos += dirortho;
     Pos[2] = zsave; // only in walk/drive mode
   }
-  void StrafeLeft() // move position
+  void StrafeLeft(float fSpeed) // move position
   {
-    glm::vec3 ortho = glm::vec3(0,0,1);
+    glm::vec3 ortho = glm::vec3(0,0, fSpeed);
     glm::vec3 dirTMP = glm::cross(DirMouse,ortho);
     Pos -= dirTMP;
   }
-  void StrafeRight() // move position
+  void StrafeRight(float fSpeed) // move position
   {
-    glm::vec3 ortho = glm::vec3(0,0,1);
+    glm::vec3 ortho = glm::vec3(0,0, fSpeed);
     glm::vec3 dirTMP = glm::cross(DirMouse,ortho);
     Pos += dirTMP;
   }

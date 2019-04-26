@@ -1,3 +1,8 @@
+4/20
++ fix jeep inner texture
+- add gravity (in physics TAB)
+- gui: objects' load time (Sponza)
+
 4/13
 + Jeep wird auf (0,0) gezeichnet, statt auf der richtigen Pos.
 + letztes Objekt wird nicht gezeichnet -> gelöst
@@ -31,7 +36,7 @@
 - bbox f. Tunnel
 
 3/22
-- loader beschleunigen, i.e. ganzes file laden
++ loader beschleunigen, i.e. ganzes file laden [ist aber anscheinend nicht viel schneller geworden (Sponza)]
 - Anton's village in kleinere Objekte aufteilen, sonst riesige BBox
 + Maussteuerung vertikal
 - Drahtgitter (GL_LINES) statt GL_TRIANGLE zeichnen : zusätzlich!

@@ -31,7 +31,7 @@ Timer timer;
 #define VBOADD_BILLBOARDS 0            // shall be more than 1 type of billboard
 #define VBOADD_20_RANDOM_HOLZSTAPEL 0
 #define VBOADD_CONTICAR 0
-#define VBOADD_JEEP 0
+#define VBOADD_JEEP 1
 #define VBOADD_BARRIERS 0
 #define VBOADD_SPONZA 0
 
@@ -302,11 +302,11 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.vVAOs.push_back(vao);
   vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
 
-  obj::CGL_ObjectWavefront barrier1(&m_render);
+/*  obj::CGL_ObjectWavefront barrier1(&m_render);
   barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
   barrier1.Load(1.0f, 0.0f, Vec3f(0.0f, 0.0f, 0.0f));
   vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
-
+  */
 
   err = glGetError();
 
@@ -377,20 +377,22 @@ int proj::Proj::DoIt()
   ImGui::NewFrame();
 
   ImGuiIO& io = ImGui::GetIO();
-  ImGui::Begin("Papa:");
-  ImGui::Text("Hallo Anton.");
-  ImGui::Text("mouse: %f,%f",io.MousePos.x,io.MousePos.y);
+  ImGui::Begin("Virtualroad");
+  ImGui::Text("mouse: %.1f,%.1f",io.MousePos.x,io.MousePos.y);
   ImGui::Text("loaded: %s", m_scene.c_Scene.c_str());
   static int viewmode;
   ImGui::RadioButton("Std",     &viewmode, 0);
   ImGui::RadioButton("Physics", &viewmode, 1);
-  static bool b_wireframe;
-  ImGui::Checkbox("wireframe", &b_wireframe);
+//  static bool b_solid;
+//  static bool b_wireframe;
+  ImGui::Checkbox("solid", &m_render.b_solid);
+  ImGui::Checkbox("wireframe", &m_render.b_wireframe);
   ImGui::Checkbox("culling", &m_render.b_culling);
   ImGui::RadioButton("Free", &m_render.p_cam->iStickToObj,0);
   ImGui::RadioButton("Jeep1", &m_render.p_cam->iStickToObj,1);
   ImGui::RadioButton("Jeep2", &m_render.p_cam->iStickToObj,2);
-  for (unsigned int ui = 0; ui < m_render.vVAOs.size(); ui++) m_render.vVAOs[ui].b_Wireframe = (int)b_wireframe;
+// (currently) not wireframe per object:
+//  for (unsigned int ui = 0; ui < m_render.vVAOs.size(); ui++) m_render.vVAOs[ui].b_Wireframe = (int)b_wireframe;
 //  static int vw;
   ImGui::SliderFloat("view width", &(float)m_render.p_cam->zFar, 10.0, 200.0);
   float v[3] = { m_render.p_cam->Pos.x,m_render.p_cam->Pos.y,m_render.p_cam->Pos.z };

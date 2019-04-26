@@ -40,7 +40,7 @@ namespace obj
 
       proj::c_VAO plane;
       plane.t_Shade = proj::SHADER_COLOR_FLAT;
-      plane.Name = "plane";
+      plane.Name = "ground";
       plane.uiVertexCount = vCount;
       return plane;
     }
