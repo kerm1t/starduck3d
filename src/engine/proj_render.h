@@ -69,6 +69,11 @@ namespace proj
     std::vector<c_VAO>  vVAOs;
     std::vector<GLuint> vVertexArray;    // stores VAO's: a) Position(x,y,z), b1) color OR b2) u,v-Texture
 
+    GLuint vao2;
+    GLuint positionBuf2;
+    GLuint    colorBuf2; // either color or ...
+    GLuint       uvBuf2; // texture
+
 //    std::vector<GLuint> vPositionBuffer; // stores position
 #define FPS_LOWPASS 255
     float aFPS[FPS_LOWPASS];

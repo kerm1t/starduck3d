@@ -616,6 +616,15 @@ void proj::Render::DrawVAOs_NEU()
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
+/*    if (vVAOs[ui].t_Shade == SHADER_TEXTURE)
+    {
+      //      glUniform1i(sh1_unif_col_tex, 1); // shader into texture-branch
+      //      glActiveTexture(GL_TEXTURE0);
+      //      err = glGetError();
+      glBindTexture(GL_TEXTURE_2D, 0);
+    }
+    */
+
     glBindVertexArray(0); // 2019-04-13 unbind -> jetzt wird das letzte Objekt nicht mehr vom Cursor (s.u.) "überschrieben"
                           //                      aber die Textur flackert
 
@@ -634,23 +643,36 @@ void proj::Render::DrawVAOs_NEU()
 
 
 
+//  glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
 
-/*
   //  ---------------------------------------------------------------------------------------
   //  glVertexAttribPointer is the current and preferred way of passing attributes to the GPU.
   //  glVertexPointer is part of the old and deprecated fixed function pipeline and set openGL to use the VBO for the attribute.
   //  ---------------------------------------------------------------------------------------
   // Cursor
   glPointSize(48.0);
-  GLfloat col[3] = { 0.0f, 1.0f, 0.0f };
-  GLfloat cur[3] = { Cursor.x,Cursor.y,Cursor.z };
+//  GLfloat col[3] = { 0.0f, 1.0f, 0.0f };
+//  GLfloat cur[3] = { Cursor.x,Cursor.y,Cursor.z };
+  GLfloat coordsies[8] = { 0.0f, 1.0f, 0.0f , Cursor.x,Cursor.y,Cursor.z, 0.0f, 0.0f };
+
+  glGenVertexArrays(1, &vao2);
+  glBindVertexArray(vao2);
+  glGenBuffers(1, &positionBuf2); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+  glGenBuffers(1, &colorBuf2); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+  glBindBuffer(GL_ARRAY_BUFFER, positionBuf2);
+  glBindBuffer(GL_ARRAY_BUFFER, colorBuf2);
+//  glBindBuffer(GL_ARRAY_BUFFER, uvBuf2);
 
   glEnableVertexAttribArray(sh1_attr_col); // Attribute indexes were received from calls to glGetAttribLocation, or passed into glBindAttribLocation.
   glEnableVertexAttribArray(sh1_attr_pos);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3, col, GL_DYNAMIC_DRAW);
-  glVertexAttribPointer(sh1_attr_col, 3, GL_FLOAT, false, 0, 0); // texcoords_data is a float*, 2 per vertex, representing UV coordinates.
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3, cur, GL_DYNAMIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3, coordsies, GL_DYNAMIC_DRAW);
+  glVertexAttribPointer(sh1_attr_col, 3, GL_FLOAT, false, 0, 0); // col_data is a float*, 3 per vertex
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3, coordsies+3, GL_DYNAMIC_DRAW);
   glVertexAttribPointer(sh1_attr_pos, 3, GL_FLOAT, false, 0, 0); // vertex_data is a float*, 3 per vertex, representing the position of each vertex
+//  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 2, coordsies+3+3, GL_DYNAMIC_DRAW);
+//  glVertexAttribPointer(sh1_attr_tex, 2, GL_FLOAT, false, 0, 0); // texture ...
+//  glBindBuffer(GL_ARRAY_BUFFER, coordsies[0] + 3);
+//  glBindBuffer(GL_ARRAY_BUFFER, coordsies[0]);
   // num_vertices is the number of verts in your vertex_data.
   // index_data is an array of unsigned int offsets into vertex_data.
 // ---------------------------------------------------------------------------------
@@ -659,13 +681,15 @@ void proj::Render::DrawVAOs_NEU()
 //  DrawArrays needs a vertex buffer(or more), DrawElements also needs an index buffer.
 // ---------------------------------------------------------------------------------
 //  glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, NULL);
-//  glBindVertexArray(vVertexArray[ui]); // <--- NVidia: hier Problem, wenn ui = 13 (beim ersten colorierten + texturierten Objekt!!)
+///  glBindVertexArray(coordsies[0]);
   glDrawArrays(GL_POINTS, 0, 1);
+  glBindVertexArray(0);
   glDisableVertexAttribArray(sh1_attr_pos);
   glDisableVertexAttribArray(sh1_attr_col);
+
   err = glGetError();
 
-*/
+
 
   //    if (b_PNG) FBO_to_PPM();
 }

@@ -1,3 +1,6 @@
+4/28
+- Objekte in Spurrichtung setzen
+
 4/20
 + fix jeep inner texture
 - add gravity (in physics TAB)
