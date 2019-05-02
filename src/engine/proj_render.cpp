@@ -336,8 +336,8 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
 //
 // ------------------------------------
 
-  for (iLine=0;iLine<sz;iLine++)
-  {
+  for (iLine=0;iLine<sz;iLine++)  // das sollte nun segment heissen, es gibt ja keine Linien mehr in dem Sinne
+  {                               // die sind jetzt Teil der Textur
     unsigned int vCount = 0;
     const std::vector<S_MarkerPoint> &rc_Marker = rc_Param.m_c_Markers[iLine];
     for (iMarker=0;iMarker<rc_Marker.size()-1;iMarker++) // no. of markersteps (typically > 500)
@@ -506,7 +506,7 @@ void proj::Render::DrawVAOs_NEU()
   {
     if (ui == 0)
       glUseProgram(program_fps);
-    else
+    if (ui == 1) // für Obj 1 und größer hier 1-malig setzen
       glUseProgram(program); // 2/2/19 für jedes Objekt glUseProgram aufrufen?
     err = glGetError();
 
@@ -643,16 +643,13 @@ void proj::Render::DrawVAOs_NEU()
 
 
 
-//  glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
 
-  //  ---------------------------------------------------------------------------------------
+
+/*  //  ---------------------------------------------------------------------------------------
   //  glVertexAttribPointer is the current and preferred way of passing attributes to the GPU.
   //  glVertexPointer is part of the old and deprecated fixed function pipeline and set openGL to use the VBO for the attribute.
   //  ---------------------------------------------------------------------------------------
-  // Cursor
   glPointSize(48.0);
-//  GLfloat col[3] = { 0.0f, 1.0f, 0.0f };
-//  GLfloat cur[3] = { Cursor.x,Cursor.y,Cursor.z };
   GLfloat coordsies[8] = { 0.0f, 1.0f, 0.0f , Cursor.x,Cursor.y,Cursor.z, 0.0f, 0.0f };
 
   glGenVertexArrays(1, &vao2);
@@ -661,7 +658,6 @@ void proj::Render::DrawVAOs_NEU()
   glGenBuffers(1, &colorBuf2); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
   glBindBuffer(GL_ARRAY_BUFFER, positionBuf2);
   glBindBuffer(GL_ARRAY_BUFFER, colorBuf2);
-//  glBindBuffer(GL_ARRAY_BUFFER, uvBuf2);
 
   glEnableVertexAttribArray(sh1_attr_col); // Attribute indexes were received from calls to glGetAttribLocation, or passed into glBindAttribLocation.
   glEnableVertexAttribArray(sh1_attr_pos);
@@ -669,20 +665,46 @@ void proj::Render::DrawVAOs_NEU()
   glVertexAttribPointer(sh1_attr_col, 3, GL_FLOAT, false, 0, 0); // col_data is a float*, 3 per vertex
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3, coordsies+3, GL_DYNAMIC_DRAW);
   glVertexAttribPointer(sh1_attr_pos, 3, GL_FLOAT, false, 0, 0); // vertex_data is a float*, 3 per vertex, representing the position of each vertex
-//  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 2, coordsies+3+3, GL_DYNAMIC_DRAW);
-//  glVertexAttribPointer(sh1_attr_tex, 2, GL_FLOAT, false, 0, 0); // texture ...
-//  glBindBuffer(GL_ARRAY_BUFFER, coordsies[0] + 3);
-//  glBindBuffer(GL_ARRAY_BUFFER, coordsies[0]);
-  // num_vertices is the number of verts in your vertex_data.
-  // index_data is an array of unsigned int offsets into vertex_data.
 // ---------------------------------------------------------------------------------
 // https://www.gamedev.net/forums/topic/659810-gldrawelements-isnt-drawing-anything/
 // You cant just replace it with DrawArrays, they work differently.
 //  DrawArrays needs a vertex buffer(or more), DrawElements also needs an index buffer.
 // ---------------------------------------------------------------------------------
-//  glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, NULL);
-///  glBindVertexArray(coordsies[0]);
-  glDrawArrays(GL_POINTS, 0, 1);
+  glDrawArrays(GL_POINTS, 0, 1); // vertexcount = 1
+  glBindVertexArray(0);
+  glDisableVertexAttribArray(sh1_attr_pos);
+  glDisableVertexAttribArray(sh1_attr_col);
+
+  err = glGetError();
+  */
+
+
+
+  // --------------------------------------------
+  // draw sceneblock in purple, that player is on
+  // --------------------------------------------
+  glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
+
+  glPointSize(1.0);
+  GLfloat col[3*4] = { 1.0f, 1.0f, 1.0f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f, 1.0f };
+//  GLfloat * pos;
+//  pos = (GLfloat*)Scenepos;
+
+  glGenVertexArrays(1, &vao3);
+  glBindVertexArray(vao3);
+  glGenBuffers(1, &positionBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+  glGenBuffers(1, &colorBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+  glBindBuffer(GL_ARRAY_BUFFER, positionBuf3);
+  glBindBuffer(GL_ARRAY_BUFFER, colorBuf3);
+
+  glEnableVertexAttribArray(sh1_attr_col); // Attribute indexes were received from calls to glGetAttribLocation, or passed into glBindAttribLocation.
+  glEnableVertexAttribArray(sh1_attr_pos);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3*4, col, GL_DYNAMIC_DRAW);
+  glVertexAttribPointer(sh1_attr_col, 3, GL_FLOAT, false, 0, 0); // col_data is a float*, 3 per vertex
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3*4, Scenepos, GL_DYNAMIC_DRAW);
+  glVertexAttribPointer(sh1_attr_pos, 3, GL_FLOAT, false, 0, 0); // vertex_data is a float*, 3 per vertex, representing the position of each vertex
+
+  glDrawArrays(GL_QUADS, 0, 4); // 4 = vertexcount
   glBindVertexArray(0);
   glDisableVertexAttribArray(sh1_attr_pos);
   glDisableVertexAttribArray(sh1_attr_col);

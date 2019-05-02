@@ -22,6 +22,7 @@ namespace proj
     int width, height;
 
     glm::vec3 Cursor;  // 2do: move to editor.hpp !!
+    glm::vec3 Scenepos[4];  // 2do: move to scene....hpp !!
 
     //        bool b_PNG;
 
@@ -72,8 +73,12 @@ namespace proj
     GLuint vao2;
     GLuint positionBuf2;
     GLuint    colorBuf2; // either color or ...
-    GLuint       uvBuf2; // texture
+//    GLuint       uvBuf2; // texture
 
+    GLuint vao3;
+    GLuint positionBuf3;
+    GLuint    colorBuf3; // either color or ... (texture)
+                         
 //    std::vector<GLuint> vPositionBuffer; // stores position
 #define FPS_LOWPASS 255
     float aFPS[FPS_LOWPASS];

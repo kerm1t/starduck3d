@@ -17,11 +17,11 @@ namespace proj
   public:
 
     // not allowed to have just a function in h class, needs to be inside a class!
-    int player_scene_pos(proj::Scene scene, glm::vec3 Cursor)
+    unsigned int player_scene_pos(const proj::Scene scene, const glm::vec3 Cursor) // 2do: use pos instead of Cursor
     {
       float dist_min = 9999.9f;
       float dist;
-      int iTrack_nearest = -1;
+      unsigned int iTrack_nearest = 0;
       for (int i = 0; i < scene.trajectory_len; i++)
       {
         glm::vec3 v3 = glm::vec3(scene.m_SceneLoader.m_c_Trajectory[i].s_Pos.rl_X,
@@ -37,8 +37,27 @@ namespace proj
       return iTrack_nearest;
     } // PlayerPos
 
+    void trajectory_id_to_line_marker(const proj::Scene scene, const int traj_id, unsigned int & iLine, unsigned int & iMark)
+    {
+//      unsigned int iLine;
+//      unsigned int iMarker;
+      unsigned int sz;
+      unsigned int i = 0;
+
+      sz = (unsigned int)scene.m_SceneLoader.m_c_Markers.size(); // number of marker vectors (lines)
+      for (iLine = 0; iLine < sz; iLine++)  // das sollte nun segment heissen, es gibt ja keine Linien mehr in dem Sinne
+      {                                     // die sind jetzt Teil der Textur
+        
+        const std::vector<S_MarkerPoint> &rc_Marker = scene.m_SceneLoader.m_c_Markers[iLine];
+        i += rc_Marker.size();
+        if (i >= traj_id) break;
+      }
+      iMark = traj_id % i;
+    }
+
+
     // return 0 = no collision | otherwise index of object
-    int collision_check(std::vector <obj::CObject> vobj, glm::vec3 Cursor)
+    int collision_check(const std::vector <obj::CObject> vobj, const glm::vec3 Cursor) // 2do: use pos instead of Cursor
     {
       int i_obj_bump = -1;
       for (unsigned int i = 0; i < vobj.size(); i++)

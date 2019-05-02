@@ -1,3 +1,8 @@
+5/1
+- Scenepos-Platte farbig (rosa)
+- Code aufräumen
+  - Scenestuff von render in scene...
+
 4/28
 - Objekte in Spurrichtung setzen
 
