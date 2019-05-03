@@ -44,15 +44,18 @@ namespace proj
       unsigned int sz;
       unsigned int i = 0;
 
+      if (traj_id == 0) { iLine = 0; iMark = 0; return; }
+
       sz = (unsigned int)scene.m_SceneLoader.m_c_Markers.size(); // number of marker vectors (lines)
       for (iLine = 0; iLine < sz; iLine++)  // das sollte nun segment heissen, es gibt ja keine Linien mehr in dem Sinne
       {                                     // die sind jetzt Teil der Textur
         
         const std::vector<S_MarkerPoint> &rc_Marker = scene.m_SceneLoader.m_c_Markers[iLine];
+        if ((i + rc_Marker.size()) >= traj_id) break;
         i += rc_Marker.size();
-        if (i >= traj_id) break;
       }
-      iMark = traj_id % i;
+//      iMark = traj_id % i;
+      iMark = traj_id - i;
     }
 
 

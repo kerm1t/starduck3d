@@ -457,18 +457,22 @@ int proj::Proj::DoIt()
   unsigned int nLine = 0;
   unsigned int nMarker = 2;
   m_phys.trajectory_id_to_line_marker(m_scene, pp, nLine, nMarker);
-
-
-  S_Point3D p0 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker].s_Left;
-  S_Point3D p1 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker].s_Right;
-  S_Point3D p2 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker+1].s_Right;
-  S_Point3D p3 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker+1].s_Left;
-  GLfloat z = 1.0f;
-  m_render.Scenepos[0] = glm::vec3(p0.rl_X, p0.rl_Y, z);
-  m_render.Scenepos[1] = glm::vec3(p1.rl_X, p1.rl_Y, z);
-  m_render.Scenepos[2] = glm::vec3(p2.rl_X, p2.rl_Y, z);
-  m_render.Scenepos[3] = glm::vec3(p3.rl_X, p3.rl_Y, z);
-
+  if (nMarker < (m_scene.m_SceneLoader.m_c_Markers[nLine].size()-1))
+  {
+    S_Point3D p0 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker].s_Left;
+    S_Point3D p1 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker].s_Right;
+    S_Point3D p2 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker + 1].s_Right;
+    S_Point3D p3 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker + 1].s_Left;
+    GLfloat z = .1f;
+    m_render.Scenepos[0] = glm::vec3(p0.rl_X, p0.rl_Y, z);
+    m_render.Scenepos[1] = glm::vec3(p1.rl_X, p1.rl_Y, z);
+    m_render.Scenepos[2] = glm::vec3(p2.rl_X, p2.rl_Y, z);
+    m_render.Scenepos[3] = glm::vec3(p3.rl_X, p3.rl_Y, z);
+  }
+  else
+  {
+    nLine = 1;
+  }
 
   ImGui::Text("Track nearest: %d", pp);
   std::string s_obj = "";

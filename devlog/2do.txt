@@ -1,10 +1,16 @@
+5/2
+- sh1_unif_wirecolor --> sh1_unif_color
+- übergänge zw. den Segmenten schliessen (derzeit 1 Segmentweite Abstand)
+
 5/1
-- Scenepos-Platte farbig (rosa)
++ Scenepos-Platte farbig (rosa)
 - Code aufräumen
   - Scenestuff von render in scene...
 
 4/28
-- Objekte in Spurrichtung setzen
+- Objekte setzen, orthogonal zur
+  - a) Blickrichtung
+  - b) Spurrichtung
 
 4/20
 + fix jeep inner texture

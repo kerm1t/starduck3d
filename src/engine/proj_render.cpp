@@ -642,6 +642,9 @@ void proj::Render::DrawVAOs_NEU()
   err = glGetError();
 
 
+  // set back coloring
+  glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
+  glUniform1i(sh1_unif_wirecolor, 0); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
 
 
 
@@ -679,29 +682,27 @@ void proj::Render::DrawVAOs_NEU()
   */
 
 
-
   // --------------------------------------------
   // draw sceneblock in purple, that player is on
   // --------------------------------------------
-  glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
-
   glPointSize(1.0);
-  GLfloat col[3*4] = { 1.0f, 1.0f, 1.0f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f, 1.0f };
-//  GLfloat * pos;
-//  pos = (GLfloat*)Scenepos;
+  GLfloat col[3*4] = { 1.0f, .5f, 1.f,   1.0f, .5f, 1.f,   1.0f, .5f, 1.f,   1.0f, .5f, 1.f };
+  GLfloat * pos = (GLfloat*)Scenepos;
 
   glGenVertexArrays(1, &vao3);
   glBindVertexArray(vao3);
-  glGenBuffers(1, &positionBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
-  glGenBuffers(1, &colorBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
-  glBindBuffer(GL_ARRAY_BUFFER, positionBuf3);
-  glBindBuffer(GL_ARRAY_BUFFER, colorBuf3);
 
   glEnableVertexAttribArray(sh1_attr_col); // Attribute indexes were received from calls to glGetAttribLocation, or passed into glBindAttribLocation.
   glEnableVertexAttribArray(sh1_attr_pos);
+
+  glGenBuffers(1, &colorBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+  glBindBuffer(GL_ARRAY_BUFFER, colorBuf3);
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3*4, col, GL_DYNAMIC_DRAW);
   glVertexAttribPointer(sh1_attr_col, 3, GL_FLOAT, false, 0, 0); // col_data is a float*, 3 per vertex
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3*4, Scenepos, GL_DYNAMIC_DRAW);
+
+  glGenBuffers(1, &positionBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+  glBindBuffer(GL_ARRAY_BUFFER, positionBuf3);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3*4, pos, GL_DYNAMIC_DRAW);
   glVertexAttribPointer(sh1_attr_pos, 3, GL_FLOAT, false, 0, 0); // vertex_data is a float*, 3 per vertex, representing the position of each vertex
 
   glDrawArrays(GL_QUADS, 0, 4); // 4 = vertexcount
