@@ -1,3 +1,6 @@
+5/3
+- Ackermann / Einspurmodell f. Fahrzeugbewegung
+
 5/2
 - sh1_unif_wirecolor --> sh1_unif_color
 - übergänge zw. den Segmenten schliessen (derzeit 1 Segmentweite Abstand)
@@ -9,7 +12,7 @@
 
 4/28
 - Objekte setzen, orthogonal zur
-  - a) Blickrichtung
+  + a) Blickrichtung
   - b) Spurrichtung
 
 4/20
@@ -139,7 +142,7 @@ Inspiration: https://www.youtube.com/watch?v=Sg07FTzDKzk
 - i) trajektorie / trägheit für Bewegung Auto
   ii) Bewegung als Fussgänger sofortig
 - Häuser platzieren
-- Billboards platzieren (Spiel als Editor)!!!!
++ Billboards platzieren (Spiel als Editor)!!!!
 
 2/4
 - culling-fix: Tunnel, Schilder
@@ -181,7 +184,7 @@ Editor:
 Starduck/buggyboy:
 ==================
 + display buggy
-- randomly place flags (single and double) <-- billboards
++ randomly place flags (single and double) <-- billboards
   alternative: place flags with editor
 - collision check car & flags
 
@@ -212,13 +215,13 @@ https://www.funstockretro.co.uk/news/throwback-thursday-buggy-boy/
 + ego Fahrzeug (Jeep) steuern + positionieren
 - framerate im debug ~800 FPS im release > 1000
   bricht jedoch auf dem SONY in beiden targets auf bis zu 6-20 FPS ein
-- vertikale Mausbewegung nOK
++ vertikale Mausbewegung nOK
 
 
 13.5.'17
 https://www.youtube.com/watch?v=EhyqW-r2i5g
 - mehr Buggyboy Elemente einbauen
-  - Flaggen (Bonus)
+  + Flaggen (Bonus)
   - Tore (Bonus)
   - Baumstamm (Springen)
   - Baumstammhaufen (Hindernis)

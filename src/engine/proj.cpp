@@ -104,8 +104,8 @@ int proj::Proj::Load_Scene_Objs()
 */      // ===== 2do: move outside =====
       obj::CBillboard bb;
       bb.p_render = &m_render;
-      proj::c_VAO vao = bb.Create("tx_Banner",pos.x, pos.y, pos.z);
-      m_render.vVAOs.push_back(vao);
+/////////////////      proj::c_VAO vao = bb.Create("tx_Banner",pos.x, pos.y, pos.z);
+/////////////////      m_render.vVAOs.push_back(vao);
 
 
       nobjs++;
@@ -283,7 +283,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   sponza.Load(1.0f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
 #endif
 
-  // c) place billboard here: das letzte wird nicht gezeichnet !?
+/*  // c) place billboard here: das letzte wird nicht gezeichnet !?
   obj::CBillboard bb;
   bb.p_render = &m_render;
   vao = bb.Create("tx_Banner",10.0f, 10.0f, 0.0f);
@@ -301,7 +301,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   vao = bb.Create("tx_Banner",40.0f, 10.0f, 0.0f);
   m_render.vVAOs.push_back(vao);
   vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
-
+  */
 /*  obj::CGL_ObjectWavefront barrier1(&m_render);
   barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
   barrier1.Load(1.0f, 0.0f, Vec3f(0.0f, 0.0f, 0.0f));

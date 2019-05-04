@@ -36,9 +36,11 @@ HGLRC            hRC=NULL;                      // Permanent Rendering Context
 HDC              hDC=NULL;                      // Private GDI Device Context
 HWND             hWnd=NULL;                     // Holds Our Window Handle
 
+// 2do: think about add variables to which classes
+
 proj::Proj m_proj;
 
-Camera m_cam;
+Camera m_cam; // 2do: besser dort als m_cam und hier p_cam-> m_proj.m_render.p_cam
 
 int win_h,win_w;
 int mouse_x,mouse_y;
@@ -100,9 +102,13 @@ void RenderThread(void *args)
         obj::CBillboard bb;
         bb.p_render = &m_proj.m_render;
         proj::c_VAO vao;
-        if (editor_Obj == ED_OBJ_BB_BANNER) vao = bb.Create("tx_Banner", m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f);
-        else if (editor_Obj == ED_OBJ_BB_DAWG) vao = bb.Create("tx_Dawg", m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f);
-        else /*if (editor_Obj == ED_OBJ_BB_DAWK)*/ vao = bb.Create("tx_DawK", m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f);
+        // place objects orthogonal to viewing direction
+        glm::vec3 cam_dir = m_proj.m_render.p_cam->At - m_proj.m_render.p_cam->Pos;
+        glm::vec3 obj_dir = -cam_dir;
+        glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f); // cursor is just a little bit ahead of the camera pos.
+        if (editor_Obj == ED_OBJ_BB_BANNER) vao = bb.Create("tx_Banner", obj_pos, obj_dir);
+        else if (editor_Obj == ED_OBJ_BB_DAWG) vao = bb.Create("tx_Dawg", obj_pos, obj_dir);
+        else /*if (editor_Obj == ED_OBJ_BB_DAWK)*/ vao = bb.Create("tx_DawK", obj_pos, obj_dir);
         m_proj.m_render.vVAOs.push_back(vao);
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
