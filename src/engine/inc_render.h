@@ -12,6 +12,8 @@
 #include <gl\gl.h>    // Header File For The OpenGL32 Library
 #include <gl\glu.h>   // Header File For The GLu32 Library
 
+#include "glm/glm.hpp"
+
 //#include "obj.hpp"
 
 namespace proj
@@ -51,7 +53,7 @@ namespace proj
 
     bool b_doDraw;
     bool b_Wireframe;
-    Vec3f vPos;
+    glm::vec3 pos;
     uint16 uiVertexCount;
     bool b_moving;
 
@@ -60,7 +62,7 @@ namespace proj
       ui_idTexture = 0;
       b_doDraw     = true;
       b_Wireframe  = false;
-      vPos         = Vec3f(0.0f,0.0f,0.0f);
+      pos          = glm::vec3(0.0f,0.0f,0.0f);
       b_moving     = false;
     }
   };

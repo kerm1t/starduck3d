@@ -88,7 +88,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       vao.Name = "guardrail";
       vao.t_Shade = proj::SHADER_COLOR_FLAT;
       vao.uiVertexCount = nVert;
-      vao.vPos = Vec3f(0.0f, 0.0f, 0.0f);
+      vao.pos = glm::vec3(0.0f, 0.0f, 0.0f);
       return vao;
     }
 

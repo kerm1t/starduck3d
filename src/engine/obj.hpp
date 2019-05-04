@@ -220,7 +220,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       bHasParts = true;
     }
 
-    void PartsToVBOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
+//    void PartsToVBOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
+    void PartsToVBOs(glm::vec3 pos = glm::vec3(0.0f,0.0f,0.0f))
     {
       GLenum err = GL_NO_ERROR;
       err = glGetError(); // 3/8/2019 - when adding at draw time, I got an error 1282 here and object not shown
@@ -286,7 +287,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       }
     }
 
-    void PartsToVAOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
+//    void PartsToVAOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
+    void PartsToVAOs(glm::vec3 pos = glm::vec3(0.0f,0.0f,0.0f))
     {
       // --> die infos erstmal am Objekt speichern !?
       uint16 nParts = (uint16)v_parts.size();
@@ -313,7 +315,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
           vao.t_Shade = proj::SHADER_COLOR_FLAT;
         }
         vao.uiVertexCount = (uint16)v_parts[ui].vertices.size();
-        vao.vPos = vPos;
+        vao.pos = pos;
         p_render->vVAOs.push_back(vao);
       }
     }
@@ -328,8 +330,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     std::string sObjectFullpath;
     std::string sObjectDirectory;
 
-    virtual void Load(float, float, Vec3f) = 0;  // includes ToVBO, ToVAO
-    virtual void LoadParts(float, float, Vec3f) = 0;    // load OBJ 'n texture
+    virtual void Load(glm::vec3, glm::vec3, float, float) = 0;  // includes ToVBO, ToVAO
+    virtual void LoadParts(glm::vec3, glm::vec3, float, float) = 0;    // load OBJ 'n texture
   };
 
 
@@ -351,14 +353,14 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       p_render = p_rnd;
     };
 
-    void Load(float fScale = 1.0f, float fZ = 0.0f, Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f)) // load OBJ 'n texture
+    void Load(glm::vec3 pos, glm::vec3 dir = glm::vec3(0.0f,1.0f,0.0f), float fScale = 1.0f, float fZ = 0.0f) // load OBJ 'n texture
     {
-      LoadParts(fScale, fZ, vPos);
-      PartsToVBOs(vPos);
-      PartsToVAOs(vPos);
+      LoadParts(pos, dir, fScale, fZ);
+      PartsToVBOs(pos);
+      PartsToVAOs(pos);
     }
 
-    void LoadParts(float fScale = 1.0f, float fZ = 0.0f, Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f)) // load OBJ 'n texture
+    void LoadParts(glm::vec3 pos, glm::vec3 dir = glm::vec3(0.0f, 1.0f, 0.0f), float fScale = 1.0f, float fZ = 0.0f) // load OBJ 'n texture
     {
       CLoader_OBJ ldr;
       // i) load geometry and material list
@@ -368,8 +370,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
       // BBox
       aabb = ldr.aabb;
-      aabb.min_point += glm::vec3(vPos.x, vPos.y, vPos.z);
-      aabb.max_point += glm::vec3(vPos.x, vPos.y, vPos.z);
+      aabb.min_point += pos;
+      aabb.max_point += pos;
 
 #if(B_ADD_BBOX_VAO == 1)
       obj::CCube2 m_cube;

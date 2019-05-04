@@ -1,4 +1,5 @@
-5/3
+5/4
+- Objekte auch drehen ("barrier")
 - Ackermann / Einspurmodell f. Fahrzeugbewegung
 
 5/2

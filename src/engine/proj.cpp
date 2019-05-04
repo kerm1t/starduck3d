@@ -255,7 +255,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 #if (VBOADD_JEEP == 1)
   obj::CGL_ObjectWavefront car3(&m_render);
   car3.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep_openair.obj";
-  car3.Load(0.4f, 0.0f, Vec3f(10.0f, 3.0f, 0.0f)); // scaled
+  car3.Load(glm::vec3(10.0f, 3.0f, 0.0f), glm::vec3(0,1,0), 0.4f, 0.0f); // scaled
   vObjects.push_back(car3); // 2do: wieviel Speicherverbrauch?
 #endif
 
@@ -440,7 +440,7 @@ int proj::Proj::DoIt()
       ImGui::Text("%d",i); ImGui::NextColumn();
       ImGui::Text(m_render.vVAOs[i].Name.c_str()); ImGui::NextColumn();
       ImGui::Text("%d",m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
-      ImGui::Text("%.2f,%.2f,%.2f",m_render.vVAOs[i].vPos.x, m_render.vVAOs[i].vPos.y, m_render.vVAOs[i].vPos.z); ImGui::NextColumn();
+      ImGui::Text("%.2f,%.2f,%.2f",m_render.vVAOs[i].pos.x, m_render.vVAOs[i].pos.y, m_render.vVAOs[i].pos.z); ImGui::NextColumn();
       ImGui::Text("%d", m_render.vVAOs[i].ui_idTexture); ImGui::NextColumn();
     }
     ImGui::Columns(1);

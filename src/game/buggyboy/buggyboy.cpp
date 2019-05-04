@@ -97,15 +97,16 @@ void RenderThread(void *args)
       myfile << "planken," << m_proj.m_render.Cursor.x << "," << m_proj.m_render.Cursor.y << "," << 0.0f << "\n";
       myfile.close();
   */    
+      // place objects orthogonal to viewing direction
+      glm::vec3 cam_dir = m_proj.m_render.p_cam->At - m_proj.m_render.p_cam->Pos;
+      glm::vec3 obj_dir = -cam_dir;
+      glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f); // cursor is just a little bit ahead of the camera pos.
+
       if ((editor_Obj == ED_OBJ_BB_BANNER) || (editor_Obj == ED_OBJ_BB_DAWG) || (editor_Obj == ED_OBJ_BB_DAWK))
       {
         obj::CBillboard bb;
         bb.p_render = &m_proj.m_render;
         proj::c_VAO vao;
-        // place objects orthogonal to viewing direction
-        glm::vec3 cam_dir = m_proj.m_render.p_cam->At - m_proj.m_render.p_cam->Pos;
-        glm::vec3 obj_dir = -cam_dir;
-        glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f); // cursor is just a little bit ahead of the camera pos.
         if (editor_Obj == ED_OBJ_BB_BANNER) vao = bb.Create("tx_Banner", obj_pos, obj_dir);
         else if (editor_Obj == ED_OBJ_BB_DAWG) vao = bb.Create("tx_Dawg", obj_pos, obj_dir);
         else /*if (editor_Obj == ED_OBJ_BB_DAWK)*/ vao = bb.Create("tx_DawK", obj_pos, obj_dir);
@@ -117,7 +118,7 @@ void RenderThread(void *args)
       {
         obj::CGL_ObjectWavefront barrier1(&m_proj.m_render);
         barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
-        barrier1.Load(1.0f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f));
+        barrier1.Load(obj_pos, obj_dir, 1.0f, 0.0f);
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
       }

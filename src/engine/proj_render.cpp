@@ -514,15 +514,15 @@ void proj::Render::DrawVAOs_NEU()
     bool bMoved = false; // workaround, removed later
 
     if (
-      ((vVAOs[ui].vPos.x < -0.001f) || (vVAOs[ui].vPos.x > 0.001f)) ||
-      ((vVAOs[ui].vPos.y < -0.001f) || (vVAOs[ui].vPos.y > 0.001f)) ||
-      ((vVAOs[ui].vPos.z < -0.001f) || (vVAOs[ui].vPos.z > 0.001f))
+      ((vVAOs[ui].pos.x < -0.001f) || (vVAOs[ui].pos.x > 0.001f)) ||
+      ((vVAOs[ui].pos.y < -0.001f) || (vVAOs[ui].pos.y > 0.001f)) ||
+      ((vVAOs[ui].pos.z < -0.001f) || (vVAOs[ui].pos.z > 0.001f))
       )
     {
       bMoved = true; // workaround, removed later
       glm::mat4 Model = glm::mat4(1.0f);
       // first translate
-      Model = glm::translate(Model,glm::vec3(vVAOs[ui].vPos.x,vVAOs[ui].vPos.y,vVAOs[ui].vPos.z));
+      Model = glm::translate(Model, vVAOs[ui].pos);
       p_cam->change_Model(Model);
     }
 // MOVED ???? ... wenn ich das ausschalte, werden billboards ok, aber barriers (+ Jeep) falsch gezeichnet
@@ -537,8 +537,8 @@ void proj::Render::DrawVAOs_NEU()
         ((p_cam->iStickToObj == 2) && (vVAOs[ui].Name.compare("Jeep_default") == 0)))
       {
         glm::vec3 move; // hack, just a test for object movement
-        move.x = p_cam->Pos.x - vVAOs[ui].vPos.x;
-        move.y = p_cam->Pos.y - vVAOs[ui].vPos.y;
+        move.x = p_cam->Pos.x - vVAOs[ui].pos.x;
+        move.y = p_cam->Pos.y - vVAOs[ui].pos.y;
         glm::vec3 dir = p_cam->At - p_cam->Pos;
         move.x += dir.x*3.0f;
         move.y += dir.y*3.0f;
