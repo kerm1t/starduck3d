@@ -1,5 +1,17 @@
 5/4
-- Objekte auch drehen ("barrier")
+- mit WASD genau eine billboard-Weite strafe-n
+- Auto soll da stehen bleiben, wo man es hingefahren hat
+- einfacher ins Auto einsteigen (richtige Pos, keine vertikale Kamera etc.)
+- gegen Beton-BB fahren: Auto hält an o. BB fällt um
+- bewegl. Objekte, z.B. Tür, die man öffnen kann (K)
+- Objekte in der Luft setzen (z > 0.0) (K)
+- ein distribute Verzeichnis erstellen <-- release build + weniger/kleinere Texturen
+- eigene Welt für Katja, Anton (loader)
+- Anton's planken richtig laden (keine Löcher, per loader, Farben!, Richtung) 
+- Kollision auswerten = zählen / visualisieren
+- "Menschen" (Katja)
+- Objekte wieder löschen
+- Objekte auch m. Richtung platzieren ("barrier")
 - Ackermann / Einspurmodell f. Fahrzeugbewegung
 
 5/2

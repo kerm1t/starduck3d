@@ -35,6 +35,8 @@ Timer timer;
 #define VBOADD_BARRIERS 0
 #define VBOADD_SPONZA 0
 
+//#define TEX_TRANSPARENT true // 2do: move to e.g. GFX_defines
+
 proj::Proj::Proj()
 {
 }
@@ -151,6 +153,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Banner", ldrIMG.loadIMG("..\\data\\buggyboy\\banner_t.png", true)));
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Dawg", ldrIMG.loadIMG("..\\data\\buggyboy\\dawgman_transp.png", true)));
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_DawK", ldrIMG.loadIMG("..\\data\\buggyboy\\dawgman_katja.png", true)));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Concrete", ldrIMG.loadIMG("..\\data\\nebulus\\road_tex_256x256.bmp", false)));
+//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Concrete", ldrBMP.loadBMP_custom("..\\data\\nebulus\\road_tex_256x256.bmp")));
 
 
 #if (VBOADD_SCENE_OBJS == 1)

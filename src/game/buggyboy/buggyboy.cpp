@@ -56,10 +56,11 @@ bool b_WM_resized = false;
 bool b_program_stopped = false;
 bool b_add_obj = false;
 
-#define ED_OBJ_BARRIER 1
-#define ED_OBJ_BB_BANNER 2
-#define ED_OBJ_BB_DAWG 3  // Bonus: Dawgman
-#define ED_OBJ_BB_DAWK 4  // Bonus: Dawgman (Katja)
+#define ED_OBJ_BARRIER      1
+#define ED_OBJ_BB_BANNER    2
+#define ED_OBJ_BB_DAWG      3  // Bonus: Dawgman
+#define ED_OBJ_BB_DAWK      4  // Bonus: Dawgman (Katja)
+#define ED_OBJ_BB_CONCRETE  5
 int editor_Obj = ED_OBJ_BB_BANNER;
 
 void CalculateFrameRate()
@@ -100,16 +101,18 @@ void RenderThread(void *args)
       // place objects orthogonal to viewing direction
       glm::vec3 cam_dir = m_proj.m_render.p_cam->At - m_proj.m_render.p_cam->Pos;
       glm::vec3 obj_dir = -cam_dir;
-      glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f); // cursor is just a little bit ahead of the camera pos.
+//      glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f); // cursor is just a little bit ahead of the camera pos.
+      glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, m_proj.m_render.p_cam->Pos.z); // cursor is just a little bit ahead of the camera pos.
 
-      if ((editor_Obj == ED_OBJ_BB_BANNER) || (editor_Obj == ED_OBJ_BB_DAWG) || (editor_Obj == ED_OBJ_BB_DAWK))
+      if ((editor_Obj == ED_OBJ_BB_BANNER) || (editor_Obj == ED_OBJ_BB_DAWG) || (editor_Obj == ED_OBJ_BB_DAWK) || (editor_Obj == ED_OBJ_BB_CONCRETE))
       {
         obj::CBillboard bb;
         bb.p_render = &m_proj.m_render;
         proj::c_VAO vao;
         if (editor_Obj == ED_OBJ_BB_BANNER) vao = bb.Create("tx_Banner", obj_pos, obj_dir);
         else if (editor_Obj == ED_OBJ_BB_DAWG) vao = bb.Create("tx_Dawg", obj_pos, obj_dir);
-        else /*if (editor_Obj == ED_OBJ_BB_DAWK)*/ vao = bb.Create("tx_DawK", obj_pos, obj_dir);
+        else if (editor_Obj == ED_OBJ_BB_DAWK) vao = bb.Create("tx_DawK", obj_pos, obj_dir);
+        else /*if (editor_Obj == ED_OBJ_BB_CONCRETE)*/ vao = bb.Create("tx_Concrete", obj_pos, obj_dir);
         m_proj.m_render.vVAOs.push_back(vao);
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
@@ -522,6 +525,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     case 52: // 4
       editor_Obj = ED_OBJ_BB_DAWK;
+      b_add_obj = true;
+      break;
+    case 53: // 5
+      editor_Obj = ED_OBJ_BB_CONCRETE;
       b_add_obj = true;
       break;
     case 80: // P >> Pause ON/OFF
