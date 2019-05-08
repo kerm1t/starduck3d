@@ -1,4 +1,5 @@
 5/4
+- wenn ich aus dem Programm wechsele (zum Editor), dann ist die Kamera "off" mit Taste "0" o.ä.
 - mit WASD genau eine billboard-Weite strafe-n
 - Auto soll da stehen bleiben, wo man es hingefahren hat
 - einfacher ins Auto einsteigen (richtige Pos, keine vertikale Kamera etc.)
@@ -10,7 +11,7 @@
 - Anton's planken richtig laden (keine Löcher, per loader, Farben!, Richtung) 
 - Kollision auswerten = zählen / visualisieren
 - "Menschen" (Katja)
-- Objekte wieder löschen
+- Objekte wieder löschen (das Objekt "in view" markieren)
 - Objekte auch m. Richtung platzieren ("barrier")
 - Ackermann / Einspurmodell f. Fahrzeugbewegung
 

@@ -61,6 +61,7 @@ bool b_add_obj = false;
 #define ED_OBJ_BB_DAWG      3  // Bonus: Dawgman
 #define ED_OBJ_BB_DAWK      4  // Bonus: Dawgman (Katja)
 #define ED_OBJ_BB_CONCRETE  5
+#define ED_OBJ_BB_TREE      6
 int editor_Obj = ED_OBJ_BB_BANNER;
 
 void CalculateFrameRate()
@@ -102,9 +103,10 @@ void RenderThread(void *args)
       glm::vec3 cam_dir = m_proj.m_render.p_cam->At - m_proj.m_render.p_cam->Pos;
       glm::vec3 obj_dir = -cam_dir;
 //      glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f); // cursor is just a little bit ahead of the camera pos.
-      glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, m_proj.m_render.p_cam->Pos.z); // cursor is just a little bit ahead of the camera pos.
+      glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, m_proj.m_render.p_cam->Pos.z-CAM_Z); // cursor is just a little bit ahead of the camera pos.
 
-      if ((editor_Obj == ED_OBJ_BB_BANNER) || (editor_Obj == ED_OBJ_BB_DAWG) || (editor_Obj == ED_OBJ_BB_DAWK) || (editor_Obj == ED_OBJ_BB_CONCRETE))
+      if ((editor_Obj == ED_OBJ_BB_BANNER) || (editor_Obj == ED_OBJ_BB_DAWG) ||
+          (editor_Obj == ED_OBJ_BB_DAWK) || (editor_Obj == ED_OBJ_BB_CONCRETE) || (editor_Obj == ED_OBJ_BB_TREE))
       {
         obj::CBillboard bb;
         bb.p_render = &m_proj.m_render;
@@ -112,7 +114,8 @@ void RenderThread(void *args)
         if (editor_Obj == ED_OBJ_BB_BANNER) vao = bb.Create("tx_Banner", obj_pos, obj_dir);
         else if (editor_Obj == ED_OBJ_BB_DAWG) vao = bb.Create("tx_Dawg", obj_pos, obj_dir);
         else if (editor_Obj == ED_OBJ_BB_DAWK) vao = bb.Create("tx_DawK", obj_pos, obj_dir);
-        else /*if (editor_Obj == ED_OBJ_BB_CONCRETE)*/ vao = bb.Create("tx_Concrete", obj_pos, obj_dir);
+        else if (editor_Obj == ED_OBJ_BB_CONCRETE) vao = bb.Create("tx_Concrete", obj_pos, obj_dir);
+        else /*if (editor_Obj == ED_OBJ_BB_TREE)*/ vao = bb.Create("tx_Tree", obj_pos, obj_dir, 1.0f);
         m_proj.m_render.vVAOs.push_back(vao);
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
@@ -529,6 +532,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     case 53: // 5
       editor_Obj = ED_OBJ_BB_CONCRETE;
+      b_add_obj = true;
+      break;
+    case 54: // 6
+      editor_Obj = ED_OBJ_BB_TREE;
       b_add_obj = true;
       break;
     case 80: // P >> Pause ON/OFF

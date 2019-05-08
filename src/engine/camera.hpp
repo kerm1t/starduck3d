@@ -20,6 +20,7 @@
 #include <gl\glu.h>   // Header File For The GLu32 Library
 
 #define DEGTORAD(x) (x * M_PI / 180.0f)
+#define CAM_Z 1.34f
 
 class Camera
 {
@@ -77,7 +78,7 @@ public:
 
     Pos[0] = 0.0f;
     Pos[1] = 0.0f;
-    Pos[2] = 1.34f;
+    Pos[2] = CAM_Z;
 
     Dir[0] = 1.0f;
     Dir[1] = 1.0f;

@@ -250,7 +250,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       std::vector <glm::vec3> & temp_normals,
       std::vector <unsigned int> & face_v,
       std::vector <unsigned int> & face_vt,
-      std::vector <unsigned int> & face_vn)
+      std::vector <unsigned int> & face_vn,
+      glm::vec3 dir)
     {
       CPart part;
       part.name       = p_tmp_Obj;
@@ -267,12 +268,19 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       }
       part.b_textured = (part.s_Texture.size() > 0);
 
+//      GLfloat angle = glm::dot(glm::normalize(glm::vec2(0.0f, 1.0f)), glm::normalize(glm::vec2(dir.x, dir.y)));
+      GLfloat angle = glm::dot(glm::vec2(0.0f, 1.0f),glm::vec2(dir.x,dir.y));
       // For each vertex of each triangle
       for (unsigned int i=0; i<face_v.size(); i++)
       {
         unsigned int vertexIndex = face_v[i];
         glm::vec3 vertex = temp_vertices[vertexIndex-1];
-        part.vertices.push_back(vertex);
+        // rotate around z-axis    https://academo.org/demos/rotation-about-point/
+//        GLfloat x = vertex.x * cos(DEGTORAD(90)) - vertex.y * sin(DEGTORAD(90));
+//        GLfloat y = vertex.y * cos(DEGTORAD(90)) + vertex.x * sin(DEGTORAD(90));
+        GLfloat x = vertex.x * cos(angle) - vertex.y * sin(angle);
+        GLfloat y = vertex.y * cos(angle) + vertex.x * sin(angle);
+        part.vertices.push_back(glm::vec3(x,y,vertex.z));
 
         // span bbox
         if (vertex.x < aabb.min_point.x) aabb.min_point.x = vertex.x; // min
@@ -318,7 +326,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       provide parts with appropriate Material (set pointer)
     */
     bool loadOBJParts(const char * filename, std::vector <CMaterial> & v_Mat,
-      std::vector <CPart> & out_v_CParts, float fScale = 1.0f, float fZ = 0.0f)
+      std::vector <CPart> & out_v_CParts, float fScale = 1.0f, float fZ = 0.0f,
+      glm::vec3 dir = glm::vec3(0.0f, 1.0f, 0.0f))
     {
       state objstate = os_none;
 
@@ -378,7 +387,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               temp_normals,
               face_v,
               face_vt,
-              face_vn);
+              face_vn,
+              dir);
           }
           objstate = os_v;
           glm::vec3 vertex;
@@ -415,7 +425,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
               temp_normals,
               face_v,
               face_vt,
-              face_vn);
+              face_vn,
+              dir);
           }
           objstate = os_usemtl;
           sscanf(line.c_str(), "usemtl %s\n", temp_material);
@@ -607,7 +618,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         temp_normals,
         face_v,
         face_vt,
-        face_vn);
+        face_vn,
+        dir);
 
       return true;
     }

@@ -685,7 +685,7 @@ void proj::Render::DrawVAOs_NEU()
   // --------------------------------------------
   // draw sceneblock in purple, that player is on
   // --------------------------------------------
-  glPointSize(1.0);
+//  glPointSize(1.0);
   GLfloat col[3*4] = { 1.0f, .5f, 1.f,   1.0f, .5f, 1.f,   1.0f, .5f, 1.f,   1.0f, .5f, 1.f };
   GLfloat * pos = (GLfloat*)Scenepos;
 

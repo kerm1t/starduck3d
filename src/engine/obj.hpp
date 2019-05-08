@@ -221,7 +221,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     }
 
 //    void PartsToVBOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
-    void PartsToVBOs(glm::vec3 pos = glm::vec3(0.0f,0.0f,0.0f))
+    void PartsToVBOs()//glm::vec3 pos = glm::vec3(0.0f,0.0f,0.0f))
     {
       GLenum err = GL_NO_ERROR;
       err = glGetError(); // 3/8/2019 - when adding at draw time, I got an error 1282 here and object not shown
@@ -355,16 +355,16 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
 
     void Load(glm::vec3 pos, glm::vec3 dir = glm::vec3(0.0f,1.0f,0.0f), float fScale = 1.0f, float fZ = 0.0f) // load OBJ 'n texture
     {
-      LoadParts(pos, dir, fScale, fZ);
-      PartsToVBOs(pos);
-      PartsToVAOs(pos);
+      LoadParts(pos, dir, fScale, fZ); // nothing done with pos here
+      PartsToVBOs();// pos);
+      PartsToVAOs(pos); // pos. stored @ obj and later applied in the shader
     }
 
     void LoadParts(glm::vec3 pos, glm::vec3 dir = glm::vec3(0.0f, 1.0f, 0.0f), float fScale = 1.0f, float fZ = 0.0f) // load OBJ 'n texture
     {
       CLoader_OBJ ldr;
       // i) load geometry and material list
-      bool res = ldr.loadOBJParts(sObjectFullpath.c_str(), v_mat, v_parts, fScale, fZ);
+      bool res = ldr.loadOBJParts(sObjectFullpath.c_str(), v_mat, v_parts, fScale, fZ, dir);
       assert(res == true);
 
 

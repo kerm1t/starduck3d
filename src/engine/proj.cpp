@@ -10,6 +10,8 @@
 #include "Timer.h"
 #include <glm/gtc/type_ptr.hpp> // f. value_ptr()
 
+#include <gl/gl.h> // 2do: include somewhere in render...
+
 // FPS
 // http://www.songho.ca/misc/timer/timer.html
 // Windows --> (also doch lieber GlfW benutzen)
@@ -155,6 +157,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_DawK", ldrIMG.loadIMG("..\\data\\buggyboy\\dawgman_katja.png", true)));
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Concrete", ldrIMG.loadIMG("..\\data\\nebulus\\road_tex_256x256.bmp", false)));
 //  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Concrete", ldrBMP.loadBMP_custom("..\\data\\nebulus\\road_tex_256x256.bmp")));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Tree", ldrIMG.loadIMG("..\\data\\buggyboy\\tree4.png", true)));
 
 
 #if (VBOADD_SCENE_OBJS == 1)
@@ -306,11 +309,11 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.vVAOs.push_back(vao);
   vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
   */
-/*  obj::CGL_ObjectWavefront barrier1(&m_render);
-  barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
-  barrier1.Load(1.0f, 0.0f, Vec3f(0.0f, 0.0f, 0.0f));
+  obj::CGL_ObjectWavefront barrier1(&m_render);
+  barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier4.obj";
+  barrier1.Load(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, 0.0f);
   vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
-  */
+
 
   err = glGetError();
 
@@ -422,6 +425,10 @@ int proj::Proj::DoIt()
 
 
   ImGui::Begin("Render");
+
+  const GLubyte* vendor = glGetString(GL_VENDOR); // Returns the vendor
+  const GLubyte* renderer = glGetString(GL_RENDERER); // Returns a hint to the model
+  ImGui::Text("%s", renderer);
 
   float FPS = 1000.0f / (float)timer.getElapsedTimeInMilliSec();
   m_render.aFPS[m_render.idxFPS++ % FPS_LOWPASS] = FPS;
