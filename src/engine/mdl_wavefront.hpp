@@ -269,7 +269,11 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       part.b_textured = (part.s_Texture.size() > 0);
 
 //      GLfloat angle = glm::dot(glm::normalize(glm::vec2(0.0f, 1.0f)), glm::normalize(glm::vec2(dir.x, dir.y)));
-      GLfloat angle = glm::dot(glm::vec2(0.0f, 1.0f),glm::vec2(dir.x,dir.y));
+//      GLfloat angle = glm::dot(glm::vec2(0.0f, 1.0f),glm::vec2(dir.x,dir.y));
+      glm::vec2 v1 = glm::vec2(-1.0f, 0.0f);
+      glm::vec3 v2 = glm::normalize(dir);
+//      GLfloat angle = acos(v1.x * v2.x + v1.y * v2.y);
+      GLfloat angle = atan2(v2.y, v2.x) - atan2(v1.y, v1.x);
       // For each vertex of each triangle
       for (unsigned int i=0; i<face_v.size(); i++)
       {

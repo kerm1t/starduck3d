@@ -262,7 +262,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 #if (VBOADD_JEEP == 1)
   obj::CGL_ObjectWavefront car3(&m_render);
   car3.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep_openair.obj";
-  car3.Load(glm::vec3(10.0f, 3.0f, 0.0f), glm::vec3(0,1,0), 0.4f, 0.0f); // scaled
+  car3.Load(glm::vec3(10,3,0), glm::vec3(-1,0,0), 0.4f, 0); // scaled
   vObjects.push_back(car3); // 2do: wieviel Speicherverbrauch?
 #endif
 
