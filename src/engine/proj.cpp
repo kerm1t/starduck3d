@@ -27,12 +27,14 @@ Timer timer;
 #define VBOADD_TUNNEL 0
 #define VBOADD_TRAFFICSIGNS 0
 #define VBOADD_REDCAR 0
+#define VBOADD_HOUSE 0
 #define VBOADD_CONFERENCEROOM 0
 #define VBOADD_ANTONS_VILLAGE 0
 #define VBOADD_SCENE_OBJS 0            // load from obj.txt
 #define VBOADD_BILLBOARDS 0            // shall be more than 1 type of billboard
 #define VBOADD_20_RANDOM_HOLZSTAPEL 0
 #define VBOADD_CONTICAR 0
+#define VBOADD_BLACKJEEP 1
 #define VBOADD_JEEP 1
 #define VBOADD_BARRIERS 0
 #define VBOADD_SPONZA 0
@@ -214,9 +216,14 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 #if (VBOADD_REDCAR == 1)
   obj::CGL_ObjectWavefront car(&m_render);
-//  car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
+  car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
+  car.Load(glm::vec3(-5.0f, -1.0f, 0.0f),glm::vec3(0,1,0),0.04f, 0.0f); // scaled
+#endif
+
+#if (VBOADD_HOUSE == 1)
+  obj::CGL_ObjectWavefront car(&m_render);
   car.sObjectFullpath = "d:\\X\\untitled.obj";
-  car.Load(0.04f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
+  car.Load(glm::vec3(-5.0f, -1.0f, 0.0f), glm::vec3(0, 1, 0), 0.04f, 0.0f); // scaled
 #endif
 
 #if (VBOADD_CONFERENCEROOM == 1)
@@ -253,9 +260,14 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 #if (VBOADD_CONTICAR == 1)
   obj::CGL_ObjectWavefront car2(&m_render);
   car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
-  car2.Load(.6f, 0.0f, Vec3f(20.0f, 6.0f, 0.7f)); // scaled
-//  car2.sObjectFullpath = "..\\data\\virtualroad\\lowpoly_jeep3\\jeep.obj";
-//  car2.Load(.6f, 0.0f, Vec3f(20.0f, 6.0f, 0.7f)); // scaled
+  car2.Load(glm::vec3(20, 6, .7f),glm::vec3(0,1,0),.6f, 0.0f); // scaled
+  vObjects.push_back(car2); // 2do: wieviel Speicherverbrauch?
+#endif
+
+#if (VBOADD_BLACKJEEP == 1)
+  obj::CGL_ObjectWavefront car2(&m_render);
+  car2.sObjectFullpath = "..\\data\\virtualroad\\lowpoly_jeep3\\jeep.obj";
+  car2.Load(glm::vec3(20, 6, .7f), glm::vec3(0, -1, 0), .4f, 0.0f); // scaled
   vObjects.push_back(car2); // 2do: wieviel Speicherverbrauch?
 #endif
 

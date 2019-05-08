@@ -1,3 +1,7 @@
+5/8
+- objloader fixen (Runde Objekte, Löcher)
+- black jeep einfärben
+
 5/4
 - wenn ich aus dem Programm wechsele (zum Editor), dann ist die Kamera "off" mit Taste "0" o.ä.
 - mit WASD genau eine billboard-Weite strafe-n
@@ -12,7 +16,7 @@
 - Kollision auswerten = zählen / visualisieren
 - "Menschen" (Katja)
 - Objekte wieder löschen (das Objekt "in view" markieren)
-- Objekte auch m. Richtung platzieren ("barrier")
++ Objekte auch m. Richtung platzieren ("barrier")
 - Ackermann / Einspurmodell f. Fahrzeugbewegung
 
 5/2
