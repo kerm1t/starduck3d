@@ -1,4 +1,15 @@
+5/9
+- BBoxen gleich d. Objekten drehen
+- Billboards ohne BBox
+- es wird nur der 1. Part "selektiert" (wireframe)
+- selektiert: statt "wireframe" das Objekte heller (pulsieren, Minecraft)
+- redCar: reifen falsch texturiert
+
 5/8
+Idee: die BBox-check Routine erhält einen alternativen input
+  a) Ego
+  b) Zeiger, der Zeiger kann Objekte selektieren
+  - nur die bboxen auf Kollision checken
 - objloader fixen (Runde Objekte, Löcher)
 - black jeep einfärben
 

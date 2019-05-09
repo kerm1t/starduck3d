@@ -42,7 +42,7 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 
 //#include "obj_simple.hpp"    // bboxes
 
-#define B_ADD_BBOX_VAO 0 // 0 | 1
+#define B_ADD_BBOX_VAO 1 // 0 | 1    2019-05-08, draw only that bbox, which is "touched"
 
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx    
@@ -90,6 +90,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     //    glm::vec3 direction; // position - prev.position
     
     s_AABB aabb;
+    unsigned int vaoID;
 
     CObject()
     {
@@ -316,6 +317,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         }
         vao.uiVertexCount = (uint16)v_parts[ui].vertices.size();
         vao.pos = pos;
+        this->vaoID = p_render->vVAOs.size(); // 2do: easier (add in the obj.Create etc...) or merge vVAO and vObj??
         p_render->vVAOs.push_back(vao);
       }
     }

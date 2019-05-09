@@ -607,7 +607,8 @@ void proj::Render::DrawVAOs_NEU()
     else
       glUniform1i(sh1_unif_wirecolor, 0); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
 
-    if (b_wireframe)
+//    if (b_wireframe)
+    if (ui == touch_object_vaoId)
     {
       glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
       glLineWidth(5.0);

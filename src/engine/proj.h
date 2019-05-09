@@ -59,12 +59,15 @@ namespace proj
     proj::physics m_phys;
 
     int hit_object_id;
+    int touch_object_id;
 
     /* ===== FUNCTIONS ===== */
 
     int Init();
 
     int DoIt(); // call m_render to draw next frame
+
+    void draw_ImGui();
 
   private:
     /* ===== FUNCTIONS ===== */

@@ -25,15 +25,15 @@ Timer timer;
 #define VBOADD_CURBSTONE 0
 #define VBOADD_GUARDRAIL 0
 #define VBOADD_TUNNEL 0
-#define VBOADD_TRAFFICSIGNS 0
-#define VBOADD_REDCAR 0
-#define VBOADD_HOUSE 0
+#define VBOADD_TRAFFICSIGNS 1
+#define VBOADD_REDCAR 1
+#define VBOADD_HOUSE 1
 #define VBOADD_CONFERENCEROOM 0
 #define VBOADD_ANTONS_VILLAGE 0
 #define VBOADD_SCENE_OBJS 0            // load from obj.txt
 #define VBOADD_BILLBOARDS 0            // shall be more than 1 type of billboard
-#define VBOADD_20_RANDOM_HOLZSTAPEL 0
-#define VBOADD_CONTICAR 0
+#define VBOADD_20_RANDOM_HOLZSTAPEL 1
+#define VBOADD_CONTICAR 1
 #define VBOADD_BLACKJEEP 1
 #define VBOADD_JEEP 1
 #define VBOADD_BARRIERS 0
@@ -217,13 +217,15 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 #if (VBOADD_REDCAR == 1)
   obj::CGL_ObjectWavefront car(&m_render);
   car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
-  car.Load(glm::vec3(-5.0f, -1.0f, 0.0f),glm::vec3(0,1,0),0.04f, 0.0f); // scaled
+  car.Load(glm::vec3(-5,-1,0),glm::vec3(0,1,0),0.04f, 0.0f); // scaled
+  vObjects.push_back(car); // 2do: wieviel Speicherverbrauch?
 #endif
 
 #if (VBOADD_HOUSE == 1)
-  obj::CGL_ObjectWavefront car(&m_render);
-  car.sObjectFullpath = "d:\\X\\untitled.obj";
-  car.Load(glm::vec3(-5.0f, -1.0f, 0.0f), glm::vec3(0, 1, 0), 0.04f, 0.0f); // scaled
+  obj::CGL_ObjectWavefront house(&m_render);
+  house.sObjectFullpath = "d:\\X\\untitled.obj";
+  house.Load(glm::vec3(-5,-30,0), glm::vec3(0,1,0), 0.04f, 0.0f); // scaled
+  vObjects.push_back(house); // 2do: wieviel Speicherverbrauch?
 #endif
 
 #if (VBOADD_CONFERENCEROOM == 1)
@@ -250,7 +252,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   {
     holzstapel[ui].setRender(&m_render);
     holzstapel[ui].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
-    holzstapel[ui].Load(0.4f, 0.0f, Vec3f(-100.0f+rand() % 200, -100.0f+rand() % 200, 0.5f)); // scaled
+    holzstapel[ui].Load(glm::vec3(-100.0f+rand() % 200, -100.0f+rand() % 200, 0.5f), glm::vec3(0,1,1), 0.4f, 0.0f); // scaled
+    vObjects.push_back(holzstapel[ui]); // 2do: wieviel Speicherverbrauch?
   }
   n_holz_gestapelt = 20;
 #else
@@ -260,22 +263,22 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 #if (VBOADD_CONTICAR == 1)
   obj::CGL_ObjectWavefront car2(&m_render);
   car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
-  car2.Load(glm::vec3(20, 6, .7f),glm::vec3(0,1,0),.6f, 0.0f); // scaled
+  car2.Load(glm::vec3(30,-2,.7f),glm::vec3(0,1,0),.6f, 0.0f); // scaled
   vObjects.push_back(car2); // 2do: wieviel Speicherverbrauch?
 #endif
 
 #if (VBOADD_BLACKJEEP == 1)
-  obj::CGL_ObjectWavefront car2(&m_render);
-  car2.sObjectFullpath = "..\\data\\virtualroad\\lowpoly_jeep3\\jeep.obj";
-  car2.Load(glm::vec3(20, 6, .7f), glm::vec3(0, -1, 0), .4f, 0.0f); // scaled
-  vObjects.push_back(car2); // 2do: wieviel Speicherverbrauch?
+  obj::CGL_ObjectWavefront car3(&m_render);
+  car3.sObjectFullpath = "..\\data\\virtualroad\\lowpoly_jeep3\\jeep.obj";
+  car3.Load(glm::vec3(20,6,0), glm::vec3(0,-1,0), .4f, 0.0f); // scaled
+  vObjects.push_back(car3); // 2do: wieviel Speicherverbrauch?
 #endif
 
 #if (VBOADD_JEEP == 1)
-  obj::CGL_ObjectWavefront car3(&m_render);
-  car3.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep_openair.obj";
-  car3.Load(glm::vec3(10,3,0), glm::vec3(-1,0,0), 0.4f, 0); // scaled
-  vObjects.push_back(car3); // 2do: wieviel Speicherverbrauch?
+  obj::CGL_ObjectWavefront car4(&m_render);
+  car4.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep_openair.obj";
+  car4.Load(glm::vec3(10,3,0), glm::vec3(-1,0,0), 0.4f, 0); // scaled
+  vObjects.push_back(car4); // 2do: wieviel Speicherverbrauch?
 #endif
 
 // b) place billboard here .. ok
@@ -383,13 +386,27 @@ int proj::Proj::DoIt()
   wglMakeCurrent(m_render.hDC,m_render.hRC); // ;-) now Tab-switching in MTS possible
 
 
+  // a) check, ob ego (Fahrzeug) mit einem Objekte kollidiert, 2do: auch bbox benutzen
   hit_object_id = m_phys.collision_check(vObjects, m_render.Cursor);
 
+  // b) check, ob ego (Fahrzeug) mit einem Objekte kollidiert
+  touch_object_id = m_phys.collision_check_bbox(vObjects, m_render.p_cam->Pos, m_render.p_cam->At);
+  touch_object_id = m_phys.collision_check_bbox(vObjects, m_render.p_cam->Pos, m_render.p_cam->At);
+  if (touch_object_id < 0) m_render.touch_object_vaoId = -1; else m_render.touch_object_vaoId = vObjects[touch_object_id].vaoID;
 
   m_render.DrawVAOs_NEU();          // Draw The Scene
   err = glGetError();
 
+  draw_ImGui();
+  err = glGetError();
 
+  SwapBuffers(m_render.hDC);    // Swap Buffers (Double Buffering)
+
+  return 0;
+}
+
+void proj::Proj::draw_ImGui()
+{
   // --------- IMGUI ---------
   ImGui_ImplWin32_NewFrame();
   ImGui_ImplOpenGL3_NewFrame();
@@ -397,22 +414,22 @@ int proj::Proj::DoIt()
 
   ImGuiIO& io = ImGui::GetIO();
   ImGui::Begin("Virtualroad");
-  ImGui::Text("mouse: %.1f,%.1f",io.MousePos.x,io.MousePos.y);
+  ImGui::Text("mouse: %.1f,%.1f", io.MousePos.x, io.MousePos.y);
   ImGui::Text("loaded: %s", m_scene.c_Scene.c_str());
   static int viewmode;
-  ImGui::RadioButton("Std",     &viewmode, 0);
+  ImGui::RadioButton("Std", &viewmode, 0);
   ImGui::RadioButton("Physics", &viewmode, 1);
-//  static bool b_solid;
-//  static bool b_wireframe;
+  //  static bool b_solid;
+  //  static bool b_wireframe;
   ImGui::Checkbox("solid", &m_render.b_solid);
   ImGui::Checkbox("wireframe", &m_render.b_wireframe);
   ImGui::Checkbox("culling", &m_render.b_culling);
-  ImGui::RadioButton("Free", &m_render.p_cam->iStickToObj,0);
-  ImGui::RadioButton("Jeep1", &m_render.p_cam->iStickToObj,1);
-  ImGui::RadioButton("Jeep2", &m_render.p_cam->iStickToObj,2);
-// (currently) not wireframe per object:
-//  for (unsigned int ui = 0; ui < m_render.vVAOs.size(); ui++) m_render.vVAOs[ui].b_Wireframe = (int)b_wireframe;
-//  static int vw;
+  ImGui::RadioButton("Free", &m_render.p_cam->iStickToObj, 0);
+  ImGui::RadioButton("Jeep1", &m_render.p_cam->iStickToObj, 1);
+  ImGui::RadioButton("Jeep2", &m_render.p_cam->iStickToObj, 2);
+  // (currently) not wireframe per object:
+  //  for (unsigned int ui = 0; ui < m_render.vVAOs.size(); ui++) m_render.vVAOs[ui].b_Wireframe = (int)b_wireframe;
+  //  static int vw;
   ImGui::SliderFloat("view width", &(float)m_render.p_cam->zFar, 10.0, 200.0);
   float v[3] = { m_render.p_cam->Pos.x,m_render.p_cam->Pos.y,m_render.p_cam->Pos.z };
   ImGui::InputFloat3("cam.pos", v);
@@ -426,7 +443,7 @@ int proj::Proj::DoIt()
   if (io.MouseDown)
   {
     glm::vec3 mouse3d = Mouse2Dto3D((int)io.MousePos.x, (int)io.MousePos.y);
-//    std::cout << mouse3d.x << "," << mouse3d.y << "," << mouse3d.z << std::endl;
+    //    std::cout << mouse3d.x << "," << mouse3d.y << "," << mouse3d.z << std::endl;
   }
   float vCursor2D[3] = { winX,winY,winZ };
   ImGui::InputFloat3("Cursor2d", vCursor2D);
@@ -460,10 +477,10 @@ int proj::Proj::DoIt()
     ImGui::Separator();
     for (unsigned int i = 0; i < m_render.vVAOs.size(); i++)
     {
-      ImGui::Text("%d",i); ImGui::NextColumn();
+      ImGui::Text("%d", i); ImGui::NextColumn();
       ImGui::Text(m_render.vVAOs[i].Name.c_str()); ImGui::NextColumn();
-      ImGui::Text("%d",m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
-      ImGui::Text("%.2f,%.2f,%.2f",m_render.vVAOs[i].pos.x, m_render.vVAOs[i].pos.y, m_render.vVAOs[i].pos.z); ImGui::NextColumn();
+      ImGui::Text("%d", m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
+      ImGui::Text("%.2f,%.2f,%.2f", m_render.vVAOs[i].pos.x, m_render.vVAOs[i].pos.y, m_render.vVAOs[i].pos.z); ImGui::NextColumn();
       ImGui::Text("%d", m_render.vVAOs[i].ui_idTexture); ImGui::NextColumn();
     }
     ImGui::Columns(1);
@@ -472,15 +489,15 @@ int proj::Proj::DoIt()
   }
   ImGui::End();
 
-  
-  
+
+
   ImGui::Begin("Physics");
-  
+
   unsigned int pp = m_phys.player_scene_pos(m_scene, m_render.Cursor);
   unsigned int nLine = 0;
   unsigned int nMarker = 2;
   m_phys.trajectory_id_to_line_marker(m_scene, pp, nLine, nMarker);
-  if (nMarker < (m_scene.m_SceneLoader.m_c_Markers[nLine].size()-1))
+  if (nMarker < (m_scene.m_SceneLoader.m_c_Markers[nLine].size() - 1))
   {
     S_Point3D p0 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker].s_Left;
     S_Point3D p1 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker].s_Right;
@@ -501,7 +518,16 @@ int proj::Proj::DoIt()
   std::string s_obj = "";
   if (hit_object_id >= 0) s_obj = vObjects[hit_object_id].name;
   ImGui::Text("Hit object: %d (%s)", hit_object_id, s_obj.c_str());
-  
+///////////
+///////////
+/////////// touched_obj_id v. vObj
+///////////     vs.
+/////////// touched_obj_id v. vVAOs
+///////////
+///////////
+  if ((touch_object_id < 0) || (touch_object_id > vObjects.size()-1)) s_obj = ""; else s_obj = vObjects[touch_object_id].name;
+  ImGui::Text("Touched object: %d (%s)", touch_object_id, s_obj.c_str());
+
   //  static int selected = -1;
   if (ImGui::TreeNode("Obj's collision checked"))
   {
@@ -509,32 +535,26 @@ int proj::Proj::DoIt()
     ImGui::Separator();
     ImGui::Text("#"); ImGui::NextColumn();
     ImGui::Text("VAO"); ImGui::NextColumn();  // 2do: show object
-//    ImGui::Text("#Vtx"); ImGui::NextColumn();
-//    ImGui::Text("Pos"); ImGui::NextColumn();
-//    ImGui::Text("idTxt"); ImGui::NextColumn();
+                                              //    ImGui::Text("#Vtx"); ImGui::NextColumn();
+                                              //    ImGui::Text("Pos"); ImGui::NextColumn();
+                                              //    ImGui::Text("idTxt"); ImGui::NextColumn();
     ImGui::Separator();
     for (unsigned int i = 0; i < vObjects.size(); i++)
     {
       ImGui::Text("%d", i); ImGui::NextColumn();
       ImGui::Text(vObjects[i].name.c_str()); ImGui::NextColumn();
-//      ImGui::Text("%d", m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
-//      ImGui::Text("%.2f,%.2f,%.2f", m_render.vVAOs[i].vPos.x, m_render.vVAOs[i].vPos.y, m_render.vVAOs[i].vPos.z); ImGui::NextColumn();
-//      ImGui::Text("%d", m_render.vVAOs[i].ui_idTexture); ImGui::NextColumn();
+      //      ImGui::Text("%d", m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
+      //      ImGui::Text("%.2f,%.2f,%.2f", m_render.vVAOs[i].vPos.x, m_render.vVAOs[i].vPos.y, m_render.vVAOs[i].vPos.z); ImGui::NextColumn();
+      //      ImGui::Text("%d", m_render.vVAOs[i].ui_idTexture); ImGui::NextColumn();
     }
     ImGui::Columns(1);
     ImGui::Separator();
     ImGui::TreePop();
   }
-//  ImGui::SetNextTreeNodeOpen(true);
+  //  ImGui::SetNextTreeNodeOpen(true);
   ImGui::End();
 
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   // --------- IMGUI ---------
-
-  err = glGetError();
-
-  SwapBuffers(m_render.hDC);    // Swap Buffers (Double Buffering)
-
-  return 0;
 }

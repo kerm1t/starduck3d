@@ -117,6 +117,7 @@ void RenderThread(void *args)
         else if (editor_Obj == ED_OBJ_BB_CONCRETE) vao = bb.Create("tx_Concrete", obj_pos, obj_dir);
         else /*if (editor_Obj == ED_OBJ_BB_TREE)*/ vao = bb.Create("tx_Tree", obj_pos, obj_dir, 1.0f);
         m_proj.m_render.vVAOs.push_back(vao);
+        bb.vaoID = nVAOs; // 2do: easier (add in the obj.Create etc...)
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
       }
@@ -126,9 +127,9 @@ void RenderThread(void *args)
         barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
         barrier1.Load(obj_pos, obj_dir, 1.0f, 0.0f);
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+        barrier1.vaoID = nVAOs; // 2do: easier (add in the obj.Create etc...)
         m_proj.vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
       }
-
 
       b_add_obj = false;
     }
@@ -487,7 +488,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       return DefWindowProc(hWnd, message, wParam, lParam);
     }
     break;
-//  case WM_PAINT: ... painting by OpenGL
+//  case WM_PAINT: ... painting done by OpenGL
   case WM_KEYDOWN:
     switch (wParam)
     {
@@ -553,6 +554,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     case 68: // D
       m_cam.StrafeRight(0.1f);
+      break;
+    case 89: // Y
+      // delete latest added object
       break;
     }
     break;
