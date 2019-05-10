@@ -42,7 +42,7 @@ namespace obj
       coords.push_back(x); coords.push_back(y - whalf); coords.push_back(z + h);
       coords.push_back(x); coords.push_back(y + whalf); coords.push_back(z + h);
       */
-      glm::vec3 orth = glm::normalize(glm::cross(dir, glm::vec3(0, 0, 1)));
+      glm::vec3 orth = glm::normalize(glm::cross(dir, glm::vec3(0,0,1)));
       glm::vec3 li = pos + orth*whalf;
       glm::vec3 re = pos - orth*whalf;
       
@@ -61,6 +61,8 @@ namespace obj
 // 90 Grad
 ////      this->aabb.min_point = glm::vec3(x - 0.5f, y - whalf, z);
 ////      this->aabb.max_point = glm::vec3(x + 0.5f, y + whalf, z + h);
+      this->aabb.min_point = glm::vec3(li.x - 0.5f, li.y, li.z);
+      this->aabb.max_point = glm::vec3(re.x + 0.5f, re.y, re.z + h);
 
 #if(B_ADD_BBOX_VAO == 1)
       obj::CCube2 m_cube;

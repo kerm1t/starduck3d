@@ -1,6 +1,8 @@
 5/9
-- BBoxen gleich d. Objekten drehen
-- Billboards ohne BBox
+- Idee: ähnlich wie bei Minecraft an die Seite eines bestehenden Objekts / Billboards anbauen
+  z.B. um eine Mauer aus Beton-BB zu erstellen
++ BBoxen gleich d. Objekten drehen
++ Billboards sind ohne BBox
 - es wird nur der 1. Part "selektiert" (wireframe)
 - selektiert: statt "wireframe" das Objekte heller (pulsieren, Minecraft)
 - redCar: reifen falsch texturiert

@@ -268,23 +268,22 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       }
       part.b_textured = (part.s_Texture.size() > 0);
 
-//      GLfloat angle = glm::dot(glm::normalize(glm::vec2(0.0f, 1.0f)), glm::normalize(glm::vec2(dir.x, dir.y)));
-//      GLfloat angle = glm::dot(glm::vec2(0.0f, 1.0f),glm::vec2(dir.x,dir.y));
+      // direction to rotation angle (RAD)
       glm::vec2 v1 = glm::vec2(-1.0f, 0.0f);
       glm::vec3 v2 = glm::normalize(dir);
-//      GLfloat angle = acos(v1.x * v2.x + v1.y * v2.y);
       GLfloat angle = atan2(v2.y, v2.x) - atan2(v1.y, v1.x);
+
       // For each vertex of each triangle
       for (unsigned int i=0; i<face_v.size(); i++)
       {
         unsigned int vertexIndex = face_v[i];
         glm::vec3 vertex = temp_vertices[vertexIndex-1];
-        // rotate around z-axis    https://academo.org/demos/rotation-about-point/
-//        GLfloat x = vertex.x * cos(DEGTORAD(90)) - vertex.y * sin(DEGTORAD(90));
-//        GLfloat y = vertex.y * cos(DEGTORAD(90)) + vertex.x * sin(DEGTORAD(90));
+        // simply rotate around z-axis    https://academo.org/demos/rotation-about-point/
         GLfloat x = vertex.x * cos(angle) - vertex.y * sin(angle);
         GLfloat y = vertex.y * cos(angle) + vertex.x * sin(angle);
-        part.vertices.push_back(glm::vec3(x,y,vertex.z));
+        vertex.x = x;
+        vertex.y = y;
+        part.vertices.push_back(vertex);
 
         // span bbox
         if (vertex.x < aabb.min_point.x) aabb.min_point.x = vertex.x; // min

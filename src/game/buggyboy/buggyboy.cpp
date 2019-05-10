@@ -126,8 +126,8 @@ void RenderThread(void *args)
         obj::CGL_ObjectWavefront barrier1(&m_proj.m_render);
         barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
         barrier1.Load(obj_pos, obj_dir, 1.0f, 0.0f);
-        m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         barrier1.vaoID = nVAOs; // 2do: easier (add in the obj.Create etc...)
+        m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
       }
 
@@ -546,8 +546,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       m_cam.MoveFwd(0.3f);
       break;
     case 65: // A
-//      m_cam.TurnLeft();
-      m_cam.StrafeLeft(0.1f);
+      m_cam.StrafeLeft(0.1f); // optional:  m_cam.TurnLeft();
       break;
     case 83: // S
       m_cam.MoveBack(0.3f);

@@ -90,7 +90,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     //    glm::vec3 direction; // position - prev.position
     
     s_AABB aabb;
-    unsigned int vaoID;
+    unsigned int vaoID; // link to VAO, idea: combine vObjects and vVAO
 
     CObject()
     {
