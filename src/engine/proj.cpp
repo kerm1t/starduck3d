@@ -407,6 +407,8 @@ int proj::Proj::DoIt()
 
 void proj::Proj::draw_ImGui()
 {
+  char buf[100];
+
   // --------- IMGUI ---------
   ImGui_ImplWin32_NewFrame();
   ImGui_ImplOpenGL3_NewFrame();
@@ -419,17 +421,14 @@ void proj::Proj::draw_ImGui()
   static int viewmode;
   ImGui::RadioButton("Std", &viewmode, 0);
   ImGui::RadioButton("Physics", &viewmode, 1);
-  //  static bool b_solid;
-  //  static bool b_wireframe;
+
   ImGui::Checkbox("solid", &m_render.b_solid);
   ImGui::Checkbox("wireframe", &m_render.b_wireframe);
   ImGui::Checkbox("culling", &m_render.b_culling);
   ImGui::RadioButton("Free", &m_render.p_cam->iStickToObj, 0);
   ImGui::RadioButton("Jeep1", &m_render.p_cam->iStickToObj, 1);
   ImGui::RadioButton("Jeep2", &m_render.p_cam->iStickToObj, 2);
-  // (currently) not wireframe per object:
-  //  for (unsigned int ui = 0; ui < m_render.vVAOs.size(); ui++) m_render.vVAOs[ui].b_Wireframe = (int)b_wireframe;
-  //  static int vw;
+
   ImGui::SliderFloat("view width", &(float)m_render.p_cam->zFar, 10.0, 200.0);
   float v[3] = { m_render.p_cam->Pos.x,m_render.p_cam->Pos.y,m_render.p_cam->Pos.z };
   ImGui::InputFloat3("cam.pos", v);
@@ -465,7 +464,8 @@ void proj::Proj::draw_ImGui()
   ImGui::Text("%.0f FPS", FPS);
 
   static int selected = -1;
-  if (ImGui::TreeNode("Obj's (VAOs!) rendered"))
+  sprintf(buf, "%d Obj's (VAOs!) rendered", m_render.vVAOs.size());
+  if (ImGui::TreeNode(buf))
   {
     ImGui::Columns(5, "cols"); // no. of columns
     ImGui::Separator();
@@ -482,6 +482,7 @@ void proj::Proj::draw_ImGui()
       ImGui::Text("%d", m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
       ImGui::Text("%.2f,%.2f,%.2f", m_render.vVAOs[i].pos.x, m_render.vVAOs[i].pos.y, m_render.vVAOs[i].pos.z); ImGui::NextColumn();
       ImGui::Text("%d", m_render.vVAOs[i].ui_idTexture); ImGui::NextColumn();
+//      ImGui::Text("%s", m_render.tex_map.[m_render.vVAOs[i].ui_idTexture]);
     }
     ImGui::Columns(1);
     ImGui::Separator();
@@ -529,7 +530,8 @@ void proj::Proj::draw_ImGui()
   ImGui::Text("Touched object: %d (%s)", touch_object_id, s_obj.c_str());
 
   //  static int selected = -1;
-  if (ImGui::TreeNode("Obj's collision checked"))
+  sprintf(buf, "%d Obj's collision checked", vObjects.size());
+  if (ImGui::TreeNode(buf))
   {
     ImGui::Columns(2, "cols"); // no. of columns
     ImGui::Separator();

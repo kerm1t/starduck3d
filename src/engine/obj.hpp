@@ -221,8 +221,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       bHasParts = true;
     }
 
-//    void PartsToVBOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
-    void PartsToVBOs()//glm::vec3 pos = glm::vec3(0.0f,0.0f,0.0f))
+    void PartsToVBOs()
     {
       GLenum err = GL_NO_ERROR;
       err = glGetError(); // 3/8/2019 - when adding at draw time, I got an error 1282 here and object not shown
@@ -238,48 +237,29 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       uint16 nParts = (uint16)v_parts.size();
       for (uint16 ui = 0; ui < nParts; ui++)
       {
-        // ---------------------------------------------------------------------------------
-        // 2017-05-07
-        // Problem, nur auf Nvidia: es können keine "gemischten" Objekte gerendert werden,
-        //                          also solche, die sowohl Textur, als auch Farbe enthalten
-        // ---------------------------------------------------------------------------------
-        //        p_render->vVAOs[ui].idVBO_pos = (GLuint)p_render->ui_numVBOpos;
-        err = glGetError();
+        // --------------------------------------------------------------------------------------
+        // ist die Frage, ob das richtig ist, hier immer dieselbe Buffer-ID zu verwenden, s. hier
+        // https://stackoverflow.com/questions/11580940/glgenbuffers-freeing-memory
+        // hmm, anscheinend werden so alle Objekte im selben Buffer abgelegt
+        // --------------------------------------------------------------------------------------
+
+        // 2do: buffer wieder freigeben m. glDeleteBuffers (s. link oben)
         glGenBuffers(1, &p_render->positionBuffer[ui_idVBO + ui]);
-        err = glGetError();
         glBindBuffer(GL_ARRAY_BUFFER, p_render->positionBuffer[ui_idVBO + ui]);
-        err = glGetError();
         glBufferData(GL_ARRAY_BUFFER, v_parts[ui].vertices.size() * sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW); // init data storage
-        err = glGetError();
         if (v_parts[ui].b_textured)
         {
-          //          p_render->vVAOs[ui].idVBO_tex = (GLuint)p_render->ui_numVBOtex;
           glGenBuffers(1, &p_render->uvBuffer[ui_idVBO + ui]);
           glBindBuffer(GL_ARRAY_BUFFER, p_render->uvBuffer[ui_idVBO + ui]);
           glBufferData(GL_ARRAY_BUFFER, v_parts[ui].uvs.size() * sizeof(glm::vec2), &(v_parts[ui].uvs[0]), GL_STATIC_DRAW);
-          err = glGetError();
-          //          p_render->ui_numVBOtex++;
         }
         else
         {
-          //          p_render->vVAOs[ui].idVBO_col = (GLuint)p_render->ui_numVBOcol;
-          // ---------------------------------------------------------
-          // für Farben sind im .obj-file keine Einzelwerte angegeben,
-          // sondern nur der r,g,b-Wert
-          // also hier "on the fly" erstellen!
-          // ---------------------------------------------------------
-          //          pf_Colors = new GLfloat[v_parts[ui].vertices.size()*sizeof(glm::vec3)]; // color.r/g/b
-
-          // Hack!! hier sollten tatsächlich die Farben 'rein
           glGenBuffers(1, &p_render->colorBuffer[ui_idVBO + ui]);
           glBindBuffer(GL_ARRAY_BUFFER, p_render->colorBuffer[ui_idVBO + ui]);
-          //          glBufferData(GL_ARRAY_BUFFER, v_parts[ui].vertices.size()*sizeof(glm::vec3), &(v_parts[ui].vertices[0]), GL_STATIC_DRAW); // init data storage
           glBufferData(GL_ARRAY_BUFFER, v_parts[ui].cols.size() * sizeof(glm::vec3), &(v_parts[ui].cols[0]), GL_STATIC_DRAW); // init data storage
-          //          p_render->ui_numVBOcol++;
         }
-        //        p_render->ui_numVBOpos++;
 
-        //        assert(err != glGetError());
         if ((err = glGetError()) != GL_NO_ERROR)
         {
           // Process/log the error.
@@ -288,7 +268,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       }
     }
 
-//    void PartsToVAOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
     void PartsToVAOs(glm::vec3 pos = glm::vec3(0.0f,0.0f,0.0f))
     {
       // --> die infos erstmal am Objekt speichern !?
@@ -303,12 +282,6 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         if (v_parts[ui].b_textured)
         {
           vao.t_Shade = proj::SHADER_TEXTURE;
-          // noee                    vao.ui_idTexture = p_render->vGLTexture.size();
-          // push texture to vGLTextures
-          // noee                    std::string sTextureFilename = v_parts[ui].s_Texture;
-          //                    assert(sObjectDirectory.compare("")!=0);
-          //                    std::string sTextureFullpath = sObjectDirectory + "\\" + v_parts[ui].s_Texture;
-          //                    p_render->vGLTexture.push_back(ldrBMP.loadBMP_custom(sTextureFullpath.c_str()));
           vao.ui_idTexture = v_parts[ui].idGLTexture; // id egal, nur größer 0 ??? 2do: check
         }
         else

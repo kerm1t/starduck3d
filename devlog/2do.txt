@@ -1,3 +1,7 @@
+5/11
+- Liste: Obj -> parts (/->) VAOs
+- fix billboard bounding boxes
+
 5/9
 - Idee: ähnlich wie bei Minecraft an die Seite eines bestehenden Objekts / Billboards anbauen
   z.B. um eine Mauer aus Beton-BB zu erstellen
@@ -29,6 +33,15 @@ Idee: die BBox-check Routine erhält einen alternativen input
 - Kollision auswerten = zählen / visualisieren
 - "Menschen" (Katja)
 - Objekte wieder löschen (das Objekt "in view" markieren)
+  - entfernen aus vObjects
+  - entfernen von VBO (glGenBuffers... -> )
+  - entfernen aus vVAO (1 Obj = mehrere VAOs)
+  - entfernen aus Datei(liste)
+  - ggf. Textur entfernen (map)
+  - BBox entfernen
+  ================
+  sollte erstmal die Objektstruktur aufräumen, um einfacher entfernen zu können!
+
 + Objekte auch m. Richtung platzieren ("barrier")
 - Ackermann / Einspurmodell f. Fahrzeugbewegung
 
