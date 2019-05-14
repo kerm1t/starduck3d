@@ -682,7 +682,7 @@ void proj::Render::DrawVAOs_NEU()
   err = glGetError();
   */
 
-
+/* follwing block allocates memory, but doesn't free it again...
   // --------------------------------------------
   // draw sceneblock in purple, that player is on
   // --------------------------------------------
@@ -712,7 +712,7 @@ void proj::Render::DrawVAOs_NEU()
   glDisableVertexAttribArray(sh1_attr_col);
 
   err = glGetError();
-
+*/
 
 
   //    if (b_PNG) FBO_to_PPM();

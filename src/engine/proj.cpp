@@ -26,15 +26,15 @@ Timer timer;
 #define VBOADD_GUARDRAIL 0
 #define VBOADD_TUNNEL 0
 #define VBOADD_TRAFFICSIGNS 1
-#define VBOADD_REDCAR 1
-#define VBOADD_HOUSE 1
+#define VBOADD_REDCAR 0
+#define VBOADD_HOUSE 0
 #define VBOADD_CONFERENCEROOM 0
 #define VBOADD_ANTONS_VILLAGE 0
 #define VBOADD_SCENE_OBJS 0            // load from obj.txt
 #define VBOADD_BILLBOARDS 0            // shall be more than 1 type of billboard
 #define VBOADD_20_RANDOM_HOLZSTAPEL 1
-#define VBOADD_CONTICAR 1
-#define VBOADD_BLACKJEEP 1
+#define VBOADD_CONTICAR 0
+#define VBOADD_BLACKJEEP 0
 #define VBOADD_JEEP 1
 #define VBOADD_BARRIERS 0
 #define VBOADD_SPONZA 0

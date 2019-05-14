@@ -86,6 +86,15 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     std::string name;
     
     bool bHasParts;
+// slows down to 1-8 FPS (before 130 FPS) std::vector <CPart> v_parts;
+//    CPart a_parts[10];
+// ==========================================================================================================================
+// CPart stores all pos, uv- and col vertices as std::vector. That is not necessary. After loading those buffers to GFX card,
+// the vectors are not needed anymore. Parts can store pos, direction etc.
+// - but how to create VAO's then?
+//   a) create VAO's within mdl_wavefront class
+//   b) parts is a "global" std::vector, obj only has pointers, pointing to parts vector
+// ==========================================================================================================================
     glm::vec3 position;
     //    glm::vec3 direction; // position - prev.position
     

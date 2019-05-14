@@ -1,3 +1,6 @@
+5/12
+- fix Memory increase
+
 5/11
 - Liste: Obj -> parts (/->) VAOs
 - fix billboard bounding boxes
