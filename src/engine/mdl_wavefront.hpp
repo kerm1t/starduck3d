@@ -58,6 +58,13 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   class CPart
   {
   public:
+/*    void Create(const std::vector<glm::vec3> & vertices,
+      const std::vector<glm::vec2> & uvs,
+      const std::vector<glm::vec3> & normals,
+      const std::vector<glm::vec3> & cols)
+    {
+    };
+    */
     // texture
     std::string            name;
     bool                   b_textured;
@@ -69,10 +76,10 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     glm::vec3              Kd;
     glm::vec3              Ks;
     // read the model -->
-    std::vector<glm::vec3> vertices;
-    std::vector<glm::vec2> uvs;
-    std::vector<glm::vec3> normals; // won't be used at the moment. (for bumpmaps??)
-    std::vector<glm::vec3> cols;    // ... if not textured
+//    std::vector<glm::vec3> vertices;
+//    std::vector<glm::vec2> uvs;
+//    std::vector<glm::vec3> normals; // won't be used at the moment. (for bumpmaps??)
+//    std::vector<glm::vec3> cols;    // ... if not textured
   };
 
   class CMaterial

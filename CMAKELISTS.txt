@@ -54,7 +54,8 @@ add_executable(starduck WIN32
     src/engine/obj_curbstone.hpp
     src/engine/obj_groundplane.hpp
     src/engine/obj_guardrail.hpp
-    src/engine/obj_moving.hpp
+#    src/engine/obj_moving.hpp
+    src/engine/obj_parts.hpp
     src/engine/obj_scene.hpp
     src/engine/obj_simple.hpp
     src/engine/obj_trafficsign.hpp
