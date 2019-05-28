@@ -63,6 +63,19 @@ int proj::Proj::Init()
   return 0;
 }
 
+void proj::Proj::Exit()
+{
+  obj::CGL_ObjectWavefront* o = new obj::CGL_ObjectWavefront(&m_render);
+  obj::CObject* oo = o;
+  delete o;
+
+  for (unsigned int i = 0; i < vObjects.size()-1; i++)
+  {
+    obj::CObject* o = vObjects[i];
+    delete o;
+  }
+}
+
 // Tokenizer, https://stackoverflow.com/questions/53849/how-do-i-tokenize-a-string-in-c
 //2do: move to own header file
 std::vector<std::string> split(const char *str, char c = ' ')
@@ -250,12 +263,13 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  obj::CGL_ObjectWavefront holzstapel[N_HOLZSTAPEL];
   for (unsigned int ui = 0; ui < 20; ui++)
   {
-    holzstapel[ui].setRender(&m_render);
-    holzstapel[ui].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
-    holzstapel[ui].Load(glm::vec3(-100.0f+rand() % 200, -100.0f+rand() % 200, 0.5f), glm::vec3(0,1,1), 0.4f, 0.0f); // scaled
-    vObjects.push_back(holzstapel[ui]); // 2do: wieviel Speicherverbrauch?
+//    holzstapel[ui].setRender(&m_render);
+    obj::CGL_ObjectWavefront* holzstapel = new obj::CGL_ObjectWavefront(&m_render);
+    holzstapel->sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
+    holzstapel->Load(glm::vec3(-100.0f+rand() % 200, -100.0f+rand() % 200, 0.5f), glm::vec3(0,1,1), 0.4f, 0.0f); // scaled
+    vObjects.push_back(holzstapel); // 2do: wieviel Speicherverbrauch?
   }
-  n_holz_gestapelt = 20;
+//  n_holz_gestapelt = 20;
 #else
   n_holz_gestapelt = 0;
 #endif
@@ -275,9 +289,9 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 #endif
 
 #if (VBOADD_JEEP == 1)
-  obj::CGL_ObjectWavefront car4(&m_render);
-  car4.sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep_openair.obj";
-  car4.Load(glm::vec3(10,3,0), glm::vec3(-1,0,0), 0.4f, 0); // scaled
+  obj::CGL_ObjectWavefront* car4 = new obj::CGL_ObjectWavefront(&m_render);
+  car4->sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep_openair.obj";
+  car4->Load(glm::vec3(10,3,0), glm::vec3(-1,0,0), 0.4f, 0); // scaled
   vObjects.push_back(car4); // 2do: wieviel Speicherverbrauch?
 #endif
 
@@ -324,9 +338,9 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.vVAOs.push_back(vao);
   vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
   */
-  obj::CGL_ObjectWavefront barrier1(&m_render);
-  barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier4.obj";
-  barrier1.Load(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, 0.0f);
+  obj::CGL_ObjectWavefront* barrier1 = new obj::CGL_ObjectWavefront(&m_render);
+  barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier4.obj";
+  barrier1->Load(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, 0.0f);
   vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
 
 
@@ -392,7 +406,7 @@ int proj::Proj::DoIt()
   // b) check, ob ego (Fahrzeug) mit einem Objekte kollidiert
   touch_object_id = m_phys.collision_check_bbox(vObjects, m_render.p_cam->Pos, m_render.p_cam->At);
   touch_object_id = m_phys.collision_check_bbox(vObjects, m_render.p_cam->Pos, m_render.p_cam->At);
-  if (touch_object_id < 0) m_render.touch_object_vaoId = -1; else m_render.touch_object_vaoId = vObjects[touch_object_id].vaoID;
+  if (touch_object_id < 0) m_render.touch_object_vaoId = -1; else m_render.touch_object_vaoId = vObjects[touch_object_id]->vaoID;
 
   m_render.DrawVAOs_NEU();          // Draw The Scene
   err = glGetError();
@@ -517,7 +531,7 @@ void proj::Proj::draw_ImGui()
 
   ImGui::Text("Track nearest: %d", pp);
   std::string s_obj = "";
-  if (hit_object_id >= 0) s_obj = vObjects[hit_object_id].name;
+  if (hit_object_id >= 0) s_obj = vObjects[hit_object_id]->name;
   ImGui::Text("Hit object: %d (%s)", hit_object_id, s_obj.c_str());
 ///////////
 ///////////
@@ -526,7 +540,7 @@ void proj::Proj::draw_ImGui()
 /////////// touched_obj_id v. vVAOs
 ///////////
 ///////////
-  if ((touch_object_id < 0) || (touch_object_id > vObjects.size()-1)) s_obj = ""; else s_obj = vObjects[touch_object_id].name;
+  if ((touch_object_id < 0) || (touch_object_id > vObjects.size()-1)) s_obj = ""; else s_obj = vObjects[touch_object_id]->name;
   ImGui::Text("Touched object: %d (%s)", touch_object_id, s_obj.c_str());
 
   //  static int selected = -1;
@@ -544,7 +558,7 @@ void proj::Proj::draw_ImGui()
     for (unsigned int i = 0; i < vObjects.size(); i++)
     {
       ImGui::Text("%d", i); ImGui::NextColumn();
-      ImGui::Text(vObjects[i].name.c_str()); ImGui::NextColumn();
+      ImGui::Text(vObjects[i]->name.c_str()); ImGui::NextColumn();
       //      ImGui::Text("%d", m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
       //      ImGui::Text("%.2f,%.2f,%.2f", m_render.vVAOs[i].vPos.x, m_render.vVAOs[i].vPos.y, m_render.vVAOs[i].vPos.z); ImGui::NextColumn();
       //      ImGui::Text("%d", m_render.vVAOs[i].ui_idTexture); ImGui::NextColumn();

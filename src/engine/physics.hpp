@@ -60,14 +60,14 @@ namespace proj
 
 
     // return 0 = no collision | otherwise index of object
-    int collision_check(const std::vector <obj::CObject> vobj, const glm::vec3 Cursor) // 2do: use pos instead of Cursor
+    int collision_check(const std::vector <obj::CObject *> vobj, const glm::vec3 Cursor) // 2do: use pos instead of Cursor
     {
       int i_obj_bump = -1;
       for (unsigned int i = 0; i < vobj.size(); i++)
       {
         if (
-            (Cursor.x > vobj[i].aabb.min_point.x) && (Cursor.x < vobj[i].aabb.max_point.x)
-         && (Cursor.y > vobj[i].aabb.min_point.y) && (Cursor.y < vobj[i].aabb.max_point.y)
+            (Cursor.x > vobj[i]->aabb.min_point.x) && (Cursor.x < vobj[i]->aabb.max_point.x)
+         && (Cursor.y > vobj[i]->aabb.min_point.y) && (Cursor.y < vobj[i]->aabb.max_point.y)
 //         && (Cursor.z > vobj[i].aabb.min_point.z) && (Cursor.z < vobj[i].aabb.max_point.z)
           )
           i_obj_bump = i;
@@ -77,13 +77,13 @@ namespace proj
 
     typedef glm::vec3 CVec3;
 
-    int collision_check_bbox(const std::vector <obj::CObject> vobj, const glm::vec3 pos, const glm::vec3 at)
+    int collision_check_bbox(const std::vector <obj::CObject *> vobj, const glm::vec3 pos, const glm::vec3 at)
     {
       int i_obj_bump = -1;
       for (unsigned int i = 0; i < vobj.size(); i++)
       {
         glm::vec3 hit;
-        bool bHit = CheckLineBox(vobj[i].aabb.min_point, vobj[i].aabb.max_point, pos, pos + glm::normalize(at-pos)*10.0f, hit);
+        bool bHit = CheckLineBox(vobj[i]->aabb.min_point, vobj[i]->aabb.max_point, pos, pos + glm::normalize(at-pos)*10.0f, hit);
         if (
          bHit
           )

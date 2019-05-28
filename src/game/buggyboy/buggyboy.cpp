@@ -19,6 +19,8 @@
 #include <iostream>  // file io
 #include <fstream>
 
+#include <typeinfo>
+
 #define MAX_LOADSTRING 100
 
 // Globale Variablen:
@@ -55,6 +57,11 @@ static float lastTime = 0.0f;                   // This will hold the time from 
 bool b_WM_resized = false;
 bool b_program_stopped = false;
 bool b_add_obj = false;
+
+bool b_del_obj = false;
+int i_del_obj = -1;
+
+bool b_exit_done = false;
 
 #define ED_OBJ_BARRIER      1
 #define ED_OBJ_BB_BANNER    2
@@ -108,31 +115,45 @@ void RenderThread(void *args)
       if ((editor_Obj == ED_OBJ_BB_BANNER) || (editor_Obj == ED_OBJ_BB_DAWG) ||
           (editor_Obj == ED_OBJ_BB_DAWK) || (editor_Obj == ED_OBJ_BB_CONCRETE) || (editor_Obj == ED_OBJ_BB_TREE))
       {
-        obj::CBillboard bb;
-        bb.p_render = &m_proj.m_render;
+        obj::CBillboard* bb = new obj::CBillboard;
+        bb->p_render = &m_proj.m_render;
         proj::c_VAO vao;
-        if (editor_Obj == ED_OBJ_BB_BANNER) vao = bb.Create("tx_Banner", obj_pos, obj_dir);
-        else if (editor_Obj == ED_OBJ_BB_DAWG) vao = bb.Create("tx_Dawg", obj_pos, obj_dir);
-        else if (editor_Obj == ED_OBJ_BB_DAWK) vao = bb.Create("tx_DawK", obj_pos, obj_dir);
-        else if (editor_Obj == ED_OBJ_BB_CONCRETE) vao = bb.Create("tx_Concrete", obj_pos, obj_dir);
-        else /*if (editor_Obj == ED_OBJ_BB_TREE)*/ vao = bb.Create("tx_Tree", obj_pos, obj_dir, 1.0f);
+        if (editor_Obj == ED_OBJ_BB_BANNER) vao = bb->Create("tx_Banner", obj_pos, obj_dir);
+        else if (editor_Obj == ED_OBJ_BB_DAWG) vao = bb->Create("tx_Dawg", obj_pos, obj_dir);
+        else if (editor_Obj == ED_OBJ_BB_DAWK) vao = bb->Create("tx_DawK", obj_pos, obj_dir);
+        else if (editor_Obj == ED_OBJ_BB_CONCRETE) vao = bb->Create("tx_Concrete", obj_pos, obj_dir);
+        else /*if (editor_Obj == ED_OBJ_BB_TREE)*/ vao = bb->Create("tx_Tree", obj_pos, obj_dir, 1.0f);
         m_proj.m_render.vVAOs.push_back(vao);
-        bb.vaoID = nVAOs; // 2do: easier (add in the obj.Create etc...)
+        bb->vaoID = nVAOs; // 2do: easier (add in the obj.Create etc...)
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
       }
       if (editor_Obj == ED_OBJ_BARRIER)
       {
-        obj::CGL_ObjectWavefront barrier1(&m_proj.m_render);
-        barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
-        barrier1.Load(obj_pos, obj_dir, 1.0f, 0.0f);
-        barrier1.vaoID = nVAOs; // 2do: easier (add in the obj.Create etc...)
+        obj::CGL_ObjectWavefront* barrier1 = new obj::CGL_ObjectWavefront(&m_proj.m_render);
+        barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
+        barrier1->Load(obj_pos, obj_dir, 1.0f, 0.0f);
+        barrier1->vaoID = nVAOs; // 2do: easier (add in the obj.Create etc...)
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
       }
 
       b_add_obj = false;
+    } // if (b_add_obj)
+
+    if (b_del_obj)
+    {
+      // a) remove from v_object
+      // b) remove vao(s): i) obj, ii) bbox, iii) parts
+      int vaoID = m_proj.vObjects[i_del_obj]->vaoID;
+      m_proj.m_render.vVAOs[vaoID].b_doDraw = false;
+      if (typeid(m_proj.vObjects[i_del_obj]) == typeid(obj::CGL_ObjectParts))
+      {
+
+      }
+      b_del_obj = false;
     }
+
     float slowdown = 15.0f;
     if (GetAsyncKeyState(VK_UP))
     {
@@ -177,11 +198,18 @@ void RenderThread(void *args)
   }
   _endthread();
 
-  if (b_program_stopped)
+  // Exit(), s. LRESULT CALLBACK WndProc(...)
+}
+
+void Exit()
+{
+//  if (b_program_stopped)
   {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplWin32_Shutdown();
-    ImGui::DestroyContext();
+///?    ImGui::DestroyContext();
+    m_proj.Exit();
+    b_exit_done = true;
   }
 }
 
@@ -556,6 +584,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     case 89: // Y
       // delete latest added object
+      b_del_obj = true;
+      i_del_obj = m_proj.touch_object_id;
       break;
     }
     break;
@@ -567,6 +597,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
   case WM_DESTROY:
     PostQuitMessage(0);
+    Exit(); // buggyboy: free mem etc.
     break;
   default:
     return DefWindowProc(hWnd, message, wParam, lParam);

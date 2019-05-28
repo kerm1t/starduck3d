@@ -46,11 +46,11 @@ namespace proj
 //    obj::Moving m_moving[2];
 //    obj::CObject car[2];
 
-#define N_HOLZSTAPEL (40+20) // temp: 20 can be set later by Mouseklick
-    obj::CGL_ObjectWavefront holzstapel[N_HOLZSTAPEL];
-    int n_holz_gestapelt;
+//#define N_HOLZSTAPEL (40+20) // temp: 20 can be set later by Mouseklick
+//    obj::CGL_ObjectWavefront holzstapel[N_HOLZSTAPEL];
+//    int n_holz_gestapelt;
 
-    std::vector <obj::CObject> vObjects;
+    std::vector <obj::CObject *> vObjects; // vector of references not possible
 
     glm::vec3 vTrajPosprev; // <--- wird benutzt für ... bewegen des Fahrzeugs, s.proj.cpp->DoIt()
 
@@ -64,6 +64,7 @@ namespace proj
     /* ===== FUNCTIONS ===== */
 
     int Init();
+    void Exit();
 
     int DoIt(); // call m_render to draw next frame
 
