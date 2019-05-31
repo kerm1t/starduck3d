@@ -124,7 +124,8 @@ void RenderThread(void *args)
         else if (editor_Obj == ED_OBJ_BB_CONCRETE) vao = bb->Create("tx_Concrete", obj_pos, obj_dir);
         else /*if (editor_Obj == ED_OBJ_BB_TREE)*/ vao = bb->Create("tx_Tree", obj_pos, obj_dir, 1.0f);
         m_proj.m_render.vVAOs.push_back(vao);
-        bb->vaoID = nVAOs+1; // 2do: easier (add in the obj.Create etc...)
+        bb->vVaoID.push_back(nVAOs);
+        bb->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
       }
@@ -133,7 +134,8 @@ void RenderThread(void *args)
         obj::CGL_ObjectWavefront* barrier1 = new obj::CGL_ObjectWavefront(&m_proj.m_render);
         barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
         barrier1->Load(obj_pos, obj_dir, 1.0f, 0.0f);
-        barrier1->vaoID = nVAOs+1; // 2do: easier (add in the obj.Create etc...)
+        barrier1->vVaoID.push_back(nVAOs);
+        barrier1->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
       }
@@ -145,12 +147,16 @@ void RenderThread(void *args)
     {
       // a) remove from v_object
       // b) remove vao(s): i) obj, ii) bbox, iii) parts
-      int vaoID = m_proj.vObjects[i_del_obj]->vaoID;
-      m_proj.m_render.vVAOs[vaoID].b_doDraw = false;
-      if (typeid(m_proj.vObjects[i_del_obj]) == typeid(obj::CGL_ObjectParts))
+      for (int i = 0; i < m_proj.vObjects[i_del_obj]->vVaoID.size(); i++)
       {
-
+        int vaoID = m_proj.vObjects[i_del_obj]->vVaoID[i];
+        m_proj.m_render.vVAOs[vaoID].b_doDraw = false;
       }
+//      int vaoID = m_proj.vObjects[i_del_obj]->vaoID;
+//      m_proj.m_render.vVAOs[vaoID].b_doDraw = false;
+//      if (typeid(m_proj.vObjects[i_del_obj]) == typeid(obj::CGL_ObjectParts))
+//      {
+//      }
       b_del_obj = false;
     }
 

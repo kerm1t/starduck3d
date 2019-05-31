@@ -406,7 +406,7 @@ int proj::Proj::DoIt()
   // b) check, ob ego (Fahrzeug) mit einem Objekte kollidiert
   touch_object_id = m_phys.collision_check_bbox(vObjects, m_render.p_cam->Pos, m_render.p_cam->At);
   touch_object_id = m_phys.collision_check_bbox(vObjects, m_render.p_cam->Pos, m_render.p_cam->At);
-  if (touch_object_id < 0) m_render.touch_object_vaoId = -1; else m_render.touch_object_vaoId = vObjects[touch_object_id]->vaoID;
+  if (touch_object_id < 0) m_render.touch_object_vaoId = -1; else m_render.touch_object_vaoId = vObjects[touch_object_id]->vVaoID[0]; // check, if this works with array
 
   m_render.DrawVAOs_NEU();          // Draw The Scene
   err = glGetError();

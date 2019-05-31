@@ -67,7 +67,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     //    glm::vec3 direction; // position - prev.position
 
     s_AABB aabb;
-    unsigned int vaoID; // link to VAO, idea: combine vObjects and vVAO
+    std::vector<unsigned int> vVaoID; // link to VAO, idea: combine vObjects and vVAO
 
     CObject()
     {
@@ -299,7 +299,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         }
         vao.uiVertexCount = (uint16)v_parts[ui].vertices.size();
         vao.pos = pos;
-        this->vaoID = p_render->vVAOs.size(); // 2do: easier (add in the obj.Create etc...) or merge vVAO and vObj??
+//        this->vaoID = p_render->vVAOs.size(); // 2do: easier (add in the obj.Create etc...) or merge vVAO and vObj??
+        this->vVaoID.push_back(p_render->vVAOs.size()); // check!!
         p_render->vVAOs.push_back(vao);
       }
     }
