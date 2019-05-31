@@ -594,27 +594,30 @@ void proj::Render::DrawVAOs_NEU()
     //  wenn's hier crasht, dann ist der Fehler vermutlich vorher beim buffern passiert und
     //  glGetError hätte etwas melden sollen!!
 
-    if (b_solid)
+    if (vVAOs[ui].b_doDraw)
     {
-      glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
-      err = glGetError();                                     //     it can be either positionbuffer, colorbuffer or uvbuffer
-                                                              //     if t_Shade == TEXTURE,
-                                                              //     then colorbuffer is NULL and vice versa!
+      if (b_solid)
+      {
+        glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+        err = glGetError();                                     //     it can be either positionbuffer, colorbuffer or uvbuffer
+                                                                //     if t_Shade == TEXTURE,
+                                                                //     then colorbuffer is NULL and vice versa!
 
-      // if solid: draw wireframe in black
-      glUniform1i(sh1_unif_wirecolor, 1); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
-    }
-    else
-      glUniform1i(sh1_unif_wirecolor, 0); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
+                                                                // if solid: draw wireframe in black
+        glUniform1i(sh1_unif_wirecolor, 1); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
+      }
+      else
+        glUniform1i(sh1_unif_wirecolor, 0); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
 
-//    if (b_wireframe)
-    if (ui == touch_object_vaoId)
-    {
-      glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
-      glLineWidth(5.0);
-      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
-      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                                            //    if (b_wireframe)
+      if (ui == touch_object_vaoId)
+      {
+        glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
+        glLineWidth(5.0);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      }
     }
 
 /*    if (vVAOs[ui].t_Shade == SHADER_TEXTURE)

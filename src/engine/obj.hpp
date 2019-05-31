@@ -76,7 +76,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       nVert = 0;
       nCol = 0;
     }
-    virtual ~CObject()
+    virtual ~CObject() // has to be virtual to delete instances of derived classes properly, s. e.g. https://stackoverflow.com/questions/8733894/in-what-kind-of-situation-c-destructor-will-not-be-called/8734224#8734224
     {
       //      delete[] pf_Col;
       //      delete[] pf_Vert;
