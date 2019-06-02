@@ -146,6 +146,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti",ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp")));
+//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", ldrIMG.loadIMG("..\\data\\virtualroad\\conti.png", true)));
 
 
 #if (VBOADD_GROUNDPLANE == 1)

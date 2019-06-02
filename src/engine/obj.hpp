@@ -362,7 +362,12 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       obj::CCube2 m_cube;
       m_cube.p_render = p_render;
       proj::c_VAO vao = m_cube.Create("bbox", aabb.min_point, aabb.max_point);
+// correct vaoID linking, all works, i.e. BBoxes are selected
+      this->vVaoID.push_back(p_render->vVAOs.size()); // first this, then add to vVAOs
       p_render->vVAOs.push_back(vao);
+// not correct, vaoIDs not correctly linked, BBoxes not properly highlighted / 
+//      p_render->vVAOs.push_back(vao);                   // a) add to VVAOs
+//      this->vVaoID.push_back(p_render->vVAOs.size() + 1); // b) add VAOid to obj
 #endif
 
 //      set_aabb(ldr.aabb.min_point + glm::vec3(vPos.x, vPos.y, vPos.z),

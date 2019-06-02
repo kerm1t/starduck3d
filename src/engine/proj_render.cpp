@@ -501,7 +501,7 @@ void proj::Render::DrawVAOs_NEU()
 
   // draw Scene + Objects
   unsigned int ui_start = 1;
-  if (b_splash_screen) ui_start = 0;
+//  if (b_splash_screen) ui_start = 0;
   for (unsigned int ui = ui_start; ui < vVAOs.size(); ui++) // start with 1 as 0 is fps-counter
   {
     if (ui == 0)
@@ -644,6 +644,23 @@ void proj::Render::DrawVAOs_NEU()
   } // for ...
 
   err = glGetError();
+
+
+  // https://stackoverflow.com/questions/5526704/how-do-i-keep-an-object-always-in-front-of-everything-else-in-opengl
+  if (b_splash_screen)
+  {
+    // now draw splash screen / overlay
+    glClear(GL_DEPTH_BUFFER_BIT);
+    int ui = 0;
+    glUseProgram(program_fps);
+    glUniform1i(sh1_unif_col_tex, 1); // shader into texture-branch
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, vVAOs[ui].ui_idTexture); // TEXTURE_ID shall be > 0 !     (-1!!)
+    glUniform1i(sh2_unif_ID, 0); // hack!!
+    glBindVertexArray(vVertexArray[ui]); // <--- NVidia: hier Problem, wenn ui = 13 (beim ersten colorierten + texturierten Objekt!!)
+    glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+  }
+
 
 
   // set back coloring

@@ -1,3 +1,7 @@
+6/1
+- overlay: speed, points achieved, track
+- statt neues Quad f. position innerhalb scene, das Quad der Road umfärben
+
 5/12
 - fix Memory increase
 

@@ -163,11 +163,14 @@ public:
     const GLchar * fshd_src_FPS[] = {
       "#version 330 core\n"
       "in vec2 UV;\n"
-      "out vec3 color;\n"
+      "out vec4 color;\n"
       "uniform sampler2D myTexSampler;\n"
       "void main()\n"
       "{\n"
-      "  color = texture(myTexSampler, UV).rgb;\n" // texture2D ist deprecated
+      "  color = texture(myTexSampler, UV).rgba;\n" // texture2D ist deprecated
+                                                   //s. https://learnopengl.com/Advanced-OpenGL/Blending
+      "    if (color.a < 0.1)" // transparent
+      "      discard;"
       "}"
     };
 
