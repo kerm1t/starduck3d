@@ -277,21 +277,35 @@ void proj::Render::FPS()
   //         |       |       |
   // (-1,-1) +---------------+
   //
-  coords.push_back(-1.0f); coords.push_back(-1.0f);
+/*  coords.push_back(-1.0f); coords.push_back(-1.0f);
   coords.push_back(-1.0f); coords.push_back( 1.0f);
   coords.push_back(1.0f); coords.push_back(-1.0f);
   coords.push_back(-1.0f); coords.push_back( 1.0f);
   coords.push_back( 1.0f); coords.push_back( 1.0f);
   coords.push_back(1.0f); coords.push_back(-1.0f);
+*/  // png: upside down, works neither, had to swap texture in Irfanview
+  coords.push_back(-1.0f); coords.push_back(1.0f);
+  coords.push_back(-1.0f); coords.push_back(-1.0f);
+  coords.push_back(1.0f); coords.push_back(1.0f);
+  coords.push_back(-1.0f); coords.push_back(-1.0f);
+  coords.push_back(1.0f); coords.push_back(-1.0f);
+  coords.push_back(1.0f); coords.push_back(1.0f);
 #endif
 
   std::vector<GLfloat> uvs;
-  uvs.push_back( 0.0f); uvs.push_back(0.0f);
+/*  uvs.push_back( 0.0f); uvs.push_back(0.0f);
   uvs.push_back( 0.0f); uvs.push_back(1.0f);
   uvs.push_back( 1.0f); uvs.push_back(0.0f);
   uvs.push_back( 1.0f); uvs.push_back(0.0f);
   uvs.push_back( 1.0f); uvs.push_back(1.0f);
   uvs.push_back( 0.0f); uvs.push_back(1.0f);
+*/  // png: upside down ... doesn't work
+  uvs.push_back(0.0f); uvs.push_back(1.0f);
+  uvs.push_back(0.0f); uvs.push_back(0.0f);
+  uvs.push_back(1.0f); uvs.push_back(1.0f);
+  uvs.push_back(1.0f); uvs.push_back(1.0f);
+  uvs.push_back(1.0f); uvs.push_back(0.0f);
+  uvs.push_back(0.0f); uvs.push_back(0.0f);
 
   // ---------------------------
   // >>> now Push to OpenGL! >>>

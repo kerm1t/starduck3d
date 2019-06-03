@@ -145,8 +145,8 @@ public:
   4 coord.systems: Object, World, View, Clip
   ==========================================
   Object --> Model Matrix --> World
-  World --> View matrix --> View
-  View --> Projection Matrix (w. implicit homogeneous divide) --> Clip
+  World  --> View matrix --> View
+  View   --> Projection Matrix (w. implicit homogeneous divide) --> Clip
 */
     /* vertex shader : output always to "homogeneous clip space", i.e. (-1:1, -1:1, -1:1, -1:1) */
     const GLchar * vshd_src_FPS[] = {
@@ -157,7 +157,10 @@ public:
       "{\n"
       "  UV = (vp_clipspace+1.0) * 0.5;\n"
       "  gl_Position = vec4(vp_clipspace.x, vp_clipspace.y, 0.5, 1.0);\n"
-      "  gl_Position.xy *= 0.5;\n" // scale to half of screen
+//      "  gl_Position.xy *= 0.5;\n" // scale to half of screen
+      "  gl_Position.x *= 0.8;\n" // scale to half of screen
+      "  gl_Position.y *= 0.4;\n" // scale to half of screen
+      "  gl_Position.y += 0.3;\n" // up
       "}"
     };
     const GLchar * fshd_src_FPS[] = {

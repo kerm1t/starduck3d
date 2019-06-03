@@ -526,6 +526,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_KEYDOWN:
     switch (wParam)
     {
+    case 27: // ESC
+      m_proj.b_show_debug = !m_proj.b_show_debug;
+      break;
     case 32: // Space
       m_proj.m_render.b_splash_screen = !m_proj.m_render.b_splash_screen;
       break;

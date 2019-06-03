@@ -1,6 +1,15 @@
+6/2
+- simulation step: 0, 1=start screen, 2-100 = select, 100++ = spiel
+- title screen
+- selection
+- Wolken (am Himmel)
+- overlay dynamisch (Textur ändern)
+
 6/1
-- overlay: speed, points achieved, track
++ overlay: speed, points achieved, track
 - statt neues Quad f. position innerhalb scene, das Quad der Road umfärben
+- falsch: bboxen bei billboards abhängig v.d. blickrichtung
+- wireframe option wieder anzeigen
 
 5/12
 - fix Memory increase

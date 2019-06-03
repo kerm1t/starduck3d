@@ -43,6 +43,7 @@ Timer timer;
 
 proj::Proj::Proj()
 {
+  b_show_debug = true;
 }
 
 int proj::Proj::Init()
@@ -145,8 +146,9 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
                   //     beim LoadObjects(s.u.) call
 
 
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti",ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp")));
+//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti",ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp")));
 //  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", ldrIMG.loadIMG("..\\data\\virtualroad\\conti.png", true)));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", ldrIMG.loadIMG("..\\data\\buggyboy\\overlay2.png", true)));
 
 
 #if (VBOADD_GROUNDPLANE == 1)
@@ -169,8 +171,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Banner", ldrIMG.loadIMG("..\\data\\buggyboy\\banner_t.png", true)));
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Dawg", ldrIMG.loadIMG("..\\data\\buggyboy\\dawgman_transp.png", true)));
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_DawK", ldrIMG.loadIMG("..\\data\\buggyboy\\dawgman_katja.png", true)));
+//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Dawg", ldrIMG.loadIMG("..\\data\\buggyboy\\dawgman_transp.png", true)));
+//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_DawK", ldrIMG.loadIMG("..\\data\\buggyboy\\dawgman_katja.png", true)));
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Concrete", ldrIMG.loadIMG("..\\data\\nebulus\\road_tex_256x256.bmp", false)));
 //  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Concrete", ldrBMP.loadBMP_custom("..\\data\\nebulus\\road_tex_256x256.bmp")));
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Tree", ldrIMG.loadIMG("..\\data\\buggyboy\\tree4.png", true)));
@@ -250,9 +252,10 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 #endif
 
 #if (VBOADD_ANTONS_VILLAGE == 1)
-  obj::CGL_ObjectWavefront anton(&m_render);
-  anton.sObjectFullpath = "..\\data\\virtualroad\\erstes_projekt2.obj";
-  anton.Load(4.4f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
+  obj::CGL_ObjectWavefront* anton = new obj::CGL_ObjectWavefront(&m_render);
+  anton->sObjectFullpath = "..\\data\\virtualroad\\erstes_projekt2.obj";
+  anton->Load(glm::vec3(12.0f, 12.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 4.4f, 0.0f); // scaled
+  vObjects.push_back(anton);
 #endif
 
 //  obj::CGL_ObjectWavefront holzstapel(&m_render);
@@ -339,10 +342,10 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.vVAOs.push_back(vao);
   vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
   */
-  obj::CGL_ObjectWavefront* barrier1 = new obj::CGL_ObjectWavefront(&m_render);
-  barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier4.obj";
-  barrier1->Load(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, 0.0f);
-  vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
+//  obj::CGL_ObjectWavefront* barrier1 = new obj::CGL_ObjectWavefront(&m_render);
+//  barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier4.obj";
+//  barrier1->Load(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, 0.0f);
+//  vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
 
 
   err = glGetError();
@@ -412,7 +415,19 @@ int proj::Proj::DoIt()
   m_render.DrawVAOs_NEU();          // Draw The Scene
   err = glGetError();
 
-  draw_ImGui();
+
+
+  ImGuiIO& io = ImGui::GetIO();
+  if (io.MouseDown)
+  {
+    glm::vec3 mouse3d = Mouse2Dto3D((int)io.MousePos.x, (int)io.MousePos.y);
+    //    std::cout << mouse3d.x << "," << mouse3d.y << "," << mouse3d.z << std::endl;
+  }
+
+
+
+  if (b_show_debug) draw_ImGui();
+
   err = glGetError();
 
   SwapBuffers(m_render.hDC);    // Swap Buffers (Double Buffering)
@@ -453,13 +468,13 @@ void proj::Proj::draw_ImGui()
   ImGui::InputFloat3("cam.dir", vDir);
   ImGui::SliderFloat("cam.y", &(float)m_render.f_camy, -3.0f, 3.0f);
 
-
+/*
   if (io.MouseDown)
   {
     glm::vec3 mouse3d = Mouse2Dto3D((int)io.MousePos.x, (int)io.MousePos.y);
     //    std::cout << mouse3d.x << "," << mouse3d.y << "," << mouse3d.z << std::endl;
   }
-  float vCursor2D[3] = { winX,winY,winZ };
+  */  float vCursor2D[3] = { winX,winY,winZ };
   ImGui::InputFloat3("Cursor2d", vCursor2D);
   float vCursor[3] = { m_render.Cursor.x,m_render.Cursor.y,m_render.Cursor.z };
   ImGui::InputFloat3("Cursor", vCursor);

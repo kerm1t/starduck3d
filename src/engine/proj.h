@@ -22,6 +22,7 @@ namespace proj
   {
   public:
     bool bPause;
+    bool b_show_debug;
 
     /* ===== Constructor ===== */
 
