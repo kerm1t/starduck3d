@@ -1,5 +1,7 @@
 6/2
-- simulation step: 0, 1=start screen, 2-100 = select, 100++ = spiel
+- fragment shader: farbverlauf himmel
+- screen überblenden: fragment shader
+- simulation step: 0, 1=EkwoTECH, 2=start screen, 3-100 = select, 100-200 highscore, 200++ = spiel
 - title screen
 - selection
 - Wolken (am Himmel)
