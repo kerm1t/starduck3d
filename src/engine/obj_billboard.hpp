@@ -39,8 +39,8 @@ namespace obj
       // bbox : ydim = 0.5f  ================== 2do: put into (abstract CGL_object class)
 //      this->aabb.min_point = glm::vec3(li.x+0.5f, li.y, li.z);
 //      this->aabb.max_point = glm::vec3(re.x-0.5f, re.y, re.z + h);
-      li += glm::normalize(dir);
-      re -= glm::normalize(dir);
+///      li += glm::normalize(dir);
+///      re -= glm::normalize(dir);
       this->aabb.min_point = glm::vec3(li.x, li.y, li.z);
       this->aabb.max_point = glm::vec3(re.x, re.y, re.z + h);
 

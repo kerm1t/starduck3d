@@ -49,16 +49,18 @@ public:
 #ifdef COLS_N_TEXTURES
     const GLchar * vertexShaderSource[] = {
       "#version 330 core\n"
-      "uniform mat4 MVPMatrix;\n"
+// in
       "in vec3 position;\n"
-      "uniform vec3 offset;\n"  // <-- for object-movement = uniform!!
-      // textured
-      "in vec2 vertexUV;\n"
-      "out vec2 UV;\n"
-      // colored
-      "in vec3 color;\n"        // f.d. nicht texturierten, sondern Farbdreiecke
+      "in vec2 vertexUV;\n"     //  i) textured
+      "in vec3 color;\n"        // ii) colored f.d. nicht texturierten, sondern Farbdreiecke
+// modifiers
+      "uniform mat4 MVPMatrix;\n"
+      "uniform vec3 offset;\n"  // object-movement (redundant to MVP?)
       "uniform int wirecolor;\n"
-      "out vec3 fragColor;\n"   // f.d. nicht texturierten, sondern Farbdreiecke
+// out
+      "out vec2 UV;\n"          //  i) textured
+      "out vec3 fragColor;\n"   // ii) colored triangles, ...
+// code
       "void main()\n"
       "{\n"
       "  if (wirecolor==1)\n"
@@ -73,10 +75,13 @@ public:
     // der Vertexshader gibt die fragColor an den Fragment-Shader weiter!!
     const GLchar * fragmentShaderSource[] = {
       "#version 330 core\n"
+// in
       "in vec2 UV;\n"
+      "in vec3 fragColor;\n"
+// modifiers
       "uniform sampler2D myTexSampler;\n" // <-- hier hatte ich das Semikolon vergessen
       "uniform int col_tex;\n"            // 0 = color, 1 = texture
-      "in vec3 fragColor;\n"
+// out
       "out vec4 outColor;\n"              // <-- texture
       "void main()\n"
       "{\n"
@@ -151,12 +156,16 @@ public:
     /* vertex shader : output always to "homogeneous clip space", i.e. (-1:1, -1:1, -1:1, -1:1) */
     const GLchar * vshd_src_FPS[] = {
       "#version 330 core\n" // 410 not supported by SONY OpenGL driver
-      "in vec2 vp_clipspace;\n"
+      "in vec2 vp_clipspace;\n" // vertexposition? in clipspace
       "out vec2 UV;\n"
       "void main()\n"
       "{\n"
       "  UV = (vp_clipspace+1.0) * 0.5;\n"
-      "  gl_Position = vec4(vp_clipspace.x, vp_clipspace.y, 0.5, 1.0);\n"
+//      "  UV = (vp_clipspace) * 0.5;\n" // 2mal (oder 4mal) dargestellt
+//      "  UV = (vp_clipspace+1.0);\n" // 4mal in viertelgröße dargestellt
+//      "  UV = (vp_clipspace);\n" // 4x dargestellt
+// s. https://stackoverflow.com/questions/31125387/why-is-gl-position-a-different-data-type-than-position
+      "  gl_Position = vec4(vp_clipspace.x, vp_clipspace.y, 0.5, 1.0);\n" // global variable (x,y,z,w), [z] e.g. 0.5, but not 1.0
 //      "  gl_Position.xy *= 0.5;\n" // scale to half of screen
       "  gl_Position.x *= 0.8;\n" // scale to half of screen
       "  gl_Position.y *= 0.4;\n" // scale to half of screen

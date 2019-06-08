@@ -1,3 +1,9 @@
+6/8
+- shader auslagern, importieren und live aktualisieren
+
+6/3
+- OBB statt AABB
+
 6/2
 - fragment shader: farbverlauf himmel
 - screen überblenden: fragment shader
@@ -50,13 +56,13 @@ Idee: die BBox-check Routine erhält einen alternativen input
 - Anton's planken richtig laden (keine Löcher, per loader, Farben!, Richtung) 
 - Kollision auswerten = zählen / visualisieren
 - "Menschen" (Katja)
-- Objekte wieder löschen (das Objekt "in view" markieren)
++ Objekte wieder löschen (das Objekt "in view" markieren)
   - entfernen aus vObjects
   - entfernen von VBO (glGenBuffers... -> )
   - entfernen aus vVAO (1 Obj = mehrere VAOs)
   - entfernen aus Datei(liste)
   - ggf. Textur entfernen (map)
-  - BBox entfernen
+  + BBox entfernen
   ================
   sollte erstmal die Objektstruktur aufräumen, um einfacher entfernen zu können!
 

@@ -109,6 +109,7 @@ void RenderThread(void *args)
       // place objects orthogonal to viewing direction
       glm::vec3 cam_dir = m_proj.m_render.p_cam->At - m_proj.m_render.p_cam->Pos;
       glm::vec3 obj_dir = -cam_dir;
+      obj_dir.z = 0.0f; // being used for obj's BBox, thus z-comp always same
 //      glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f); // cursor is just a little bit ahead of the camera pos.
       glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, m_proj.m_render.p_cam->Pos.z-CAM_Z); // cursor is just a little bit ahead of the camera pos.
 
