@@ -1,5 +1,10 @@
+6/10
++ fix object collision
+- obj Cursor, fkt nicht korrekt, weil Flächen parallel zu Strahl
+  (s. physics.hpp, intersection line & box)
+
 6/8
-- shader auslagern, importieren und live aktualisieren
+- shader auslagern, importieren und live (per Taster) aktualisieren, s. http://antongerdelan.net/opengl/shader_hot_reload.html
 
 6/3
 - OBB statt AABB

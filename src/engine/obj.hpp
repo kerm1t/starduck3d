@@ -42,7 +42,7 @@ Use STL or not !? --> http://stackoverflow.com/questions/2226252/embedded-c-to-u
 
 //#include "obj_simple.hpp"    // bboxes
 
-#define B_ADD_BBOX_VAO 1 // 0 | 1    2019-05-08, draw only that bbox, which is "touched"
+#define B_ADD_BBOX_VAO 0 // 0 | 1    2019-05-08, draw only that bbox, which is "touched"
 
 namespace obj // constructor, functions are **implicitly** inline, s. http://stackoverflow.com/questions/16441036/when-using-a-header-only-in-c-c
 {             // how to put all into.h file --> s. Vec3f.hxx    
@@ -66,7 +66,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     glm::vec3 position;
     //    glm::vec3 direction; // position - prev.position
 
-    s_AABB aabb;
+    s_AABB aabb; // for fast collision check (AABB needs to be enlarged!)
+    s_OBB obb;   // to visualize BBox
     std::vector<unsigned int> vVaoID; // link to VAO, idea: combine vObjects and vVAO
 
     CObject()
@@ -105,9 +106,9 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     }
     void col_pushback(glm::vec3 C)
     {
-      pf_Col[nCol++] = C.r;
-      pf_Col[nCol++] = C.g;
-      pf_Col[nCol++] = C.b;
+      pf_Col[nCol++] = C.x;// r;
+      pf_Col[nCol++] = C.y;// g;
+      pf_Col[nCol++] = C.z;// b;
     }
 
     void set_pos(glm::vec3 pos)

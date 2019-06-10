@@ -41,6 +41,16 @@ namespace obj
 //      this->aabb.max_point = glm::vec3(re.x-0.5f, re.y, re.z + h);
 ///      li += glm::normalize(dir);
 ///      re -= glm::normalize(dir);
+      if (abs(re.x - li.x) < 1.0)
+      {
+        if (li.x < re.x) { li.x -= 1.0f; re.x += 1.0f; }
+        else { li.x += 1.0f; re.x -= 1.0f; }
+      }
+      if (abs(re.y - li.y) < 1.0)
+      {
+        if (li.y < re.y) { li.y -= 1.0f; re.y += 1.0f; }
+        else { li.y += 1.0f; re.y -= 1.0f; }
+      }
       this->aabb.min_point = glm::vec3(li.x, li.y, li.z);
       this->aabb.max_point = glm::vec3(re.x, re.y, re.z + h);
 

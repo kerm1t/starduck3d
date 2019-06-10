@@ -405,7 +405,8 @@ int proj::Proj::DoIt()
 
 
   // a) check, ob ego (Fahrzeug) mit einem Objekte kollidiert, 2do: auch bbox benutzen
-  hit_object_id = m_phys.collision_check(vObjects, m_render.Cursor);
+//  hit_object_id = m_phys.collision_check(vObjects, m_render.Cursor);
+  hit_object_id = m_phys.collision_check(vObjects, m_render.p_cam->Pos);
 
   // b) check, ob ego (Fahrzeug) mit einem Objekte kollidiert
   touch_object_id = m_phys.collision_check_bbox(vObjects, m_render.p_cam->Pos, m_render.p_cam->At);
