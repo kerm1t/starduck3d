@@ -156,7 +156,9 @@ public:
     /* vertex shader : output always to "homogeneous clip space", i.e. (-1:1, -1:1, -1:1, -1:1) */
     const GLchar * vshd_src_FPS[] = {
       "#version 330 core\n" // 410 not supported by SONY OpenGL driver
+// in
       "in vec2 vp_clipspace;\n" // vertexposition? in clipspace
+// out
       "out vec2 UV;\n"
       "void main()\n"
       "{\n"
@@ -174,9 +176,12 @@ public:
     };
     const GLchar * fshd_src_FPS[] = {
       "#version 330 core\n"
+// in
       "in vec2 UV;\n"
-      "out vec4 color;\n"
+// modifier(s)
       "uniform sampler2D myTexSampler;\n"
+// out
+      "out vec4 color;\n" // this is not an official OpenGL variable, why does this work?
       "void main()\n"
       "{\n"
       "  color = texture(myTexSampler, UV).rgba;\n" // texture2D ist deprecated
