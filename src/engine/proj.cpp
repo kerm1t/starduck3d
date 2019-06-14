@@ -30,7 +30,7 @@ Timer timer;
 #define VBOADD_HOUSE 0
 #define VBOADD_CONFERENCEROOM 0
 #define VBOADD_ANTONS_VILLAGE 0
-#define VBOADD_SCENE_OBJS 0            // load from obj.txt
+#define VBOADD_SCENE_OBJS 1            // load from obj.txt
 #define VBOADD_BILLBOARDS 0            // shall be more than 1 type of billboard
 #define VBOADD_20_RANDOM_HOLZSTAPEL 1
 #define VBOADD_CONTICAR 0
@@ -101,32 +101,52 @@ int proj::Proj::Load_Scene_Objs()
   std::ifstream file("obj.txt");
   std::string line;
 
+  int nVAOs = m_render.vVAOs.size();
   int nobjs = 0;
   if (file)
   {
     while (std::getline(file, line))
     {
       std::vector<std::string> tokens = split(line.c_str(), ',');
-      std::string sobj = tokens[0];
-      glm::vec3 pos;
-      pos.x = (float)atof(tokens[1].c_str());
-      pos.y = (float)atof(tokens[2].c_str());
-      pos.z = (float)atof(tokens[3].c_str());
+      std::string sobj = tokens[0]; // e.g. "planken"
+      glm::vec3 obj_pos;
+      obj_pos.x = (float)atof(tokens[1].c_str());
+      obj_pos.y = (float)atof(tokens[2].c_str());
+      obj_pos.z = (float)atof(tokens[3].c_str());
+      glm::vec3 obj_dir = {-1, 0, 0};
 
       // ===== 2do: move outside =====
-/*      int nVAOs = m_render.vVAOs.size();
-      holzstapel[n_holz_gestapelt].setRender(&m_render);
-      holzstapel[n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
-      holzstapel[n_holz_gestapelt].Load(0.4f, 0.0f, Vec3f(pos.x, pos.y, pos.z)); // scaled
-//      m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
-      vObjects.push_back(holzstapel[n_holz_gestapelt]); // 2do: wieviel Speicherverbrauch?
-      n_holz_gestapelt++;
-*/      // ===== 2do: move outside =====
-      obj::CBillboard bb;
-      bb.p_render = &m_render;
-/////////////////      proj::c_VAO vao = bb.Create("tx_Banner",pos.x, pos.y, pos.z);
-/////////////////      m_render.vVAOs.push_back(vao);
-
+      if ((sobj.compare("Banner")   == 0) ||
+          (sobj.compare("Flag")     == 0) ||
+          (sobj.compare("Woodpile") == 0) ||
+          (sobj.compare("Concrete") == 0) ||
+          (sobj.compare("Tree")     == 0))
+      {
+        obj::CBillboard* bb = new obj::CBillboard;
+        bb->p_render = &m_render;
+        proj::c_VAO vao;
+        if (sobj.compare("Banner"))   vao = bb->Create("tx_Banner", obj_pos, obj_dir);
+        else if (sobj.compare("Flag"))     vao = bb->Create("tx_Flag", obj_pos, obj_dir, 0.9, 1.5);
+        else if (sobj.compare("Woodpile")) vao = bb->Create("tx_Woodpile", obj_pos, obj_dir, 1.4, 1.4);
+        else if (sobj.compare("Concrete")) vao = bb->Create("tx_Concrete", obj_pos, obj_dir);
+        else if (sobj.compare("Tree")) vao = bb->Create("tx_Tree", obj_pos, obj_dir, 1.0f);
+        m_render.vVAOs.push_back(vao);
+#if(B_ADD_BBOX_VAO == 1)
+        bb->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
+#endif
+        vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
+      }
+      if (sobj.compare("planken")   == 0)
+      {
+        obj::CGL_ObjectWavefront* barrier1 = new obj::CGL_ObjectWavefront(&m_render);
+        barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
+        barrier1->Load(obj_pos, obj_dir, 1.0f, 0.0f);
+#if(B_ADD_BBOX_VAO == 1)
+        barrier1->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
+#endif
+        vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
+      }
+      // ===== 2do: move outside =====
 
       nobjs++;
     }
