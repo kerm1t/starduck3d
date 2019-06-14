@@ -1,6 +1,6 @@
 # Starduck3d
 
-![alt text](https://github.com/kerm1t/starduck3d/blob/master/devlog/20190203_Moving_objects.png)
+![alt text](https://github.com/kerm1t/starduck3d/blob/master/devlog/20190420_objloader_debugging_simplified.png)
 
 3d engine for small prototyping projects e.g. simulators, games, etc.  
 Uses OpenGL  
