@@ -71,6 +71,8 @@ namespace proj
 
     void draw_ImGui();
 
+    void Save_Scene_Objs();
+
   private:
     /* ===== FUNCTIONS ===== */
 

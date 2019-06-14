@@ -63,8 +63,8 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     //   a) create VAO's within mdl_wavefront class
     //   b) parts is a "global" std::vector, obj only has pointers, pointing to parts vector
     // ==========================================================================================================================
-    glm::vec3 position;
-    //    glm::vec3 direction; // position - prev.position
+    glm::vec3 pos;
+    glm::vec3 dir; // position - prev.position
 
     s_AABB aabb; // for fast collision check (AABB needs to be enlarged!)
     s_OBB obb;   // to visualize BBox
@@ -329,7 +329,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     CGL_ObjectWavefront() {}; // default constructor
     CGL_ObjectWavefront(proj::Render * p_rnd)
     {     // <-- inline, sonst Linker error!
-      position = glm::vec3(0.0f, 0.0f, 0.0f); // <--- ist das ok so ?
+      pos = glm::vec3(0.0f, 0.0f, 0.0f); // <--- ist das ok so ?
 
       p_render = p_rnd;
     };    // <-- inline

@@ -12,9 +12,12 @@ namespace obj
     //    proj::Render * p_render;
 
 //    proj::c_VAO Create(std::string sTex, GLfloat x, GLfloat y, GLfloat z)
-    proj::c_VAO Create(std::string sTex, glm::vec3 pos, glm::vec3 dir, GLfloat w = 2.0f, GLfloat h = 2.0f) // draw orthogonal to dir
+    proj::c_VAO Create(std::string name, std::string sTex, glm::vec3 pos, glm::vec3 dir, GLfloat w = 2.0f, GLfloat h = 2.0f) // draw orthogonal to dir
     {
-      this->name = "billboard";
+      this->name = name;// "billboard";
+      this->pos = pos;
+      this->dir = dir;
+
       // 2do: durchfahrbare billboards (Flaggen) und nicht durchfahrbare
       //      das ist hier beim collisioncheck erstmal unerheblich
       //      ich will zumindest wissen, ob das Billboard durchfahren wurde

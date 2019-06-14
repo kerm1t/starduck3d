@@ -94,23 +94,10 @@ void RenderThread(void *args)
     {
       int nVAOs = m_proj.m_render.vVAOs.size();
 
-/*      m_proj.holzstapel[m_proj.n_holz_gestapelt].setRender(&m_proj.m_render);
-      m_proj.holzstapel[m_proj.n_holz_gestapelt].sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
-      m_proj.holzstapel[m_proj.n_holz_gestapelt].Load(0.4f, 0.0f, Vec3f(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f)); // scaled
-      m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
-      m_proj.vObjects.push_back(m_proj.holzstapel[m_proj.n_holz_gestapelt]); // 2do: wieviel Speicherverbrauch?
-      m_proj.n_holz_gestapelt++;
-  */    
-/*      std::ofstream myfile;
-      myfile.open("obj.txt", std::ios::app);
-      myfile << "planken," << m_proj.m_render.Cursor.x << "," << m_proj.m_render.Cursor.y << "," << 0.0f << "\n";
-      myfile.close();
-  */    
       // place objects orthogonal to viewing direction
       glm::vec3 cam_dir = m_proj.m_render.p_cam->At - m_proj.m_render.p_cam->Pos;
       glm::vec3 obj_dir = -cam_dir;
       obj_dir.z = 0.0f; // being used for obj's BBox, thus z-comp always same
-//      glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f); // cursor is just a little bit ahead of the camera pos.
       glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, m_proj.m_render.p_cam->Pos.z-CAM_Z); // cursor is just a little bit ahead of the camera pos.
 
       if ((editor_Obj == ED_OBJ_BB_BANNER) ||
@@ -122,11 +109,11 @@ void RenderThread(void *args)
         obj::CBillboard* bb = new obj::CBillboard;
         bb->p_render = &m_proj.m_render;
         proj::c_VAO vao;
-        if      (editor_Obj == ED_OBJ_BB_BANNER)   vao = bb->Create("tx_Banner", obj_pos, obj_dir);
-        else if (editor_Obj == ED_OBJ_BB_FLAG)     vao = bb->Create("tx_Flag", obj_pos, obj_dir, 0.9, 1.5);
-        else if (editor_Obj == ED_OBJ_BB_WOODPILE) vao = bb->Create("tx_Woodpile", obj_pos, obj_dir, 1.4, 1.4);
-        else if (editor_Obj == ED_OBJ_BB_CONCRETE) vao = bb->Create("tx_Concrete", obj_pos, obj_dir);
-        else /*if (editor_Obj == ED_OBJ_BB_TREE)*/ vao = bb->Create("tx_Tree", obj_pos, obj_dir, 1.0f);
+        if      (editor_Obj == ED_OBJ_BB_BANNER)   vao = bb->Create("Banner", "tx_Banner", obj_pos, obj_dir);
+        else if (editor_Obj == ED_OBJ_BB_FLAG)     vao = bb->Create("Flag", "tx_Flag", obj_pos, obj_dir, 0.9, 1.5);
+        else if (editor_Obj == ED_OBJ_BB_WOODPILE) vao = bb->Create("Woodpile", "tx_Woodpile", obj_pos, obj_dir, 1.4, 1.4);
+        else if (editor_Obj == ED_OBJ_BB_CONCRETE) vao = bb->Create("Concrete", "tx_Concrete", obj_pos, obj_dir);
+        else /*if (editor_Obj == ED_OBJ_BB_TREE)*/ vao = bb->Create("Tree", "tx_Tree", obj_pos, obj_dir, 1.0f);
         m_proj.m_render.vVAOs.push_back(vao);
         bb->vVaoID.push_back(nVAOs);
 #if(B_ADD_BBOX_VAO == 1)
@@ -598,6 +585,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     case 68: // D
       m_cam.StrafeRight(0.1f);
+      break;
+    case 88: // X
+      // save scene
+      m_proj.Save_Scene_Objs();
       break;
     case 89: // Y
       // delete latest added object
