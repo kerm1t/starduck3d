@@ -12,7 +12,7 @@ namespace obj
     //    proj::Render * p_render;
 
 //    proj::c_VAO Create(std::string sTex, GLfloat x, GLfloat y, GLfloat z)
-    proj::c_VAO Create(std::string sTex, glm::vec3 pos, glm::vec3 dir, GLfloat w = 2.0f) // draw orthogonal to dir
+    proj::c_VAO Create(std::string sTex, glm::vec3 pos, glm::vec3 dir, GLfloat w = 2.0f, GLfloat h = 2.0f) // draw orthogonal to dir
     {
       this->name = "billboard";
       // 2do: durchfahrbare billboards (Flaggen) und nicht durchfahrbare
@@ -20,7 +20,7 @@ namespace obj
       //      ich will zumindest wissen, ob das Billboard durchfahren wurde
 
       std::vector<GLfloat> coords;
-      float h = 2.0f;
+//      float h = 2.0f;
       float whalf = w / 2.0f;
 
       glm::vec3 orth = glm::normalize(glm::cross(dir, glm::vec3(0,0,1)));
