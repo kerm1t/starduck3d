@@ -1,3 +1,15 @@
+6/13
+- touched object: highlight all parts (s. Barrier)
+
+6/12
+- löschen von Schildern
+- Schilder variierbar
+- Flaggen variierbar
+- Banner variierbar
+
+6/11
++ Banner: individuelle Größe
+
 6/10
 + fix object collision
 - obj Cursor, fkt nicht korrekt, weil Flächen parallel zu Strahl

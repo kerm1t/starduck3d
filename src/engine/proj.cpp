@@ -170,12 +170,12 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 #endif
 
 
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Banner", ldrIMG.loadIMG("..\\data\\buggyboy\\banner_t.png", true)));
-//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Dawg", ldrIMG.loadIMG("..\\data\\buggyboy\\dawgman_transp.png", true)));
-//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_DawK", ldrIMG.loadIMG("..\\data\\buggyboy\\dawgman_katja.png", true)));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Banner",   ldrIMG.loadIMG("..\\data\\buggyboy\\banner_t.png", true)));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Flag",     ldrIMG.loadIMG("..\\data\\buggyboy\\flag.png", true)));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Woodpile", ldrIMG.loadIMG("..\\data\\buggyboy\\woodpile2.png", true)));
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Concrete", ldrIMG.loadIMG("..\\data\\nebulus\\road_tex_256x256.bmp", false)));
 //  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Concrete", ldrBMP.loadBMP_custom("..\\data\\nebulus\\road_tex_256x256.bmp")));
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Tree", ldrIMG.loadIMG("..\\data\\buggyboy\\tree4.png", true)));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Tree",     ldrIMG.loadIMG("..\\data\\buggyboy\\tree4.png", true)));
 
 
 #if (VBOADD_SCENE_OBJS == 1)

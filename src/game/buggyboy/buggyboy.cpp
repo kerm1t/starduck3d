@@ -65,8 +65,8 @@ bool b_exit_done = false;
 
 #define ED_OBJ_BARRIER      1
 #define ED_OBJ_BB_BANNER    2
-#define ED_OBJ_BB_DAWG      3  // Bonus: Dawgman
-#define ED_OBJ_BB_DAWK      4  // Bonus: Dawgman (Katja)
+#define ED_OBJ_BB_FLAG      3
+#define ED_OBJ_BB_WOODPILE  4
 #define ED_OBJ_BB_CONCRETE  5
 #define ED_OBJ_BB_TREE      6
 int editor_Obj = ED_OBJ_BB_BANNER;
@@ -113,20 +113,25 @@ void RenderThread(void *args)
 //      glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, 0.0f); // cursor is just a little bit ahead of the camera pos.
       glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, m_proj.m_render.p_cam->Pos.z-CAM_Z); // cursor is just a little bit ahead of the camera pos.
 
-      if ((editor_Obj == ED_OBJ_BB_BANNER) || (editor_Obj == ED_OBJ_BB_DAWG) ||
-          (editor_Obj == ED_OBJ_BB_DAWK) || (editor_Obj == ED_OBJ_BB_CONCRETE) || (editor_Obj == ED_OBJ_BB_TREE))
+      if ((editor_Obj == ED_OBJ_BB_BANNER) ||
+          (editor_Obj == ED_OBJ_BB_FLAG) ||
+          (editor_Obj == ED_OBJ_BB_WOODPILE) ||
+          (editor_Obj == ED_OBJ_BB_CONCRETE) ||
+          (editor_Obj == ED_OBJ_BB_TREE))
       {
         obj::CBillboard* bb = new obj::CBillboard;
         bb->p_render = &m_proj.m_render;
         proj::c_VAO vao;
-        if (editor_Obj == ED_OBJ_BB_BANNER) vao = bb->Create("tx_Banner", obj_pos, obj_dir);
-        else if (editor_Obj == ED_OBJ_BB_DAWG) vao = bb->Create("tx_Dawg", obj_pos, obj_dir);
-        else if (editor_Obj == ED_OBJ_BB_DAWK) vao = bb->Create("tx_DawK", obj_pos, obj_dir);
+        if      (editor_Obj == ED_OBJ_BB_BANNER)   vao = bb->Create("tx_Banner", obj_pos, obj_dir);
+        else if (editor_Obj == ED_OBJ_BB_FLAG)     vao = bb->Create("tx_Flag", obj_pos, obj_dir, 0.9, 1.5);
+        else if (editor_Obj == ED_OBJ_BB_WOODPILE) vao = bb->Create("tx_Woodpile", obj_pos, obj_dir, 1.4, 1.4);
         else if (editor_Obj == ED_OBJ_BB_CONCRETE) vao = bb->Create("tx_Concrete", obj_pos, obj_dir);
         else /*if (editor_Obj == ED_OBJ_BB_TREE)*/ vao = bb->Create("tx_Tree", obj_pos, obj_dir, 1.0f);
         m_proj.m_render.vVAOs.push_back(vao);
         bb->vVaoID.push_back(nVAOs);
+#if(B_ADD_BBOX_VAO == 1)
         bb->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
+#endif
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
       }
@@ -136,7 +141,9 @@ void RenderThread(void *args)
         barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
         barrier1->Load(obj_pos, obj_dir, 1.0f, 0.0f);
         barrier1->vVaoID.push_back(nVAOs);
+#if(B_ADD_BBOX_VAO == 1)
         barrier1->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
+#endif
         m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
         m_proj.vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
       }
@@ -144,7 +151,7 @@ void RenderThread(void *args)
       b_add_obj = false;
     } // if (b_add_obj)
 
-    if (b_del_obj)
+    if ((b_del_obj) && (i_del_obj > -1))
     {
       // a) remove from v_object
       // b) remove vao(s): i) obj, ii) bbox, iii) parts
@@ -562,11 +569,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       b_add_obj = true;
       break;
     case 51: // 3
-      editor_Obj = ED_OBJ_BB_DAWG;
+      editor_Obj = ED_OBJ_BB_FLAG;
       b_add_obj = true;
       break;
     case 52: // 4
-      editor_Obj = ED_OBJ_BB_DAWK;
+      editor_Obj = ED_OBJ_BB_WOODPILE;
       b_add_obj = true;
       break;
     case 53: // 5
