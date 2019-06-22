@@ -133,8 +133,9 @@ int proj::Proj::Load_Scene_Objs()
         else if (sobj.compare("Woodpile") == 0) vao = bb->Create("Woodpile", "tx_Woodpile", obj_pos, obj_dir, 1.4, 1.4);
         else if (sobj.compare("Concrete") == 0) vao = bb->Create("Concrete", "tx_Concrete", obj_pos, obj_dir);
         else if (sobj.compare("Tree")     == 0) vao = bb->Create("Tree", "tx_Tree", obj_pos, obj_dir, 1.0f);
+//        bb->vVaoID.push_back(m_render.vVAOs.size()); // either (A)
         m_render.vVAOs.push_back(vao);
-        bb->vVaoID.push_back(nVAOs);
+        bb->vVaoID.push_back(nVAOs++);                 //     or (B)
 #if(B_ADD_BBOX_VAO == 1)
         bb->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
 #endif
@@ -145,7 +146,7 @@ int proj::Proj::Load_Scene_Objs()
         obj::CGL_ObjectWavefront* barrier1 = new obj::CGL_ObjectWavefront(&m_render);
         barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj"; // 2do: read texture only once!
         barrier1->Load(obj_pos, obj_dir, 1.0f, 0.0f);
-        barrier1->vVaoID.push_back(nVAOs);
+        barrier1->vVaoID.push_back(nVAOs++);
 #if(B_ADD_BBOX_VAO == 1)
         barrier1->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
 #endif
@@ -229,17 +230,28 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 
 #if (VBOADD_BILLBOARDS == 1)
-// a) place billboard here, as it needs texture id = 4 -> 2do: simplify tex-ID
-  obj::CBillboard bb;
-  bb.p_render = &m_render;
-  vao = bb.Create(10.0f, 10.0f, 0.0f);
+  obj::CBillboard* bb = new obj::CBillboard;
+  bb->p_render = &m_render;
+  vao = bb->Create("Banner","tx_Banner", glm::vec3(10, 10, 0), glm::vec3(0,1,0));
+  bb->vVaoID.push_back(m_render.vVAOs.size());
   m_render.vVAOs.push_back(vao);
   vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
+//  delete bb;
 
-  vao = bb.Create(20.0f, 10.0f, 0.0f);
+  bb = new obj::CBillboard; 
+  bb->p_render = &m_render;
+  vao = bb->Create("Woodpile", "tx_Woodpile", glm::vec3(20, 10, 0), glm::vec3(1, 0, 0));
+  bb->vVaoID.push_back(m_render.vVAOs.size());
   m_render.vVAOs.push_back(vao);
   vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
-#endif
+//  delete bb;
+
+  // wird nicht angezeigt (wg. z = 1?)
+/*  vao = bb->Create("Concrete", "tx_Concrete", glm::vec3(10, 20, 1), glm::vec3(0, 0, 1));
+  bb->vVaoID.push_back(m_render.vVAOs.size());
+  m_render.vVAOs.push_back(vao);
+  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
+*/#endif
 
 
 
