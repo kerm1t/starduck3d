@@ -134,6 +134,7 @@ int proj::Proj::Load_Scene_Objs()
         else if (sobj.compare("Concrete") == 0) vao = bb->Create("Concrete", "tx_Concrete", obj_pos, obj_dir);
         else if (sobj.compare("Tree")     == 0) vao = bb->Create("Tree", "tx_Tree", obj_pos, obj_dir, 1.0f);
         m_render.vVAOs.push_back(vao);
+        bb->vVaoID.push_back(nVAOs);
 #if(B_ADD_BBOX_VAO == 1)
         bb->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
 #endif
@@ -144,6 +145,7 @@ int proj::Proj::Load_Scene_Objs()
         obj::CGL_ObjectWavefront* barrier1 = new obj::CGL_ObjectWavefront(&m_render);
         barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj"; // 2do: read texture only once!
         barrier1->Load(obj_pos, obj_dir, 1.0f, 0.0f);
+        barrier1->vVaoID.push_back(nVAOs);
 #if(B_ADD_BBOX_VAO == 1)
         barrier1->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
 #endif
@@ -469,7 +471,7 @@ int proj::Proj::DoIt()
 
 
 
-  if (b_show_debug) draw_ImGui();
+  if (b_show_debug) draw_ImGui(); else io.WantCaptureMouse = false; // fix! -> deactivate wantcapturemouse
 
   err = glGetError();
 
@@ -606,10 +608,12 @@ void proj::Proj::draw_ImGui()
   sprintf(buf, "%d Obj's collision checked", vObjects.size());
   if (ImGui::TreeNode(buf))
   {
-    ImGui::Columns(2, "cols"); // no. of columns
+    ImGui::Columns(4, "cols"); // no. of columns
     ImGui::Separator();
     ImGui::Text("#"); ImGui::NextColumn();
-    ImGui::Text("VAO"); ImGui::NextColumn();  // 2do: show object
+    ImGui::Text("Obj"); ImGui::NextColumn();
+    ImGui::Text("#Vao"); ImGui::NextColumn();
+    ImGui::Text("VAOs"); ImGui::NextColumn();
                                               //    ImGui::Text("#Vtx"); ImGui::NextColumn();
                                               //    ImGui::Text("Pos"); ImGui::NextColumn();
                                               //    ImGui::Text("idTxt"); ImGui::NextColumn();
@@ -618,6 +622,13 @@ void proj::Proj::draw_ImGui()
     {
       ImGui::Text("%d", i); ImGui::NextColumn();
       ImGui::Text(vObjects[i]->name.c_str()); ImGui::NextColumn();
+      ImGui::Text("%d", vObjects[i]->vVaoID.size()); ImGui::NextColumn();
+      std::string s = "";
+      for (unsigned int j = 0; j < vObjects[i]->vVaoID.size(); j++)
+      {
+        s += std::to_string(vObjects[i]->vVaoID[j]) + ',';
+      }
+      ImGui::Text(s.c_str()); ImGui::NextColumn();
       //      ImGui::Text("%d", m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
       //      ImGui::Text("%.2f,%.2f,%.2f", m_render.vVAOs[i].vPos.x, m_render.vVAOs[i].vPos.y, m_render.vVAOs[i].vPos.z); ImGui::NextColumn();
       //      ImGui::Text("%d", m_render.vVAOs[i].ui_idTexture); ImGui::NextColumn();

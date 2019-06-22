@@ -83,10 +83,15 @@ namespace proj
     int collision_check_bbox(const std::vector <obj::CObject *> vobj, const glm::vec3 pos, const glm::vec3 at)
     {
       int i_obj_bump = -1;
+      glm::vec3 _pos = glm::vec3(pos.x, pos.y,1.0f);
+      glm::vec3 _at  = glm::vec3(at.x, at.y, 1.0f);
       for (unsigned int i = 0; i < vobj.size(); i++)
       {
         glm::vec3 hit;
-        bool bHit = CheckLineBox(vobj[i]->aabb.min_point, vobj[i]->aabb.max_point, pos, pos + glm::normalize(at-pos)*10.0f, hit);
+//        bool bHit = CheckLineBox(vobj[i]->aabb.min_point, vobj[i]->aabb.max_point, _pos, pos + glm::normalize(at-pos)*10.0f, hit);
+        bool bHit = CheckLineBox(glm::min(vobj[i]->aabb.min_point, vobj[i]->aabb.max_point),
+                                 glm::max(vobj[i]->aabb.min_point, vobj[i]->aabb.max_point),
+                                 _pos, pos + glm::normalize(at - pos)*10.0f, hit);
         if (
          bHit
           )

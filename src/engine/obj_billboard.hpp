@@ -15,8 +15,8 @@ namespace obj
     proj::c_VAO Create(std::string name, std::string sTex, glm::vec3 pos, glm::vec3 dir, GLfloat w = 2.0f, GLfloat h = 2.0f) // draw orthogonal to dir
     {
       this->name = name;// "billboard";
-      this->pos = pos;
-      this->dir = dir;
+      this->pos  = pos;
+      this->dir  = dir;
 
       // 2do: durchfahrbare billboards (Flaggen) und nicht durchfahrbare
       //      das ist hier beim collisioncheck erstmal unerheblich

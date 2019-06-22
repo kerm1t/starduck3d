@@ -1,3 +1,11 @@
+6/14
+- Zeiger (touching!) zeichnen
++ Maussteuerung friert ein (Tastatur fkt. noch) <-- io.WantCaptureMouse
++ touching fkt. nicht mit (geladenen) Objekten
+- Grafitti
++ bug in obj.vao
+- obj.txt place somewhere else (not in build, as this is gitignore'd)
+
 6/13
 - touched object: highlight all parts (s. Barrier)
 
@@ -12,7 +20,7 @@
 
 6/10
 + fix object collision
-- obj Cursor, fkt nicht korrekt, weil Flächen parallel zu Strahl
++ obj Cursor, fkt nicht korrekt, weil Flächen parallel zu Strahl
   (s. physics.hpp, intersection line & box)
 
 6/8
