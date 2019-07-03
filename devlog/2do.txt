@@ -1,8 +1,14 @@
+6/22
+(-) billboards sollen umfallen, wenn man gegen sie fährt
+- im Auto nur x,y Bewegung
+- im Auto Kamera richtig setzen
+- clear all objects = create new scene
+
 6/14
 - Zeiger (touching!) zeichnen
 + Maussteuerung friert ein (Tastatur fkt. noch) <-- io.WantCaptureMouse
 + touching fkt. nicht mit (geladenen) Objekten
-- Grafitti
+(-) Grafitti
 + bug in obj.vao
 - obj.txt place somewhere else (not in build, as this is gitignore'd)
 
@@ -12,8 +18,8 @@
 6/12
 - löschen von Schildern
 - Schilder variierbar
-- Flaggen variierbar
-- Banner variierbar
+- Flaggen variierbar (Farbe)
+- Banner variierbar (z.B. 100, 200 Punkte)
 
 6/11
 + Banner: individuelle Größe
@@ -27,7 +33,7 @@
 - shader auslagern, importieren und live (per Taster) aktualisieren, s. http://antongerdelan.net/opengl/shader_hot_reload.html
 
 6/3
-- OBB statt AABB
+(-) OBB statt AABB
 
 6/2
 - fragment shader: farbverlauf himmel
@@ -52,7 +58,7 @@
 - fix billboard bounding boxes
 
 5/9
-- Idee: ähnlich wie bei Minecraft an die Seite eines bestehenden Objekts / Billboards anbauen
+(-) Idee: ähnlich wie bei Minecraft an die Seite eines bestehenden Objekts / Billboards anbauen
   z.B. um eine Mauer aus Beton-BB zu erstellen
 + BBoxen gleich d. Objekten drehen
 + Billboards sind ohne BBox
@@ -71,7 +77,7 @@ Idee: die BBox-check Routine erhält einen alternativen input
 5/4
 - wenn ich aus dem Programm wechsele (zum Editor), dann ist die Kamera "off" mit Taste "0" o.ä.
 - mit WASD genau eine billboard-Weite strafe-n
-- Auto soll da stehen bleiben, wo man es hingefahren hat
+- Auto soll da stehen bleiben, wo man es hingefahren hat (K)
 - einfacher ins Auto einsteigen (richtige Pos, keine vertikale Kamera etc.)
 - gegen Beton-BB fahren: Auto hält an o. BB fällt um
 - bewegl. Objekte, z.B. Tür, die man öffnen kann (K)
