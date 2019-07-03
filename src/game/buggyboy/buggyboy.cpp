@@ -63,6 +63,8 @@ int i_del_obj = -1;
 
 bool b_exit_done = false;
 
+bool b_test = false;
+
 #define ED_OBJ_BARRIER      1
 #define ED_OBJ_BB_BANNER    2
 #define ED_OBJ_BB_FLAG      3
@@ -90,6 +92,17 @@ void RenderThread(void *args)
   // Renderloop now
   while ((true) && (!b_program_stopped)) // do not interfere with freeing of ressources (Imgui, ...)
   {
+
+
+    // ===== Update overlay texture =====
+    CIMGLoader ldrIMG; // texture has to have same size as original texture, otherwise >> Unhandled exception at 0x1000AA43 (ig4icd32.dll) <<
+    if (b_test)
+      ldrIMG.loadIMG_Tex_ID(m_proj.id_tex_overlay, "..\\data\\buggyboy\\overlay3.png", false);
+    else
+      ldrIMG.loadIMG_Tex_ID(m_proj.id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
+    // ===== Update overlay texture =====
+
+
     if (b_add_obj)
     {
       int nVAOs = m_proj.m_render.vVAOs.size();
@@ -525,7 +538,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       m_proj.b_show_debug = !m_proj.b_show_debug;
       break;
     case 32: // Space
-      m_proj.m_render.b_splash_screen = !m_proj.m_render.b_splash_screen;
+//      m_proj.m_render.b_splash_screen = !m_proj.m_render.b_splash_screen;
+      b_test = !b_test;
       break;
     case 37: // ARROW-LEFT
       if (bCamStickToTrack)

@@ -62,6 +62,8 @@ namespace proj
     int hit_object_id;
     int touch_object_id;
 
+    GLuint id_tex_overlay; // texture, that stores overlay, e.g. display of speed, score points etc.
+
     /* ===== FUNCTIONS ===== */
 
     int Init();

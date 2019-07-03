@@ -193,7 +193,10 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 
 //  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti",ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp")));
 //  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", ldrIMG.loadIMG("..\\data\\virtualroad\\conti.png", true)));
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", ldrIMG.loadIMG("..\\data\\buggyboy\\overlay2.png", true)));
+  glGenTextures(1, &id_tex_overlay);
+  // "Bind" the newly created texture : all future texture functions will modify this texture
+  ldrIMG.loadIMG_Tex_ID(id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", id_tex_overlay));
 
 
 #if (VBOADD_GROUNDPLANE == 1)
@@ -202,7 +205,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.vVAOs.push_back(vao);
 #endif
 
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Road", ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_road_vert4.bmp")));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Road",  ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_road_vert4.bmp")));
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Water", ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_water.bmp")));
 
 
@@ -551,7 +554,7 @@ void proj::Proj::draw_ImGui()
   ImGui::Text("%.0f FPS", FPS);
 
   static int selected = -1;
-  sprintf(buf, "%d Obj's (VAOs!) rendered", m_render.vVAOs.size());
+  sprintf(buf, "%d VAOs rendered", m_render.vVAOs.size());
   if (ImGui::TreeNode(buf))
   {
     ImGui::Columns(5, "cols"); // no. of columns
