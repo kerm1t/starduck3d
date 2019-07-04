@@ -8,5 +8,5 @@ class CIMGLoader
 {
 public:
   GLuint loadIMG(const char * imagepath, bool bTransparent = false);
-  void loadIMG_Tex_ID(const GLuint textureID, const char * imagepath, bool bTransparent);
+  void loadIMG_texID(const GLuint textureID, const char * imagepath, bool bTransparent);
 };

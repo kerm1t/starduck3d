@@ -45,7 +45,7 @@ GLuint CIMGLoader::loadIMG(const char * imagepath, bool bTransparent)
   return textureID;
 };
 
-void CIMGLoader::loadIMG_Tex_ID(const GLuint textureID, const char * imagepath, bool bTransparent)
+void CIMGLoader::loadIMG_texID(const GLuint textureID, const char * imagepath, bool bTransparent)
 {
   int w;
   int h;
