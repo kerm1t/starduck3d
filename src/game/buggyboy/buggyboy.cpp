@@ -97,9 +97,9 @@ void RenderThread(void *args)
     // ===== Update overlay texture =====
     CIMGLoader ldrIMG; // texture has to have same size as original texture, otherwise >> Unhandled exception at 0x1000AA43 (ig4icd32.dll) <<
     if (b_test)
-      ldrIMG.loadIMG_Tex_ID(m_proj.id_tex_overlay, "..\\data\\buggyboy\\overlay3.png", false);
+      ldrIMG.loadIMG_texID(m_proj.id_tex_overlay, "..\\data\\buggyboy\\overlay3.png", false);
     else
-      ldrIMG.loadIMG_Tex_ID(m_proj.id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
+      ldrIMG.loadIMG_texID(m_proj.id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
     // ===== Update overlay texture =====
 
 

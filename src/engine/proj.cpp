@@ -199,7 +199,7 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", ldrIMG.loadIMG("..\\data\\virtualroad\\conti.png", true)));
   glGenTextures(1, &id_tex_overlay);
   // "Bind" the newly created texture : all future texture functions will modify this texture
-  ldrIMG.loadIMG_Tex_ID(id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
+  ldrIMG.loadIMG_texID(id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
   m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", id_tex_overlay));
 
 
