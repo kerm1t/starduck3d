@@ -61,11 +61,16 @@ int proj::Proj::Init()
 
   hit_object_id = 0;
 
+  CBMPLoader ldrBMP;
+  size_t result = ldrBMP.loadBMP("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
+
   return 0;
 }
 
 void proj::Proj::Exit()
 {
+  delete bmp_font.data;
+
   obj::CGL_ObjectWavefront* o = new obj::CGL_ObjectWavefront(&m_render);
   obj::CObject* oo = o;
   delete o;
@@ -190,7 +195,6 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.FPS(); // <-- wenn ich das ins VAO fülle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
                   //     beim LoadObjects(s.u.) call
 
-
 //  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti",ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp")));
 //  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", ldrIMG.loadIMG("..\\data\\virtualroad\\conti.png", true)));
   glGenTextures(1, &id_tex_overlay);
@@ -205,8 +209,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.vVAOs.push_back(vao);
 #endif
 
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Road",  ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_road_vert4.bmp")));
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Water", ldrBMP.loadBMP_custom("..\\data\\buggyboy\\bboy_water.bmp")));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Road",  ldrBMP.loadBMP_texID("..\\data\\buggyboy\\bboy_road_vert4.bmp")));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Water", ldrBMP.loadBMP_texID("..\\data\\buggyboy\\bboy_water.bmp")));
 
 
 

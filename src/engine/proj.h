@@ -64,6 +64,8 @@ namespace proj
 
     GLuint id_tex_overlay; // texture, that stores overlay, e.g. display of speed, score points etc.
 
+    s_bmp bmp_font;
+
     /* ===== FUNCTIONS ===== */
 
     int Init();
