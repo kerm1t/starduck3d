@@ -56,7 +56,7 @@ void CIMGLoader::loadIMG_texID(const GLuint textureID, const char * imagepath, b
 
   // tut's net ->  stbi__vertically_flip_on_load = true; // 2019-03-03, uv texture vertices upside down!
 
-  // Create one OpenGL texture
+  // Create one OpenGL texture ... NOT, it's the function parameter!
 
   // "Bind" the newly created texture : all future texture functions will modify this texture
   glBindTexture(GL_TEXTURE_2D, textureID);

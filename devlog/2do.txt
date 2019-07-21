@@ -1,5 +1,10 @@
+7/21
+- Ladezeit zu hoch --> das Laden des Jeeps dauert so lange
+- ist der Jeep nicht geladen, wird die gesamte Szene nicht dargestellt
+- transparentes Bitmap!
+
 6/22
-(-) billboards sollen umfallen, wenn man gegen sie fährt
+(-) billboards sollen umfallen, wenn man gegen sie fÃ¤hrt
 - im Auto nur x,y Bewegung
 - im Auto Kamera richtig setzen
 - clear all objects = create new scene
@@ -16,17 +21,17 @@
 - touched object: highlight all parts (s. Barrier)
 
 6/12
-- löschen von Schildern
+- lÃ¶schen von Schildern
 - Schilder variierbar
 - Flaggen variierbar (Farbe)
 - Banner variierbar (z.B. 100, 200 Punkte)
 
 6/11
-+ Banner: individuelle Größe
++ Banner: individuelle GrÃ¶ÃŸe
 
 6/10
 + fix object collision
-+ obj Cursor, fkt nicht korrekt, weil Flächen parallel zu Strahl
++ obj Cursor, fkt nicht korrekt, weil FlÃ¤chen parallel zu Strahl
   (s. physics.hpp, intersection line & box)
 
 6/8
@@ -37,17 +42,17 @@
 
 6/2
 - fragment shader: farbverlauf himmel
-- screen überblenden: fragment shader
+- screen Ã¼berblenden: fragment shader
 - simulation step: 0, 1=EkwoTECH, 2=start screen, 3-100 = select, 100-200 highscore, 200++ = spiel
 - title screen
 - selection
 - Wolken (am Himmel)
-- overlay dynamisch (Textur ändern)
+- overlay dynamisch (Textur Ã¤ndern)
 
 6/1
 + overlay: speed, points achieved, track
-- statt neues Quad f. position innerhalb scene, das Quad der Road umfärben
-- falsch: bboxen bei billboards abhängig v.d. blickrichtung
+- statt neues Quad f. position innerhalb scene, das Quad der Road umfÃ¤rben
+- falsch: bboxen bei billboards abhÃ¤ngig v.d. blickrichtung
 - wireframe option wieder anzeigen
 
 5/12
@@ -58,7 +63,7 @@
 - fix billboard bounding boxes
 
 5/9
-(-) Idee: ähnlich wie bei Minecraft an die Seite eines bestehenden Objekts / Billboards anbauen
+(-) Idee: Ã¤hnlich wie bei Minecraft an die Seite eines bestehenden Objekts / Billboards anbauen
   z.B. um eine Mauer aus Beton-BB zu erstellen
 + BBoxen gleich d. Objekten drehen
 + Billboards sind ohne BBox
@@ -67,27 +72,27 @@
 - redCar: reifen falsch texturiert
 
 5/8
-Idee: die BBox-check Routine erhält einen alternativen input
+Idee: die BBox-check Routine erhÃ¤lt einen alternativen input
   a) Ego
   b) Zeiger, der Zeiger kann Objekte selektieren
   - nur die bboxen auf Kollision checken
-- objloader fixen (Runde Objekte, Löcher)
-- black jeep einfärben
+- objloader fixen (Runde Objekte, LÃ¶cher)
+- black jeep einfÃ¤rben
 
 5/4
-- wenn ich aus dem Programm wechsele (zum Editor), dann ist die Kamera "off" mit Taste "0" o.ä.
+- wenn ich aus dem Programm wechsele (zum Editor), dann ist die Kamera "off" mit Taste "0" o.Ã¤.
 - mit WASD genau eine billboard-Weite strafe-n
 - Auto soll da stehen bleiben, wo man es hingefahren hat (K)
 - einfacher ins Auto einsteigen (richtige Pos, keine vertikale Kamera etc.)
-- gegen Beton-BB fahren: Auto hält an o. BB fällt um
-- bewegl. Objekte, z.B. Tür, die man öffnen kann (K)
+- gegen Beton-BB fahren: Auto hÃ¤lt an o. BB fÃ¤llt um
+- bewegl. Objekte, z.B. TÃ¼r, die man Ã¶ffnen kann (K)
 - Objekte in der Luft setzen (z > 0.0) (K)
 - ein distribute Verzeichnis erstellen <-- release build + weniger/kleinere Texturen
-- eigene Welt für Katja, Anton (loader)
-- Anton's planken richtig laden (keine Löcher, per loader, Farben!, Richtung) 
-- Kollision auswerten = zählen / visualisieren
+- eigene Welt fÃ¼r Katja, Anton (loader)
+- Anton's planken richtig laden (keine LÃ¶cher, per loader, Farben!, Richtung) 
+- Kollision auswerten = zÃ¤hlen / visualisieren
 - "Menschen" (Katja)
-+ Objekte wieder löschen (das Objekt "in view" markieren)
++ Objekte wieder lÃ¶schen (das Objekt "in view" markieren)
   - entfernen aus vObjects
   - entfernen von VBO (glGenBuffers... -> )
   - entfernen aus vVAO (1 Obj = mehrere VAOs)
@@ -95,18 +100,18 @@ Idee: die BBox-check Routine erhält einen alternativen input
   - ggf. Textur entfernen (map)
   + BBox entfernen
   ================
-  sollte erstmal die Objektstruktur aufräumen, um einfacher entfernen zu können!
+  sollte erstmal die Objektstruktur aufrÃ¤umen, um einfacher entfernen zu kÃ¶nnen!
 
 + Objekte auch m. Richtung platzieren ("barrier")
 - Ackermann / Einspurmodell f. Fahrzeugbewegung
 
 5/2
 - sh1_unif_wirecolor --> sh1_unif_color
-- übergänge zw. den Segmenten schliessen (derzeit 1 Segmentweite Abstand)
+- Ã¼bergÃ¤nge zw. den Segmenten schliessen (derzeit 1 Segmentweite Abstand)
 
 5/1
 + Scenepos-Platte farbig (rosa)
-- Code aufräumen
+- Code aufrÃ¤umen
   - Scenestuff von render in scene...
 
 4/28
@@ -121,11 +126,11 @@ Idee: die BBox-check Routine erhält einen alternativen input
 
 4/13
 + Jeep wird auf (0,0) gezeichnet, statt auf der richtigen Pos.
-+ letztes Objekt wird nicht gezeichnet -> gelöst
++ letztes Objekt wird nicht gezeichnet -> gelÃ¶st
 
 4/11
-- texRoad,texWater -> tx_Road, tx_Water, dann direktes Laden per Hash möglich
-- Editor: Cursor durch Hand o.Ä. ersetzen
+- texRoad,texWater -> tx_Road, tx_Water, dann direktes Laden per Hash mÃ¶glich
+- Editor: Cursor durch Hand o.Ã„. ersetzen
 - Editor: Objekte drehen
 
 4/1
@@ -136,11 +141,11 @@ Idee: die BBox-check Routine erhält einen alternativen input
   => release: kann billboards aus obj.txt laden
   => debug: Fehler, kann nur planken (holzstapel) aus obj.txt laden
             sonst: vector subscript out of range
-            ahso, der Zugriff auf die Textur per festem Index überschreitet die Array Größe
+            ahso, der Zugriff auf die Textur per festem Index Ã¼berschreitet die Array GrÃ¶ÃŸe
 + Texturen richtig handlen: per map (schneller als unsorted_map)
 
 3/29
-- nur noch 120 FPS (vorher ca. 700-800), Möglichkeit, Objekte nicht zu rendern per Mausklick
+- nur noch 120 FPS (vorher ca. 700-800), MÃ¶glichkeit, Objekte nicht zu rendern per Mausklick
   -> vielleicht weil der Shader jetzt Transparenzen berechnen muss
 - verschiedene Objekte laden
 + verschiedene Objekte platzieren
@@ -155,10 +160,10 @@ Idee: die BBox-check Routine erhält einen alternativen input
 + loader beschleunigen, i.e. ganzes file laden [ist aber anscheinend nicht viel schneller geworden (Sponza)]
 - Anton's village in kleinere Objekte aufteilen, sonst riesige BBox
 + Maussteuerung vertikal
-- Drahtgitter (GL_LINES) statt GL_TRIANGLE zeichnen : zusätzlich!
+- Drahtgitter (GL_LINES) statt GL_TRIANGLE zeichnen : zusÃ¤tzlich!
 noch besser: https://computergraphics.stackexchange.com/questions/1664/how-to-render-the-wireframe-of-a-cube-without-the-diagonals-on-the-faces
   ODER: glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); abschnittsweise zeichnen als TRIANGLES, LINES etc.
-- Continental Logo zu einer Art Werkzeugbox, dafür: nach vorne holen
+- Continental Logo zu einer Art Werkzeugbox, dafÃ¼r: nach vorne holen
 
 3/20
 + BBox berechnen
@@ -183,13 +188,13 @@ noch besser: https://computergraphics.stackexchange.com/questions/1664/how-to-re
 
 3/5
 - generate houses (procedurally)
-- Sponza Türen und Fenster Texturen werden nicht richtig gemapped
+- Sponza TÃ¼ren und Fenster Texturen werden nicht richtig gemapped
 
 3/4
 + fix OBJ-loader: v_Mat shall be used to load textures
 
 3/3
-- Texturen stimmen nicht mehr (hängt nicht mit IMG loader zusammen, scheint eher ein Problem des .OBJ loaders zu sein)
+- Texturen stimmen nicht mehr (hÃ¤ngt nicht mit IMG loader zusammen, scheint eher ein Problem des .OBJ loaders zu sein)
 - Texturen nicht mehrfach laden, Bsp.: Sponza, Kamen.jpg (3x)
 - fix usemtl + AddPart: man darf nicht clearen
 
@@ -199,7 +204,7 @@ noch besser: https://computergraphics.stackexchange.com/questions/1664/how-to-re
 + can load Spnza scene (has issues)
 
 2/21
-- perspective statt pos (im Shader) ändern, dann fkt. auch gluUnproject
+- perspective statt pos (im Shader) Ã¤ndern, dann fkt. auch gluUnproject
 
 2/20
 - beliebig viele(!) Objekte laden --> VBOCOUNT
@@ -208,15 +213,15 @@ noch besser: https://computergraphics.stackexchange.com/questions/1664/how-to-re
 2/19
 + ego Fahrzeug bewegen
 - Editor zum Objekte platzieren
-- Loader optimieren, der lädt noch nicht alle Vertexkombinationen (z.B. die Seitenteile beim Holzstapel)
+- Loader optimieren, der lÃ¤dt noch nicht alle Vertexkombinationen (z.B. die Seitenteile beim Holzstapel)
 - verschiedene Shader f. Objekte (Phong, Flat, etc.)
-- Menü: Kursauswahl
-- Menü: Fahrzeugauswahl
+- MenÃ¼: Kursauswahl
+- MenÃ¼: Fahrzeugauswahl
 
 2/14
 - beliebige Objekte laden (derzeit kann ich Anton's village nur an einer best. Position laden!?)
 + Ego-Fahrzeug nicht per Index, sondern anders (ID) setzen
-+ Ego Fahrzeuge auswählen
++ Ego Fahrzeuge auswÃ¤hlen
 - Ego Fahrzeuge vorkonfigurieren (x-Abstand, Mausfreiheitsgrad etc.)
 - Schilder v.d. Strasse nehmen (oder neben die Strasse setzen)
 + Anton's Ministadt geladen ins Programm
@@ -238,9 +243,9 @@ Inspiration: https://www.youtube.com/watch?v=Sg07FTzDKzk
   und auch die "mitfahrende Barriere" gefixt, das war der hack, die Objekte 27-29 zu bewegen,
   wobei derneue Jeep_openair aber nur noch 2 parts hat, das 3. Objekt war also die Barriere
   grrrrr.
-- i) trajektorie / trägheit für Bewegung Auto
-  ii) Bewegung als Fussgänger sofortig
-- Häuser platzieren
+- i) trajektorie / trÃ¤gheit fÃ¼r Bewegung Auto
+  ii) Bewegung als FussgÃ¤nger sofortig
+- HÃ¤user platzieren
 + Billboards platzieren (Spiel als Editor)!!!!
 
 2/4
@@ -255,9 +260,9 @@ Inspiration: https://www.youtube.com/watch?v=Sg07FTzDKzk
 
 2/1/2019
 - wasser, Road, wird die Textur schon im Editor geladen?
-+ moving-Objects: wie wäre es, mal das eigene Fahrzeug zu bewegen, so aus der Egoperspektive
++ moving-Objects: wie wÃ¤re es, mal das eigene Fahrzeug zu bewegen, so aus der Egoperspektive
 + Conti-car Farben setzen simple shading: Phone, Gourad o. Flat!!
-+ wie kann ich ein Objekt hinzufügen, einfach ein Objekt "room" geht nicht
++ wie kann ich ein Objekt hinzufÃ¼gen, einfach ein Objekt "room" geht nicht
   doch, lag daran, dass die Datei nicht existierte
 
 2018-11-18
@@ -305,7 +310,7 @@ https://www.funstockretro.co.uk/news/throwback-thursday-buggy-boy/
 - Strecke einblenden und die Position zeigen!
 
 2018-10-14
-- Editor erstellen -> Papa
++ Editor erstellen -> Papa
 - Strecke bauen -> Anton
 - Schilder platzieren -> Anton
 
@@ -321,24 +326,24 @@ https://www.funstockretro.co.uk/news/throwback-thursday-buggy-boy/
 https://www.youtube.com/watch?v=EhyqW-r2i5g
 - mehr Buggyboy Elemente einbauen
   + Flaggen (Bonus)
-  - Tore (Bonus)
+  + Tore (Bonus)
   - Baumstamm (Springen)
-  - Baumstammhaufen (Hindernis)
+  + Baumstammhaufen (Hindernis)
   - Steine (Hindernis)
   - Holzhaufen (Hindernis)
-  - Wasser
-  - Bäume (Optik)
+  + Wasser
+  - BÃ¤ume (Optik)
   - Schild (Wasser)
   - senkrechte Wand
 - Anfang: 3,2,1,Go Billboards
 
 
 2018-09-21
-- mit Mousescroll nicht hoch/runter, sondern in Blockrichtung vor / zurück
+- mit Mousescroll nicht hoch/runter, sondern in Blockrichtung vor / zurÃ¼ck
 
 
 2018-09-19
-+ nicht Mausposition, sondern Mausbewegung nutzen für Drehung
++ nicht Mausposition, sondern Mausbewegung nutzen fÃ¼r Drehung
 
 
 2018-09-16
@@ -371,7 +376,7 @@ https://www.youtube.com/watch?v=EhyqW-r2i5g
   - Fahrzeug bewegen
 - neuer shader: Editor (Objekte picken und platzieren)
 - neuer shader: FPS anzeige
-- schönes bmp für splash screen (<-- Name!) "Sahara Scurry" (gewusel in der Sahara)
+- schÃ¶nes bmp fÃ¼r splash screen (<-- Name!) "Sahara Scurry" (gewusel in der Sahara)
 - textur nur 1mal laden, Beispiel: barrier.bmp
 
-+ textur oder color für parts, nicht wie bisher für Objekte (war schon so, hatte nur zu lange nicht in den src geschaut ;-)
++ textur oder color fÃ¼r parts, nicht wie bisher fÃ¼r Objekte (war schon so, hatte nur zu lange nicht in den src geschaut ;-)

@@ -23,11 +23,75 @@ struct s_bmp
   unsigned char * data;
 };
 
+class CBMP
+{
+public:
+  void BMP(s_bmp & bmp, int w, int h)
+  {
+    bmp.width = w;
+    bmp.height = h;
+    bmp.imageSize = bmp.width * bmp.height * 3;
+
+    // Create a buffer
+    bmp.data = new unsigned char[bmp.imageSize];
+  }
+
+  void setPixel(s_bmp & bmp, const unsigned int x, const unsigned int y, const unsigned char r, const unsigned char g, const unsigned char b)
+  {
+    unsigned int _y = bmp.height - 1 - y; // hack, texture upside down? 2do: check!!
+                                        //    unsigned int _y = y;
+    unsigned int pos = 3 * (_y * bmp.width + x);
+    //    assert(pos < imageSize);
+    if (pos >= bmp.imageSize) return;
+    if (x > bmp.width) return; // test < 0 ?? <-- need signed then
+    bmp.data[pos] = b; // r ?
+    bmp.data[pos + 1] = g;
+    bmp.data[pos + 2] = r; // b ?
+  }
+
+  void red(s_bmp & bmp)
+  {
+    setPixel(bmp, 20, 20, 255, 0, 0);
+    setPixel(bmp, 21, 20, 255, 0, 0);
+    setPixel(bmp, 22, 20, 255, 0, 0);
+    setPixel(bmp, 23, 20, 255, 0, 0);
+    setPixel(bmp, 24, 20, 255, 0, 0);
+  }
+  void blue(s_bmp & bmp)
+  {
+    setPixel(bmp, 20, 20, 0, 255, 0);
+    setPixel(bmp, 21, 20, 0, 255, 0);
+    setPixel(bmp, 22, 20, 0, 255, 0);
+    setPixel(bmp, 23, 20, 0, 255, 0);
+    setPixel(bmp, 24, 20, 0, 255, 0);
+  }
+
+  GLuint BMP_texID(const s_bmp & bmp, const GLuint textureID)
+  {
+    // Create one OpenGL texture
+//    GLuint textureID;
+//    glGenTextures(1, &textureID);
+
+    // "Bind" the newly created texture : all future texture functions will modify this texture
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    // Give the image to OpenGL
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bmp.width, bmp.height, 0, GL_BGR, GL_UNSIGNED_BYTE, bmp.data);
+
+    //    delete bmp.data;
+
+    return textureID;
+  }
+};
+
 class CBMPLoader
 {
 public:
-  // return size in bytes
-  size_t loadBMP(const char * imagepath, s_bmp & bmp)
+  
+  size_t loadBMP_to_bmp(const char * imagepath, s_bmp & bmp) // return size in bytes
   {
     // Data read from the header of the BMP file
     size_t size;
@@ -75,11 +139,11 @@ public:
     return size;
   }
 
-  GLuint loadBMP_texID(const char * imagepath)
+  GLuint loadBMP(const char * imagepath)
   {
     s_bmp bmp;
 
-    size_t result = loadBMP(imagepath, bmp);
+    size_t result = loadBMP_to_bmp(imagepath, bmp);
 
     // Create one OpenGL texture
     GLuint textureID;

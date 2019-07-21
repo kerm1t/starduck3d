@@ -94,13 +94,45 @@ void RenderThread(void *args)
   {
 
 
+#if (0)
     // ===== Update overlay texture =====
     CIMGLoader ldrIMG; // texture has to have same size as original texture, otherwise >> Unhandled exception at 0x1000AA43 (ig4icd32.dll) <<
     if (b_test)
       ldrIMG.loadIMG_texID(m_proj.id_tex_overlay, "..\\data\\buggyboy\\overlay3.png", false);
     else
+    {
       ldrIMG.loadIMG_texID(m_proj.id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
+    }
     // ===== Update overlay texture =====
+#endif
+
+    // ===== Update overlay texture with individual pattern =====
+    if (b_test)
+    {
+      // create empty bitmap
+      s_bmp bmp;
+      CBMP BMP;
+      BMP.BMP(bmp, 100, 100);
+      // copy some font stuff in the bmp
+      BMP.red(bmp);
+      BMP.BMP_texID(bmp, m_proj.id_tex_overlay);
+      // m_proj.bmp_font
+      delete bmp.data;
+    }
+    else
+    {
+      // create empty bitmap
+      s_bmp bmp;
+      CBMP BMP;
+      BMP.BMP(bmp, 100, 100);
+      // copy some font stuff in the bmp
+      BMP.blue(bmp);
+      BMP.BMP_texID(bmp, m_proj.id_tex_overlay);
+      // m_proj.bmp_font
+      delete bmp.data;
+    }
+    // ===== Update overlay texture with individual pattern =====
+
 
 
     if (b_add_obj)

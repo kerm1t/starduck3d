@@ -30,7 +30,7 @@ Timer timer;
 #define VBOADD_HOUSE 0
 #define VBOADD_CONFERENCEROOM 0
 #define VBOADD_ANTONS_VILLAGE 0
-#define VBOADD_SCENE_OBJS 1            // load from obj.txt
+#define VBOADD_SCENE_OBJS 0            // load from obj.txt
 #define VBOADD_BILLBOARDS 0            // shall be more than 1 type of billboard
 #define VBOADD_20_RANDOM_HOLZSTAPEL 0
 #define VBOADD_CONTICAR 0
@@ -62,7 +62,7 @@ int proj::Proj::Init()
   hit_object_id = 0;
 
   CBMPLoader ldrBMP;
-  size_t result = ldrBMP.loadBMP("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
+  size_t result = ldrBMP.loadBMP_to_bmp("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
 
   return 0;
 }
@@ -199,8 +199,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
 //  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", ldrIMG.loadIMG("..\\data\\virtualroad\\conti.png", true)));
   glGenTextures(1, &id_tex_overlay);
   // "Bind" the newly created texture : all future texture functions will modify this texture
-  ldrIMG.loadIMG_texID(id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", id_tex_overlay));
+///  ldrIMG.loadIMG_texID(id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
+///  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", id_tex_overlay));
 
 
 #if (VBOADD_GROUNDPLANE == 1)
@@ -209,8 +209,8 @@ int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|
   m_render.vVAOs.push_back(vao);
 #endif
 
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Road",  ldrBMP.loadBMP_texID("..\\data\\buggyboy\\bboy_road_vert4.bmp")));
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Water", ldrBMP.loadBMP_texID("..\\data\\buggyboy\\bboy_water.bmp")));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Road",  ldrBMP.loadBMP("..\\data\\buggyboy\\bboy_road_vert4.bmp")));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Water", ldrBMP.loadBMP("..\\data\\buggyboy\\bboy_water.bmp")));
 
 
 
