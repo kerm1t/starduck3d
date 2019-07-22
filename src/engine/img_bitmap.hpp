@@ -50,7 +50,7 @@ public:
       for (int y = 0; y < 32; y++)
       {
         s_col col = getPixel(src, xsrc + x, ysrc + y);
-        setPixel(dst, xdst + x, xdst + y, col);
+        setPixel(dst, xdst + x, ydst + y, col);
       }
     }
   }
@@ -83,7 +83,7 @@ public:
     bmp.data[pos + 2] = col.r;
   }
 
-  void red(s_bmp & bmp)
+  void red(s_bmp & bmp) // test: draw red line
   {
     setPixel(bmp, 20, 20, { 255, 0, 0 });
     setPixel(bmp, 21, 20, { 255, 0, 0 });
@@ -91,7 +91,7 @@ public:
     setPixel(bmp, 23, 20, { 255, 0, 0 });
     setPixel(bmp, 24, 20, { 255, 0, 0 });
   }
-  void blue(s_bmp & bmp)
+  void blue(s_bmp & bmp) // test: draw green line
   {
     setPixel(bmp, 20, 20, { 0, 255, 0 });
     setPixel(bmp, 21, 20, { 0, 255, 0 });
@@ -100,12 +100,8 @@ public:
     setPixel(bmp, 24, 20, { 0, 255, 0 });
   }
 
-  GLuint BMP_texID(const s_bmp & bmp, const GLuint textureID)
+  GLuint BMP_texID(const s_bmp & bmp, const GLuint textureID) // bitmap is created and deleted outside
   {
-    // Create one OpenGL texture
-//    GLuint textureID;
-//    glGenTextures(1, &textureID);
-
     // "Bind" the newly created texture : all future texture functions will modify this texture
     glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -114,8 +110,6 @@ public:
 
     // Give the image to OpenGL
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bmp.width, bmp.height, 0, GL_BGR, GL_UNSIGNED_BYTE, bmp.data);
-
-    //    delete bmp.data;
 
     return textureID;
   }
