@@ -127,6 +127,19 @@ void RenderThread(void *args)
       BMP.BMP(bmp, 100, 100);
       // copy some font stuff in the bmp
       BMP.blue(bmp);
+/*      for (int x = 0; x < 32; x++)
+      {
+        for (int y = 0; y < 32; y++)
+        {
+          s_col col = BMP.getPixel(m_proj.bmp_font, 32+x, 64+y);
+          BMP.setPixel(bmp, x, y, col.r, col.g, col.b);
+        }
+      }
+      */
+      BMP.copy(m_proj.bmp_font, bmp, 3*32, 5*32,0,0);
+      BMP.copy(m_proj.bmp_font, bmp, 1 * 32, 4 * 32,32,0);
+      BMP.copy(m_proj.bmp_font, bmp, 4 * 32, 6 * 32,64,0);
+
       BMP.BMP_texID(bmp, m_proj.id_tex_overlay);
       // m_proj.bmp_font
       delete bmp.data;

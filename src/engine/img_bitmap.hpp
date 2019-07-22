@@ -23,6 +23,13 @@ struct s_bmp
   unsigned char * data;
 };
 
+struct s_col
+{
+  unsigned char r;
+  unsigned char g;
+  unsigned char b;
+};
+
 class CBMP
 {
 public:
@@ -36,7 +43,34 @@ public:
     bmp.data = new unsigned char[bmp.imageSize];
   }
 
-  void setPixel(s_bmp & bmp, const unsigned int x, const unsigned int y, const unsigned char r, const unsigned char g, const unsigned char b)
+  void copy(const s_bmp & src, s_bmp & dst, const int xsrc, const int ysrc, const int xdst, const int ydst)
+  {
+    for (int x = 0; x < 32; x++)
+    {
+      for (int y = 0; y < 32; y++)
+      {
+        s_col col = getPixel(src, xsrc + x, ysrc + y);
+        setPixel(dst, xdst + x, xdst + y, col);
+      }
+    }
+  }
+
+  s_col getPixel(const s_bmp & bmp, const unsigned int x, const unsigned int y)
+  {
+    unsigned int _y = bmp.height - 1 - y; // hack, texture upside down? 2do: check!!
+                                          //    unsigned int _y = y;
+    unsigned int pos = 3 * (_y * bmp.width + x);
+    //    assert(pos < imageSize);
+    if (pos >= bmp.imageSize) return{ 0,0,0 };
+    if (x > bmp.width) return{ 0,0,0 }; // test < 0 ?? <-- need signed then
+    s_col col;
+    col.b = bmp.data[pos];
+    col.g = bmp.data[pos + 1];
+    col.r = bmp.data[pos + 2];
+    return col;
+  }
+
+  void setPixel(s_bmp & bmp, const unsigned int x, const unsigned int y, const s_col col)
   {
     unsigned int _y = bmp.height - 1 - y; // hack, texture upside down? 2do: check!!
                                         //    unsigned int _y = y;
@@ -44,26 +78,26 @@ public:
     //    assert(pos < imageSize);
     if (pos >= bmp.imageSize) return;
     if (x > bmp.width) return; // test < 0 ?? <-- need signed then
-    bmp.data[pos] = b; // r ?
-    bmp.data[pos + 1] = g;
-    bmp.data[pos + 2] = r; // b ?
+    bmp.data[pos]     = col.b;
+    bmp.data[pos + 1] = col.g;
+    bmp.data[pos + 2] = col.r;
   }
 
   void red(s_bmp & bmp)
   {
-    setPixel(bmp, 20, 20, 255, 0, 0);
-    setPixel(bmp, 21, 20, 255, 0, 0);
-    setPixel(bmp, 22, 20, 255, 0, 0);
-    setPixel(bmp, 23, 20, 255, 0, 0);
-    setPixel(bmp, 24, 20, 255, 0, 0);
+    setPixel(bmp, 20, 20, { 255, 0, 0 });
+    setPixel(bmp, 21, 20, { 255, 0, 0 });
+    setPixel(bmp, 22, 20, { 255, 0, 0 });
+    setPixel(bmp, 23, 20, { 255, 0, 0 });
+    setPixel(bmp, 24, 20, { 255, 0, 0 });
   }
   void blue(s_bmp & bmp)
   {
-    setPixel(bmp, 20, 20, 0, 255, 0);
-    setPixel(bmp, 21, 20, 0, 255, 0);
-    setPixel(bmp, 22, 20, 0, 255, 0);
-    setPixel(bmp, 23, 20, 0, 255, 0);
-    setPixel(bmp, 24, 20, 0, 255, 0);
+    setPixel(bmp, 20, 20, { 0, 255, 0 });
+    setPixel(bmp, 21, 20, { 0, 255, 0 });
+    setPixel(bmp, 22, 20, { 0, 255, 0 });
+    setPixel(bmp, 23, 20, { 0, 255, 0 });
+    setPixel(bmp, 24, 20, { 0, 255, 0 });
   }
 
   GLuint BMP_texID(const s_bmp & bmp, const GLuint textureID)
