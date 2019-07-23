@@ -104,7 +104,7 @@ void RenderThread(void *args)
       ldrIMG.loadIMG_texID(m_proj.id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
     }
     // ===== Update overlay texture =====
-#endif
+
 
     // ===== Update overlay texture with individual pattern =====
     if (b_test)
@@ -136,17 +136,48 @@ void RenderThread(void *args)
         }
       }
       */
-      BMP.copy(m_proj.bmp_font, bmp, 3*32, 5*32,0,0);
-      BMP.copy(m_proj.bmp_font, bmp, 1 * 32, 4 * 32,32,0);
-      BMP.copy(m_proj.bmp_font, bmp, 4 * 32, 6 * 32,64,0);
+      BMP.copy(m_proj.bmp_font, bmp, 3*32, 5*32,0,0);       // K
+      BMP.copy(m_proj.bmp_font, bmp, 1 * 32, 4 * 32,32,0);  // A
+      BMP.copy(m_proj.bmp_font, bmp, 4 * 32, 6 * 32,64,0);  // T
 
       BMP.BMP_texID(bmp, m_proj.id_tex_overlay);
       // m_proj.bmp_font
       delete bmp.data;
     }
     // ===== Update overlay texture with individual pattern =====
+#endif
 
+    // ===== output Text to Overlay =====
+    // create empty bitmap
+    s_bmp bmp; // overlay
+    CBMP BMP;
+    BMP.BMP(bmp, 100, 40);
+    // copy some font stuff in the bmp
+    std::string out = "KATJA";
+    int i = (int)out[0] - 32; // space = 32
+    int xfnt = i % 8;
+    int yfnt = i / 8;
+    BMP.copy(m_proj.fnt.bmp_font, bmp, xfnt * 32, yfnt * 32, 0, 0);   // K
+    i = (int)out[1] - 32; // space = 32
+    xfnt = i % 8;
+    yfnt = i / 8;
+    BMP.copy(m_proj.fnt.bmp_font, bmp, xfnt * 32, yfnt * 32, 16, 0);   // A
+    i = (int)out[2] - 32; // space = 32
+    xfnt = i % 8;
+    yfnt = i / 8;
+    BMP.copy(m_proj.fnt.bmp_font, bmp, xfnt * 32, yfnt * 32, 32, 0);   // T
+    i = (int)out[3] - 32; // space = 32
+    xfnt = i % 8;
+    yfnt = i / 8;
+    BMP.copy(m_proj.fnt.bmp_font, bmp, xfnt * 32, yfnt * 32, 48, 0);   // J
+    i = (int)out[4] - 32; // space = 32
+    xfnt = i % 8;
+    yfnt = i / 8;
+    BMP.copy(m_proj.fnt.bmp_font, bmp, xfnt * 32, yfnt * 32, 64, 0);   // A
 
+    BMP.BMP_texID(bmp, m_proj.id_tex_overlay);
+    delete bmp.data;
+    // ===== output Text to Overlay =====
 
     if (b_add_obj)
     {

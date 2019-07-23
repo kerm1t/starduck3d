@@ -35,7 +35,7 @@ Timer timer;
 #define VBOADD_20_RANDOM_HOLZSTAPEL 0
 #define VBOADD_CONTICAR 0
 #define VBOADD_BLACKJEEP 0
-#define VBOADD_JEEP 1
+#define VBOADD_JEEP 0
 #define VBOADD_BARRIERS 0
 #define VBOADD_SPONZA 0
 
@@ -61,15 +61,15 @@ int proj::Proj::Init()
 
   hit_object_id = 0;
 
-  CBMPLoader ldrBMP;
-  size_t result = ldrBMP.loadBMP_to_bmp("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
+//  CBMPLoader ldrBMP;
+//  size_t result = ldrBMP.loadBMP_to_bmp("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
 
   return 0;
 }
 
 void proj::Proj::Exit()
 {
-  delete bmp_font.data;
+//  delete bmp_font.data;
 
   obj::CGL_ObjectWavefront* o = new obj::CGL_ObjectWavefront(&m_render);
   obj::CObject* oo = o;

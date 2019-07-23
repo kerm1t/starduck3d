@@ -15,6 +15,8 @@
 
 #include "physics.hpp"
 
+#include "img_font.hpp"
+
 
 namespace proj
 {
@@ -64,7 +66,8 @@ namespace proj
 
     GLuint id_tex_overlay; // texture, that stores overlay, e.g. display of speed, score points etc.
 
-    s_bmp bmp_font;
+//    s_bmp bmp_font;
+    C_BMP_FONT fnt;
 
     /* ===== FUNCTIONS ===== */
 
