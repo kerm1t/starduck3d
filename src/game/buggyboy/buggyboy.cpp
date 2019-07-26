@@ -73,6 +73,8 @@ bool b_test = false;
 #define ED_OBJ_BB_TREE      6
 int editor_Obj = ED_OBJ_BB_BANNER;
 
+int hiscore = 1250;
+
 void CalculateFrameRate()
 {
   float currentTime = GetTickCount() * 0.001f;
@@ -94,90 +96,16 @@ void RenderThread(void *args)
   {
 
 
-#if (0)
-    // ===== Update overlay texture =====
-    CIMGLoader ldrIMG; // texture has to have same size as original texture, otherwise >> Unhandled exception at 0x1000AA43 (ig4icd32.dll) <<
-    if (b_test)
-      ldrIMG.loadIMG_texID(m_proj.id_tex_overlay, "..\\data\\buggyboy\\overlay3.png", false);
-    else
-    {
-      ldrIMG.loadIMG_texID(m_proj.id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
-    }
-    // ===== Update overlay texture =====
-
-
-    // ===== Update overlay texture with individual pattern =====
-    if (b_test)
-    {
-      // create empty bitmap
-      s_bmp bmp;
-      CBMP BMP;
-      BMP.BMP(bmp, 100, 100);
-      // copy some font stuff in the bmp
-      BMP.red(bmp);
-      BMP.BMP_texID(bmp, m_proj.id_tex_overlay);
-      // m_proj.bmp_font
-      delete bmp.data;
-    }
-    else
-    {
-      // create empty bitmap
-      s_bmp bmp;
-      CBMP BMP;
-      BMP.BMP(bmp, 100, 100);
-      // copy some font stuff in the bmp
-      BMP.blue(bmp);
-/*      for (int x = 0; x < 32; x++)
-      {
-        for (int y = 0; y < 32; y++)
-        {
-          s_col col = BMP.getPixel(m_proj.bmp_font, 32+x, 64+y);
-          BMP.setPixel(bmp, x, y, col.r, col.g, col.b);
-        }
-      }
-      */
-      BMP.copy(m_proj.bmp_font, bmp, 3*32, 5*32,0,0);       // K
-      BMP.copy(m_proj.bmp_font, bmp, 1 * 32, 4 * 32,32,0);  // A
-      BMP.copy(m_proj.bmp_font, bmp, 4 * 32, 6 * 32,64,0);  // T
-
-      BMP.BMP_texID(bmp, m_proj.id_tex_overlay);
-      // m_proj.bmp_font
-      delete bmp.data;
-    }
-    // ===== Update overlay texture with individual pattern =====
-#endif
-
     // ===== output Text to Overlay =====
-    // create empty bitmap
     s_bmp bmp; // overlay
     CBMP BMP;
-    BMP.BMP(bmp, 100, 40);
-    // copy some font stuff in the bmp
-    std::string out = "KATJA";
-    int i = (int)out[0] - 32; // space = 32
-    int xfnt = i % 8;
-    int yfnt = i / 8;
-    BMP.copy(m_proj.fnt.bmp_font, bmp, xfnt * 32, yfnt * 32, 0, 0);   // K
-    i = (int)out[1] - 32; // space = 32
-    xfnt = i % 8;
-    yfnt = i / 8;
-    BMP.copy(m_proj.fnt.bmp_font, bmp, xfnt * 32, yfnt * 32, 16, 0);   // A
-    i = (int)out[2] - 32; // space = 32
-    xfnt = i % 8;
-    yfnt = i / 8;
-    BMP.copy(m_proj.fnt.bmp_font, bmp, xfnt * 32, yfnt * 32, 32, 0);   // T
-    i = (int)out[3] - 32; // space = 32
-    xfnt = i % 8;
-    yfnt = i / 8;
-    BMP.copy(m_proj.fnt.bmp_font, bmp, xfnt * 32, yfnt * 32, 48, 0);   // J
-    i = (int)out[4] - 32; // space = 32
-    xfnt = i % 8;
-    yfnt = i / 8;
-    BMP.copy(m_proj.fnt.bmp_font, bmp, xfnt * 32, yfnt * 32, 64, 0);   // A
-
-    BMP.BMP_texID(bmp, m_proj.id_tex_overlay);
+    BMP.BMP(bmp, 100, 40);                           // create empty bitmap
+    std::string s = std::to_string(hiscore++);
+    m_proj.fnt.word(s, bmp, 10, 0);                  // copy some font stuff in the bmp
+    BMP.BMP_texID(bmp, m_proj.id_tex_overlay);       // bmp to texture now
     delete bmp.data;
     // ===== output Text to Overlay =====
+
 
     if (b_add_obj)
     {
