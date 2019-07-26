@@ -73,8 +73,6 @@ bool b_test = false;
 #define ED_OBJ_BB_TREE      6
 int editor_Obj = ED_OBJ_BB_BANNER;
 
-int hiscore = 1250;
-
 void CalculateFrameRate()
 {
   float currentTime = GetTickCount() * 0.001f;
@@ -100,7 +98,7 @@ void RenderThread(void *args)
     s_bmp bmp; // overlay
     CBMP BMP;
     BMP.BMP(bmp, 100, 40);                           // create empty bitmap
-    std::string s = std::to_string(hiscore++);
+    std::string s = std::to_string(m_proj.score++);
     m_proj.fnt.word(s, bmp, 10, 0);                  // copy some font stuff in the bmp
     BMP.BMP_texID(bmp, m_proj.id_tex_overlay);       // bmp to texture now
     delete bmp.data;

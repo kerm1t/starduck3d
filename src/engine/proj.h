@@ -69,6 +69,8 @@ namespace proj
 //    s_bmp bmp_font;
     C_BMP_FONT fnt;
 
+    int score;
+
     /* ===== FUNCTIONS ===== */
 
     int Init();

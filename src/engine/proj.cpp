@@ -60,6 +60,7 @@ int proj::Proj::Init()
   vTrajPosprev = glm::vec3(0.0f,0.0f,0.0f);
 
   hit_object_id = 0;
+  score = 1250;
 
 //  CBMPLoader ldrBMP;
 //  size_t result = ldrBMP.loadBMP_to_bmp("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
