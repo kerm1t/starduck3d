@@ -30,12 +30,12 @@ Timer timer;
 #define VBOADD_HOUSE 0
 #define VBOADD_CONFERENCEROOM 0
 #define VBOADD_ANTONS_VILLAGE 0
-#define VBOADD_SCENE_OBJS 0            // load from obj.txt
+#define VBOADD_SCENE_OBJS 1            // load from obj.txt
 #define VBOADD_BILLBOARDS 0            // shall be more than 1 type of billboard
 #define VBOADD_20_RANDOM_HOLZSTAPEL 0
 #define VBOADD_CONTICAR 0
 #define VBOADD_BLACKJEEP 0
-#define VBOADD_JEEP 0
+#define VBOADD_JEEP 1
 #define VBOADD_BARRIERS 0
 #define VBOADD_SPONZA 0
 
@@ -60,7 +60,7 @@ int proj::Proj::Init()
   vTrajPosprev = glm::vec3(0.0f,0.0f,0.0f);
 
   hit_object_id = 0;
-  score = 1250;
+  score = 0;// 1250;
 
 //  CBMPLoader ldrBMP;
 //  size_t result = ldrBMP.loadBMP_to_bmp("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
@@ -471,6 +471,15 @@ int proj::Proj::DoIt()
   // a) check, ob ego (Fahrzeug) mit einem Objekte kollidiert, 2do: auch bbox benutzen
 //  hit_object_id = m_phys.collision_check(vObjects, m_render.Cursor);
   hit_object_id = m_phys.collision_check(vObjects, m_render.p_cam->Pos);
+  if (hit_object_id > 0)
+  {
+    if (hit_object_id != hit_object_id_prev)
+    {
+      if (vObjects[hit_object_id]->name.compare("Flag") == 0) score += 30;
+      if (vObjects[hit_object_id]->name.compare("Banner") == 0) score += 250;
+      hit_object_id_prev = hit_object_id;
+    }
+  }
 
   // b) check, ob ego (Fahrzeug) mit einem Objekte kollidiert
   touch_object_id = m_phys.collision_check_bbox(vObjects, m_render.p_cam->Pos, m_render.p_cam->At);

@@ -171,7 +171,7 @@ public:
 //      "  gl_Position.xy *= 0.5;\n" // scale to half of screen
       "  gl_Position.x *= 0.8;\n" // scale to half of screen
       "  gl_Position.y *= 0.4;\n" // scale to half of screen
-      "  gl_Position.y += 0.3;\n" // up
+      "  gl_Position.y += 0.5;\n" // up
       "}"
     };
     const GLchar * fshd_src_FPS[] = {

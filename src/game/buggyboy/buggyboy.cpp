@@ -98,7 +98,7 @@ void RenderThread(void *args)
     s_bmp bmp; // overlay
     CBMP BMP;
     BMP.BMP(bmp, 100, 40);                           // create empty bitmap
-    std::string s = std::to_string(m_proj.score++);
+    std::string s = std::to_string(m_proj.score);
     m_proj.fnt.word(s, bmp, 10, 0);                  // copy some font stuff in the bmp
     BMP.BMP_texID(bmp, m_proj.id_tex_overlay);       // bmp to texture now
     delete bmp.data;

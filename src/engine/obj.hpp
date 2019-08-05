@@ -52,6 +52,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
   {
   public:
     std::string name;
+    int score;   // e.g. flag = 30, ...
 
     bool bHasParts;
     // slows down to 1-8 FPS (before 130 FPS) std::vector <CPart> v_parts;

@@ -62,6 +62,7 @@ namespace proj
     proj::physics m_phys;
 
     int hit_object_id;
+    int hit_object_id_prev;
     int touch_object_id;
 
     GLuint id_tex_overlay; // texture, that stores overlay, e.g. display of speed, score points etc.

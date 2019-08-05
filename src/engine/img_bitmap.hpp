@@ -37,7 +37,7 @@ public:
   {
     bmp.width = w;
     bmp.height = h;
-    bmp.imageSize = bmp.width * bmp.height * 3;
+    bmp.imageSize = bmp.width * bmp.height * 3; // rgb
 
     // Create a buffer
     bmp.data = new unsigned char[bmp.imageSize];
@@ -110,6 +110,7 @@ public:
 
     // Give the image to OpenGL
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bmp.width, bmp.height, 0, GL_BGR, GL_UNSIGNED_BYTE, bmp.data);
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bmp.width, bmp.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bmp.data);
 
     return textureID;
   }
@@ -185,6 +186,7 @@ public:
 
     // Give the image to OpenGL
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bmp.width, bmp.height, 0, GL_BGR, GL_UNSIGNED_BYTE, bmp.data);
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bmp.width, bmp.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bmp.data);
 
     delete bmp.data;
 
