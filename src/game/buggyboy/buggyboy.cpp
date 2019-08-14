@@ -21,6 +21,8 @@
 
 #include <typeinfo>
 
+//#include "img_bitmap4.hpp" // text overlay
+
 #define MAX_LOADSTRING 100
 
 // Globale Variablen:
@@ -94,7 +96,7 @@ void RenderThread(void *args)
   {
 
 
-    // ===== output Text to Overlay =====
+/*    // ===== output Text to Overlay =====
     s_bmp bmp; // overlay
     CBMP BMP;
     BMP.BMP(bmp, 100, 40);                           // create empty bitmap
@@ -102,6 +104,18 @@ void RenderThread(void *args)
     m_proj.fnt.word(s, bmp, 10, 0);                  // copy some font stuff in the bmp
     BMP.BMP_texID(bmp, m_proj.id_tex_overlay);       // bmp to texture now
     delete bmp.data;
+    // ===== output Text to Overlay =====
+    */
+    // ===== output Text to Overlay =====
+    s_bmp4 bmp4; // overlay
+    CBMP4 BMP4;
+    BMP4.BMP(bmp4, 100, 40);                           // create empty bitmap
+    std::string s = std::to_string(m_proj.score);
+    m_proj.fnt.word(s, bmp4, 10, 0);                  // copy some font stuff in the bmp
+//    BMP4.red(bmp4);
+//    BMP4.green(bmp4);
+    BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
+    delete bmp4.data;
     // ===== output Text to Overlay =====
 
 

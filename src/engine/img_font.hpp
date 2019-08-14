@@ -14,8 +14,9 @@
 
 #include <stdio.h>
 #include "img_bitmap.hpp"
+#include "img_bitmap4.hpp"
 
-class C_BMP_FONT: public CBMP
+class C_BMP_FONT: public CBMP4
 {
 public:
   s_bmp bmp_font;
@@ -26,15 +27,15 @@ public:
     size_t result = ldrBMP.loadBMP_to_bmp("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
   }
 
-  void C_BMP_FONT::letter(char c, s_bmp & dst, int x, int y)
+  void C_BMP_FONT::letter(char c, s_bmp4 & dst, int x, int y)
   {
     int i = (int)c - 32; // space = 32
     int xfnt = i % 8;
     int yfnt = i / 8;
-    copy(bmp_font, dst, xfnt * 32, yfnt * 32, x, y);
+    copy3(bmp_font, dst, xfnt * 32, yfnt * 32, x, y);
   }
 
-  void C_BMP_FONT::word(std::string s, s_bmp & dst, int x, int y)
+  void C_BMP_FONT::word(std::string s, s_bmp4 & dst, int x, int y)
   {
     for (int i = 0; i < s.size(); i++)
     {

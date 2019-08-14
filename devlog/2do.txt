@@ -1,7 +1,17 @@
+8/13
+- h - output help
+- "saved"
+
+8/12
+- s_bmp in CBMP integrieren
+- Map anzeigen: Anton
+- Katja: Elemente einfacher auswählen (Menü)
+- manche Banner können nicht gewählt werden
+
 7/21
 - Ladezeit zu hoch --> das Laden des Jeeps dauert so lange
 - ist der Jeep nicht geladen, wird die gesamte Szene nicht dargestellt
-- transparentes Bitmap!
++ transparentes Bitmap!
 
 6/22
 (-) billboards sollen umfallen, wenn man gegen sie fährt
