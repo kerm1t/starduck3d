@@ -107,17 +107,31 @@ void RenderThread(void *args)
     // ===== output Text to Overlay =====
     */
     // ===== output Text to Overlay =====
-    s_bmp4 bmp4; // overlay
+/*    s_bmp4 bmp4; // overlay
     CBMP4 BMP4;
     BMP4.BMP(bmp4, 100, 40);                           // create empty bitmap
     std::string s = std::to_string(m_proj.score);
-    m_proj.fnt.word(s, bmp4, 10, 0);                  // copy some font stuff in the bmp
-//    BMP4.red(bmp4);
-//    BMP4.green(bmp4);
+    m_proj.fnt.word(s, bmp4, 10, 0);
     BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
     delete bmp4.data;
     // ===== output Text to Overlay =====
-
+  */  // ===== output Text to Overlay =====
+    s_bmp4 bmp4; // overlay
+    CBMP4 BMP4;
+    BMP4.BMP(bmp4, 200, 150);                           // create empty bitmap
+    std::string s = std::to_string(m_proj.score);
+    m_proj.fnt.word("HELP", bmp4, 10, 0);
+    m_proj.fnt.word("1-BARRIER", bmp4, 10, 16);
+    m_proj.fnt.word("2-BANNER", bmp4, 10, 32);
+    m_proj.fnt.word("3-FLAG", bmp4, 10, 48);
+    m_proj.fnt.word("4-WOODPILE", bmp4, 10, 64);
+    m_proj.fnt.word("5-CONCRETE", bmp4, 10, 80);
+    m_proj.fnt.word("6-TREE", bmp4, 10, 96);
+    m_proj.fnt.word("Y-DELETE", bmp4, 10, 112);
+    m_proj.fnt.word("Z-SAVE", bmp4, 10, 128);
+    BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
+    delete bmp4.data;
+    // ===== output Text to Overlay =====
 
     if (b_add_obj)
     {

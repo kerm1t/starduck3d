@@ -170,8 +170,8 @@ public:
       "  gl_Position = vec4(vp_clipspace.x, vp_clipspace.y, 0.5, 1.0);\n" // global variable (x,y,z,w), [z] e.g. 0.5, but not 1.0
 //      "  gl_Position.xy *= 0.5;\n" // scale to half of screen
       "  gl_Position.x *= 0.8;\n" // scale to half of screen
-      "  gl_Position.y *= 0.4;\n" // scale to half of screen
-      "  gl_Position.y += 0.5;\n" // up
+//      "  gl_Position.y *= 0.4;\n" // scale to half of screen
+//      "  gl_Position.y += 0.5;\n" // up
       "}"
     };
     const GLchar * fshd_src_FPS[] = {
