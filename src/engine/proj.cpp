@@ -62,9 +62,12 @@ int proj::Proj::Init()
   hit_object_id      = -1;
   hit_object_id_prev = -1;
 
-  score = 0;// 1250;
+  score              = 0;
 
-  gamestate = gsPlay;
+  overlaystate       = ovlPlay;
+  gamestate          = gsPlay;
+  simulationcounter  = 0;
+  statecounter       = 0;
 
 //  CBMPLoader ldrBMP;
 //  size_t result = ldrBMP.loadBMP_to_bmp("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
@@ -472,6 +475,10 @@ int proj::Proj::DoIt()
   wglMakeCurrent(m_render.hDC,m_render.hRC); // ;-) now Tab-switching in MTS possible
 
 
+  simulationcounter++;
+  statecounter++;
+  if ((gamestate == gsHit) && (statecounter > 250)) gamestate = gsPlay;
+
   // a) check, ob ego (Fahrzeug) mit einem Objekte kollidiert, 2do: auch bbox benutzen
 //  hit_object_id = m_phys.collision_check(vObjects, m_render.Cursor);
   hit_object_id = m_phys.collision_check(vObjects, m_render.p_cam->Pos);
@@ -481,6 +488,17 @@ int proj::Proj::DoIt()
     {
       if (vObjects[hit_object_id]->name.compare("Flag") == 0) score += 30;
       if (vObjects[hit_object_id]->name.compare("Banner") == 0) score += 250;
+      if (
+        (vObjects[hit_object_id]->name.compare("Woodpile") == 0)
+        ||
+        (vObjects[hit_object_id]->name.compare("Concrete") == 0)
+        ||
+        (vObjects[hit_object_id]->name.compare("Tree") == 0)
+        )
+      {
+        gamestate = gsHit;
+        statecounter = 0;
+      }
       hit_object_id_prev = hit_object_id;
     }
   }

@@ -1,5 +1,7 @@
 8/17
-- im Startzustand ist d. Score-text zu hoch (Screen zu klein kalkuliert?)
+- 2 Geschwindigkeiten, die Fahrzeug autom. einnimmt
++ stoppen bei Holzstapeln etc. SimState Hit
++ im Startzustand ist d. Score-text zu hoch (Screen zu klein kalkuliert?)
   --> GetClientRect statt GetWindowRect!
 - gamestate: intro
 - gamestate: hiscore

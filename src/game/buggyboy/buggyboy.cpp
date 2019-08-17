@@ -97,7 +97,7 @@ void RenderThread(void *args)
 
 
     // ===== output Text to Overlay =====
-    if (m_proj.gamestate == proj::gsPlay)
+    if (m_proj.overlaystate == proj::ovlPlay)
     {
       s_bmp4 bmp4; // overlay
       CBMP4 BMP4;
@@ -107,7 +107,7 @@ void RenderThread(void *args)
       BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
       delete bmp4.data;
     }
-    else if (m_proj.gamestate == proj::gsHelp)
+    else if (m_proj.overlaystate == proj::ovlHelp)
     {
       s_bmp4 bmp4; // overlay
       CBMP4 BMP4;
@@ -194,22 +194,25 @@ void RenderThread(void *args)
       b_del_obj = false;
     }
 
-    float slowdown = 15.0f;
-    if (GetAsyncKeyState(VK_UP))
+    if (m_proj.gamestate != proj::gsHit) //if object is hit -> stop for some time
     {
-      m_cam.MoveFwd(1.0f / slowdown);
-    }
-    if (GetAsyncKeyState(VK_DOWN))
-    {
-      m_cam.MoveBack(1.0f / slowdown);
-    }
-    if (GetAsyncKeyState(VK_LEFT))
-    {
-      m_cam.StrafeLeft(1.0f / 30.0f);
-    }
-    if (GetAsyncKeyState(VK_RIGHT))
-    {
-      m_cam.StrafeRight(1.0f / 30.0f);
+      float slowdown = 15.0f;
+      if (GetAsyncKeyState(VK_UP))
+      {
+        m_cam.MoveFwd(1.0f / slowdown);
+      }
+      if (GetAsyncKeyState(VK_DOWN))
+      {
+        m_cam.MoveBack(1.0f / slowdown);
+      }
+      if (GetAsyncKeyState(VK_LEFT))
+      {
+        m_cam.StrafeLeft(1.0f / 30.0f);
+      }
+      if (GetAsyncKeyState(VK_RIGHT))
+      {
+        m_cam.StrafeRight(1.0f / 30.0f);
+      }
     }
 
     if (b_WM_resized)
@@ -612,7 +615,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       b_add_obj = true;
       break;
     case 72: // h
-      if (m_proj.gamestate == proj::gsPlay) m_proj.gamestate = proj::gsHelp; else m_proj.gamestate = proj::gsPlay;
+      if (m_proj.overlaystate == proj::gsPlay) m_proj.overlaystate = proj::ovlHelp; else m_proj.overlaystate = proj::ovlPlay;
       break;
     case 80: // P >> Pause ON/OFF
       m_proj.bPause = !(m_proj.bPause);

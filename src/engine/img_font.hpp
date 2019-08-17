@@ -24,7 +24,7 @@ public:
   C_BMP_FONT::C_BMP_FONT()
   {
     CBMPLoader ldrBMP;
-    size_t result = ldrBMP.loadBMP_to_bmp("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
+    size_t result = ldrBMP.loadBMP_to_bmp("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font); // 2do: make sure, this is loaded only once!
   }
 
   void C_BMP_FONT::letter(char c, s_bmp4 & dst, int x, int y)

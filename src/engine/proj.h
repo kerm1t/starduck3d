@@ -20,7 +20,8 @@
 
 namespace proj
 {
-  enum Gamestate { gsPlay, gsHelp };
+  enum Gamestate    { gsPlay, gsHit };
+  enum Overlaystate { ovlPlay, ovlHelp };
 
   class Proj
   {
@@ -74,7 +75,11 @@ namespace proj
 
     int score;
 
+    Overlaystate overlaystate;
     Gamestate gamestate;
+    int simulationcounter; // simulation steps
+    int statecounter;      // sim. steps since this state started
+
 
     /* ===== FUNCTIONS ===== */
 
