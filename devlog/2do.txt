@@ -1,7 +1,8 @@
 8/17
+- im Startzustand ist d. Score-text zu hoch (Screen zu klein kalkuliert?)
+  --> GetClientRect statt GetWindowRect!
 - gamestate: intro
 - gamestate: hiscore
-
 + erstes Banner gibt keinen Punkte !?
 
 8/13

@@ -277,7 +277,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   }
 
   RECT rect;
-  if(GetWindowRect(hWnd, &rect))
+  if(GetClientRect(hWnd, &rect))
   {
     win_w = rect.right - rect.left;
     win_h = rect.bottom - rect.top;

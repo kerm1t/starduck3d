@@ -59,7 +59,9 @@ int proj::Proj::Init()
 
   vTrajPosprev = glm::vec3(0.0f,0.0f,0.0f);
 
-  hit_object_id = -1;
+  hit_object_id      = -1;
+  hit_object_id_prev = -1;
+
   score = 0;// 1250;
 
   gamestate = gsPlay;
