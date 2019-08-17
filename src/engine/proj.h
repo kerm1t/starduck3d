@@ -20,6 +20,8 @@
 
 namespace proj
 {
+  enum Gamestate { gsPlay, gsHelp };
+
   class Proj
   {
   public:
@@ -71,6 +73,8 @@ namespace proj
     C_BMP_FONT fnt;
 
     int score;
+
+    Gamestate gamestate;
 
     /* ===== FUNCTIONS ===== */
 

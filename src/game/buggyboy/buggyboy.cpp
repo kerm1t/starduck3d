@@ -96,42 +96,38 @@ void RenderThread(void *args)
   {
 
 
-/*    // ===== output Text to Overlay =====
-    s_bmp bmp; // overlay
-    CBMP BMP;
-    BMP.BMP(bmp, 100, 40);                           // create empty bitmap
-    std::string s = std::to_string(m_proj.score);
-    m_proj.fnt.word(s, bmp, 10, 0);                  // copy some font stuff in the bmp
-    BMP.BMP_texID(bmp, m_proj.id_tex_overlay);       // bmp to texture now
-    delete bmp.data;
     // ===== output Text to Overlay =====
-    */
+    if (m_proj.gamestate == proj::gsPlay)
+    {
+      s_bmp4 bmp4; // overlay
+      CBMP4 BMP4;
+      BMP4.BMP(bmp4, 100, 80);                           // create empty bitmap
+      std::string s = std::to_string(m_proj.score);
+      m_proj.fnt.word(s, bmp4, 10, 0);
+      BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
+      delete bmp4.data;
+    }
+    else if (m_proj.gamestate == proj::gsHelp)
+    {
+      s_bmp4 bmp4; // overlay
+      CBMP4 BMP4;
+      BMP4.BMP(bmp4, 200, 150);                          // create empty bitmap
+      std::string s = std::to_string(m_proj.score);
+      m_proj.fnt.word("HELP", bmp4, 10, 0);
+      m_proj.fnt.word("1-BARRIER", bmp4, 10, 16);
+      m_proj.fnt.word("2-BANNER", bmp4, 10, 32);
+      m_proj.fnt.word("3-FLAG", bmp4, 10, 48);
+      m_proj.fnt.word("4-WOODPILE", bmp4, 10, 64);
+      m_proj.fnt.word("5-CONCRETE", bmp4, 10, 80);
+      m_proj.fnt.word("6-TREE", bmp4, 10, 96);
+      m_proj.fnt.word("Y-DELETE", bmp4, 10, 112);
+      m_proj.fnt.word("Z-SAVE", bmp4, 10, 128);
+      BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
+      delete bmp4.data;
+    }
     // ===== output Text to Overlay =====
-/*    s_bmp4 bmp4; // overlay
-    CBMP4 BMP4;
-    BMP4.BMP(bmp4, 100, 40);                           // create empty bitmap
-    std::string s = std::to_string(m_proj.score);
-    m_proj.fnt.word(s, bmp4, 10, 0);
-    BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
-    delete bmp4.data;
-    // ===== output Text to Overlay =====
-  */  // ===== output Text to Overlay =====
-    s_bmp4 bmp4; // overlay
-    CBMP4 BMP4;
-    BMP4.BMP(bmp4, 200, 150);                           // create empty bitmap
-    std::string s = std::to_string(m_proj.score);
-    m_proj.fnt.word("HELP", bmp4, 10, 0);
-    m_proj.fnt.word("1-BARRIER", bmp4, 10, 16);
-    m_proj.fnt.word("2-BANNER", bmp4, 10, 32);
-    m_proj.fnt.word("3-FLAG", bmp4, 10, 48);
-    m_proj.fnt.word("4-WOODPILE", bmp4, 10, 64);
-    m_proj.fnt.word("5-CONCRETE", bmp4, 10, 80);
-    m_proj.fnt.word("6-TREE", bmp4, 10, 96);
-    m_proj.fnt.word("Y-DELETE", bmp4, 10, 112);
-    m_proj.fnt.word("Z-SAVE", bmp4, 10, 128);
-    BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
-    delete bmp4.data;
-    // ===== output Text to Overlay =====
+
+
 
     if (b_add_obj)
     {
@@ -614,6 +610,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case 54: // 6
       editor_Obj = ED_OBJ_BB_TREE;
       b_add_obj = true;
+      break;
+    case 72: // h
+      if (m_proj.gamestate == proj::gsPlay) m_proj.gamestate = proj::gsHelp; else m_proj.gamestate = proj::gsPlay;
       break;
     case 80: // P >> Pause ON/OFF
       m_proj.bPause = !(m_proj.bPause);

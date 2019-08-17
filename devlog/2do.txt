@@ -1,6 +1,12 @@
+8/17
+- gamestate: intro
+- gamestate: hiscore
+
++ erstes Banner gibt keinen Punkte !?
+
 8/13
-- h - output help
-- "saved"
++ h - output help
+- "saved" (gamestate?)
 
 8/12
 - s_bmp in CBMP integrieren

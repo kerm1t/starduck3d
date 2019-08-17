@@ -59,8 +59,10 @@ int proj::Proj::Init()
 
   vTrajPosprev = glm::vec3(0.0f,0.0f,0.0f);
 
-  hit_object_id = 0;
+  hit_object_id = -1;
   score = 0;// 1250;
+
+  gamestate = gsPlay;
 
 //  CBMPLoader ldrBMP;
 //  size_t result = ldrBMP.loadBMP_to_bmp("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
@@ -471,7 +473,7 @@ int proj::Proj::DoIt()
   // a) check, ob ego (Fahrzeug) mit einem Objekte kollidiert, 2do: auch bbox benutzen
 //  hit_object_id = m_phys.collision_check(vObjects, m_render.Cursor);
   hit_object_id = m_phys.collision_check(vObjects, m_render.p_cam->Pos);
-  if (hit_object_id > 0)
+  if (hit_object_id >= 0)
   {
     if (hit_object_id != hit_object_id_prev)
     {
