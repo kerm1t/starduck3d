@@ -673,6 +673,10 @@ void proj::Render::DrawVAOs_NEU()
     glUniform1i(sh2_unif_ID, 0); // hack!!
     glBindVertexArray(vVertexArray[ui]); // <--- NVidia: hier Problem, wenn ui = 13 (beim ersten colorierten + texturierten Objekt!!)
     glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+
+
+    glUseProgram(program); // zurueckschalten auf STD-program
+    err = glGetError();
   }
 
 
@@ -716,7 +720,11 @@ void proj::Render::DrawVAOs_NEU()
   err = glGetError();
   */
 
-/* follwing block allocates memory, but doesn't free it again...
+  // --------------------------------------------
+  // Bug: dieser pinke Quad wird nur dargestellt, wenn Splash screen oben disabled !??!
+  //    das lag am shader!
+  // --------------------------------------------
+  // following block allocates memory, but doesn't free it again...
   // --------------------------------------------
   // draw sceneblock in purple, that player is on
   // --------------------------------------------
@@ -744,9 +752,13 @@ void proj::Render::DrawVAOs_NEU()
   glBindVertexArray(0);
   glDisableVertexAttribArray(sh1_attr_pos);
   glDisableVertexAttribArray(sh1_attr_col);
+  
+  glDeleteBuffers(1, &colorBuf3);
+  glDeleteBuffers(1, &positionBuf3);
+  glDeleteVertexArrays(1,&vao3);
 
   err = glGetError();
-*/
+
 
 
   //    if (b_PNG) FBO_to_PPM();
