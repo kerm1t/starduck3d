@@ -1,3 +1,18 @@
+9/15
+- Scenepos berechnen, auch ohne ImGUI
+- Scenepos zeichnen : Speicherleak
+- rendering aufraeumen!
+
+9/13
+- Strecke prozedurell generiert
+- a) links / rechts steuern (2 speeds)
+- b) Einspurmodell f. Egofahrzeug
+- Strecke einblenden
+- Tacho (Geschw.) einblenden
+
+8/31
+- scenebuilder soll autom. Objekte platzieren: Banner, Trees etc.
+
 8/17
 - 2 Geschwindigkeiten, die Fahrzeug autom. einnimmt
 + stoppen bei Holzstapeln etc. SimState Hit
