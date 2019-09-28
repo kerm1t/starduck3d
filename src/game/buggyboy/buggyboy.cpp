@@ -621,16 +621,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       m_proj.bPause = !(m_proj.bPause);
       break;
     case 87: // W
-      m_cam.MoveFwd(0.3f);
+      if (m_proj.gamestate != proj::gsHit) //if object is hit -> stop for some time
+        m_cam.MoveFwd(0.3f);
       break;
     case 65: // A
-      m_cam.StrafeLeft(0.1f); // optional:  m_cam.TurnLeft();
+      if (m_proj.gamestate != proj::gsHit) //if object is hit -> stop for some time
+        m_cam.StrafeLeft(0.1f); // optional:  m_cam.TurnLeft();
       break;
     case 83: // S
-      m_cam.MoveBack(0.3f);
+      if (m_proj.gamestate != proj::gsHit) //if object is hit -> stop for some time
+        m_cam.MoveBack(0.3f);
       break;
     case 68: // D
-      m_cam.StrafeRight(0.1f);
+      if (m_proj.gamestate != proj::gsHit) //if object is hit -> stop for some time
+        m_cam.StrafeRight(0.1f);
       break;
     case 88: // X
       // save scene
