@@ -1,4 +1,6 @@
 9/15
+- function: dir_to_angle
+- m_render.Cursor --> ego.pos
 - Scenepos berechnen, auch ohne ImGUI
 - Scenepos zeichnen : Speicherleak
 - rendering aufraeumen!

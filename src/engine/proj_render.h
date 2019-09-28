@@ -23,6 +23,7 @@ namespace proj
 
     glm::vec3 Cursor;  // 2do: move to editor.hpp !!
     glm::vec3 Scenepos[4];  // 2do: move to scene....hpp !!
+    glm::vec3 dir; // 2do: move to ego-class!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     int touch_object_vaoId; // (not fully) redundant to proj.touch_object_id
 

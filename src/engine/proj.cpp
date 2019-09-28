@@ -496,7 +496,7 @@ int proj::Proj::DoIt()
         (vObjects[hit_object_id]->name.compare("Tree") == 0)
         )
       {
-        gamestate = gsHit;
+/////        gamestate = gsHit;
         statecounter = 0;
       }
       hit_object_id_prev = hit_object_id;
@@ -620,7 +620,8 @@ void proj::Proj::draw_ImGui()
 
   ImGui::Begin("Physics");
 
-  unsigned int pp = m_phys.player_scene_pos(m_scene, m_render.Cursor);
+//  unsigned int pp = m_phys.player_scene_pos(m_scene, m_render.Cursor);
+  unsigned int pp = m_phys.player_scene_pos_dir(m_scene, m_render.Cursor, m_render.dir);
   unsigned int nLine = 0;
   unsigned int nMarker = 2;
   m_phys.trajectory_id_to_line_marker(m_scene, pp, nLine, nMarker);
@@ -630,7 +631,7 @@ void proj::Proj::draw_ImGui()
     S_Point3D p1 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker].s_Right;
     S_Point3D p2 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker + 1].s_Right;
     S_Point3D p3 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker + 1].s_Left;
-    GLfloat z = .1f;
+    GLfloat z = .5f;
     m_render.Scenepos[0] = glm::vec3(p0.rl_X, p0.rl_Y, z);
     m_render.Scenepos[1] = glm::vec3(p1.rl_X, p1.rl_Y, z);
     m_render.Scenepos[2] = glm::vec3(p2.rl_X, p2.rl_Y, z);

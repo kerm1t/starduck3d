@@ -37,6 +37,34 @@ namespace proj
       return iTrack_nearest;
     } // PlayerPos
 
+    unsigned int player_scene_pos_dir(const proj::Scene scene, const glm::vec3 Cursor, glm::vec3 &dir) // 2do: use pos instead of Cursor
+    {
+      float dist_min = 9999.9f;
+      float dist;
+      unsigned int iTrack_nearest = 0;
+      for (int i = 0; i < scene.trajectory_len; i++)
+      {
+        glm::vec3 v3 = glm::vec3(scene.m_SceneLoader.m_c_Trajectory[i].s_Pos.rl_X,
+          scene.m_SceneLoader.m_c_Trajectory[i].s_Pos.rl_Y,
+          0.0f);
+        dist = glm::length(v3 - Cursor);
+        if (dist < dist_min)
+        {
+          dist_min = dist;
+          iTrack_nearest = i;
+
+          if (i > 0)
+          {
+            glm::vec3 v3prev = glm::vec3(scene.m_SceneLoader.m_c_Trajectory[i - 1].s_Pos.rl_X,
+              scene.m_SceneLoader.m_c_Trajectory[i - 1].s_Pos.rl_Y,
+              0.0f);
+            dir = v3 - v3prev;
+          }
+        }
+      }
+      return iTrack_nearest;
+    } // PlayerPos
+
     void trajectory_id_to_line_marker(const proj::Scene scene, const int traj_id, unsigned int & iLine, unsigned int & iMark)
     {
 //      unsigned int iLine;

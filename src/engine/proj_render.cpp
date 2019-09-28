@@ -761,5 +761,42 @@ void proj::Render::DrawVAOs_NEU()
 
 
 
+  // ----------------------------------
+  // draw arrow in direction of driving
+  // ----------------------------------
+  glPointSize(30.0f);
+
+  GLfloat _col[3 * 2] = { .5f, .5f, .5f,   .0f, .0f, .5f };
+  GLfloat _pos[3 * 2] = {Cursor.x,Cursor.y,1.0f,Cursor.x+dir.x,Cursor.y+dir.y,1.0f};
+
+  glGenVertexArrays(1, &vao3);
+  glBindVertexArray(vao3);
+
+  glEnableVertexAttribArray(sh1_attr_col); // Attribute indexes were received from calls to glGetAttribLocation, or passed into glBindAttribLocation.
+  glEnableVertexAttribArray(sh1_attr_pos);
+
+  glGenBuffers(1, &colorBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+  glBindBuffer(GL_ARRAY_BUFFER, colorBuf3);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * 2, _col, GL_DYNAMIC_DRAW);
+  glVertexAttribPointer(sh1_attr_col, 3, GL_FLOAT, false, 0, 0); // col_data is a float*, 3 per vertex
+
+  glGenBuffers(1, &positionBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+  glBindBuffer(GL_ARRAY_BUFFER, positionBuf3);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * 2, _pos, GL_DYNAMIC_DRAW);
+  glVertexAttribPointer(sh1_attr_pos, 3, GL_FLOAT, false, 0, 0); // vertex_data is a float*, 3 per vertex, representing the position of each vertex
+
+  err = glGetError();
+  glDrawArrays(GL_LINES, 0, 2); // 2 = vertexcount
+  err = glGetError();
+  glBindVertexArray(0);
+  glDisableVertexAttribArray(sh1_attr_pos);
+  glDisableVertexAttribArray(sh1_attr_col);
+
+  glDeleteBuffers(1, &colorBuf3);
+  glDeleteBuffers(1, &positionBuf3);
+  glDeleteVertexArrays(1, &vao3);
+
+  err = glGetError();
+
   //    if (b_PNG) FBO_to_PPM();
 }
