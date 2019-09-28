@@ -508,6 +508,31 @@ int proj::Proj::DoIt()
   touch_object_id = m_phys.collision_check_bbox(vObjects, m_render.p_cam->Pos, m_render.p_cam->At);
   if (touch_object_id < 0) m_render.touch_object_vaoId = -1; else m_render.touch_object_vaoId = vObjects[touch_object_id]->vVaoID[0]; // check, if this works with array
 
+
+//  unsigned int pp = m_phys.player_scene_pos(m_scene, m_render.Cursor);
+  unsigned int pp = m_phys.player_scene_pos_dir(m_scene, m_render.Cursor, m_render.dir);
+  unsigned int nLine = 0;
+  unsigned int nMarker = 2;
+  m_phys.trajectory_id_to_line_marker(m_scene, pp, nLine, nMarker);
+  if (nMarker < (m_scene.m_SceneLoader.m_c_Markers[nLine].size() - 1))
+  {
+    S_Point3D p0 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker].s_Left;
+    S_Point3D p1 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker].s_Right;
+    S_Point3D p2 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker + 1].s_Right;
+    S_Point3D p3 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker + 1].s_Left;
+    GLfloat z = .5f;
+    m_render.Scenepos[0] = glm::vec3(p0.rl_X, p0.rl_Y, z);
+    m_render.Scenepos[1] = glm::vec3(p1.rl_X, p1.rl_Y, z);
+    m_render.Scenepos[2] = glm::vec3(p2.rl_X, p2.rl_Y, z);
+    m_render.Scenepos[3] = glm::vec3(p3.rl_X, p3.rl_Y, z);
+  }
+  else
+  {
+    nLine = 1;
+  }
+
+
+
   m_render.DrawVAOs_NEU();          // Draw The Scene
   err = glGetError();
 
@@ -619,28 +644,6 @@ void proj::Proj::draw_ImGui()
 
 
   ImGui::Begin("Physics");
-
-//  unsigned int pp = m_phys.player_scene_pos(m_scene, m_render.Cursor);
-  unsigned int pp = m_phys.player_scene_pos_dir(m_scene, m_render.Cursor, m_render.dir);
-  unsigned int nLine = 0;
-  unsigned int nMarker = 2;
-  m_phys.trajectory_id_to_line_marker(m_scene, pp, nLine, nMarker);
-  if (nMarker < (m_scene.m_SceneLoader.m_c_Markers[nLine].size() - 1))
-  {
-    S_Point3D p0 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker].s_Left;
-    S_Point3D p1 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker].s_Right;
-    S_Point3D p2 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker + 1].s_Right;
-    S_Point3D p3 = m_scene.m_SceneLoader.m_c_Markers[nLine][nMarker + 1].s_Left;
-    GLfloat z = .5f;
-    m_render.Scenepos[0] = glm::vec3(p0.rl_X, p0.rl_Y, z);
-    m_render.Scenepos[1] = glm::vec3(p1.rl_X, p1.rl_Y, z);
-    m_render.Scenepos[2] = glm::vec3(p2.rl_X, p2.rl_Y, z);
-    m_render.Scenepos[3] = glm::vec3(p3.rl_X, p3.rl_Y, z);
-  }
-  else
-  {
-    nLine = 1;
-  }
 
   ImGui::Text("Track nearest: %d", pp);
   std::string s_obj = "";

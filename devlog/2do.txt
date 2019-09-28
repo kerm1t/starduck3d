@@ -1,3 +1,7 @@
+9/28
+- when switching to another app, camera coordinates are broken (x,y)
+- limit collisioncheck to area surrounding egovehicle
+
 9/15
 - function: dir_to_angle
 - m_render.Cursor --> ego.pos

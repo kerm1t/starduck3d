@@ -80,6 +80,7 @@ namespace proj
     int simulationcounter; // simulation steps
     int statecounter;      // sim. steps since this state started
 
+    unsigned int pp; // playerpos
 
     /* ===== FUNCTIONS ===== */
 
