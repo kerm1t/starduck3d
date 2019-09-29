@@ -156,7 +156,7 @@ T_SLONG proj::SceneLoader::sl_ReadScene(const std::string &rc_Scenefile)
         fgets(line, sizeof line, c_F);
       }
     }
-    else if (std::string(tmp2) == "S_6Dof")
+    else if (std::string(tmp2) == "S_6Dof") // trajectory
     {
 //      m_c_Trajectory.clear();
       fgets(line, sizeof line, c_F);
@@ -329,14 +329,14 @@ ERROR_EXIT:
   //    REPORT_ERROR(sl_Ret, m_ach_ModuleName);
   return sl_Ret;
 }
-
+/*
 T_SLONG proj::SceneLoader::sl_ReadParametersAndScene(const std::string &rc_Paramfile)
 {
   sl_ReadParameters(rc_Paramfile);
   sl_ReadScene(c_Scene_filename);
   return 0;
 }
-
+*/
 void proj::SceneLoader::v_ApplySpeedFactor(T_REAL rl_SpeedFactor)
 {
   T_SLONG sl_i;

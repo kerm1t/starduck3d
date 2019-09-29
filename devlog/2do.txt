@@ -1,11 +1,19 @@
 9/28
+- disable physics (ImGUI)
+- need connection between vVertexarray and vVAOs / vVAOsL 
+- add different vao type to renderer: lines (plus triangles as of now)
+- phys.PPos+ playerdir: change pos on GPU instead of upload every time
+- enable objects from .cfg instead of #DEFINE
+- fix guardrails & curbstones
+- autodrive along the trajectory (with 2 speeds)
++ draw trajectory
 - when switching to another app, camera coordinates are broken (x,y)
 - limit collisioncheck to area surrounding egovehicle
 
 9/15
 - function: dir_to_angle
 - m_render.Cursor --> ego.pos
-- Scenepos berechnen, auch ohne ImGUI
++ Scenepos berechnen, auch ohne ImGUI
 - Scenepos zeichnen : Speicherleak
 - rendering aufraeumen!
 

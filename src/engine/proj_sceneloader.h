@@ -32,6 +32,8 @@ typedef bool T_BOOL;
 #define DLL
 #endif
 
+// 2do: add this .h to cmake proj-def.
+// 2do: load struct to scene-class instead
 struct DLL RGBcolor
 {
   RGBcolor() : u_Red(0), u_Green(0), u_Blue(0)
@@ -265,7 +267,7 @@ namespace proj
 
     T_SLONG sl_ReadScene(const std::string &rc_Scenefile);
     T_SLONG sl_ReadParameters(const std::string &rc_Paramfile);
-    T_SLONG sl_ReadParametersAndScene(const std::string &rc_Paramfile);
+//    T_SLONG sl_ReadParametersAndScene(const std::string &rc_Paramfile);
   private:
     void sl_ReadColor(T_CHAR *line);
     void sl_ReadTextureID(T_CHAR *line);

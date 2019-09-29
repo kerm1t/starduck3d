@@ -18,6 +18,9 @@ static stb_fontchar fontdata[STB_SOMEFONT_NUM_CHARS];
 // VBO tutorial: http://www.ozone3d.net/tutorials/opengl_vbo.php
 // using multiple vs. using 1 large VBO: https://www.opengl.org/discussion_boards/showthread.php/176365-Working-with-multiple-VBO-s
 
+unsigned iVAOLstartHACK = 0;
+unsigned iVAOLstopHACK = 0;
+
 proj::Render::Render() // constructor
 {
   hRC=NULL;                           // Permanent Rendering Context
@@ -199,6 +202,7 @@ void proj::Render::Bind_VBOs_to_VAOs() // s. http://www.arcsynthesis.org/gltut/P
 {
   GLuint gi;
   GLenum err = glGetError();
+//  unsigned int nVAOs_ = vVAOs.size() + vVAOsL.size();
   for (unsigned int iVAO = 0; iVAO < vVAOs.size(); iVAO++)
   {
     vVertexArray.push_back(gi);
@@ -331,6 +335,8 @@ void proj::Render::FPS()
   vVAOs.push_back(fps);
 }
 
+// 2do: move this to scene.h/.cpp
+// 2do: colors not needed, as scene-elems are textured
 int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
 {
   unsigned int ui_idVBO = vVAOs.size();
@@ -354,6 +360,8 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
   {                               // die sind jetzt Teil der Textur
     unsigned int vCount = 0;
     const std::vector<S_MarkerPoint> &rc_Marker = rc_Param.m_c_Markers[iLine];
+   
+    // 2do: do we need to run this loop or directly calc from rc_Marker.size()
     for (iMarker=0;iMarker<rc_Marker.size()-1;iMarker++) // no. of markersteps (typically > 500)
     {
       if (rc_Marker[iMarker].b_Visible) vCount+=6; // 2 triangles per Quad
@@ -473,6 +481,94 @@ int proj::Render::Scene_to_VBO()//uint * p_idxVBO)
   return 0;
 }
 
+int proj::Render::Trajectory_to_VBO()
+{
+  iVAOLstartHACK = vVAOs.size(); // 2do, merge vVAOs (triangles) and these LINE guys
+
+
+  unsigned int ui_idVBO = vVAOs.size();
+  SceneParam &rc_Param = p_Scene->m_SceneLoader;
+
+//  unsigned int iLine;
+//  unsigned int iMarker;
+//  unsigned int sz;
+
+  S_Point3D p0, p1;
+//  sz = (unsigned int)rc_Param.m_c_Markers.size(); // number of marker vectors (lines)
+
+  // ------------------------------------
+  //
+  // 11/17/2018 - different scene concept
+  // every segment is stored individually
+  //
+  // ------------------------------------
+
+  unsigned int sz = (unsigned int)rc_Param.m_c_Trajectory.size();
+
+  unsigned int vCount = sz;
+
+  GLfloat* vertices = new GLfloat[vCount * 3]; // Vertex.x/y/z
+  GLfloat* colors = new GLfloat[vCount * 3]; // Color.r/g/b
+
+  int iV = 0;
+  for (unsigned int iStep = 0; iStep < sz; iStep++)
+  {
+
+    //      [0 ..  255] <-- 2do
+    //      [0 .. 4095]
+    // -> [0.0 ..  1.0]
+    float f_R = 1.0f;
+    float f_G = 1.0f;
+    float f_B = 1.0f;
+
+    //    int textureID = rc_Param.m_TextureIDs[*p_idxVBO]; // nur die "Road" hat eine texture, Left+Right nicht
+
+    float fTexStrip = 0.0f; // store strip of texture, if not full texture is mapped to triangle
+    float fTexIncr = 0.1f;  // 2do <-- aus der "Höhe" des triangles berechnen!
+
+
+//        S_6Dof step = rc_Param.m_c_Trajectory[iStep];
+
+    p0 = rc_Param.m_c_Trajectory[iStep].s_Pos;
+//    p1 = rc_Param.m_c_Trajectory[iStep+1].s_Pos;
+
+    // Farben funktionieren nicht, ich denke, man muss die Shader (vert+frag) einbauen
+    // 1st Triangle
+    vertices[iV] = p0.rl_X;   colors[iV++] = f_R; //  texCoords[iTx++] = 0.0f;  // U
+    vertices[iV] = p0.rl_Y;   colors[iV++] = f_G; //  texCoords[iTx++] = 0.0f;  // V
+    vertices[iV] = 1.0f/*p0.rl_Z*/;   colors[iV++] = f_B;
+//    vertices[iV] = p1.rl_X;   colors[iV++] = f_R; //  texCoords[iTx++] = 1.0f;
+//    vertices[iV] = p1.rl_Y;   colors[iV++] = f_G; //  texCoords[iTx++] = 0.0f;
+//    vertices[iV] = p1.rl_Z;   colors[iV++] = f_B;
+  }
+
+  // b) store VAO props for OpenGL-drawing loop (and later manipulation, e.g. position change)
+  c_VAO vao;
+  vao.Name = "traj";// aParts[iLine];
+  vao.t_Shade = SHADER_COLOR_FLAT;
+  vao.ui_idTexture = 0;
+  vao.uiVertexCount = vCount * 3;
+  vVAOs.push_back(vao);
+
+  // VBO, s. http://ogldev.atspace.co.uk/www/tutorial02/tutorial02.html
+  glGenBuffers(1, &positionBuffer[ui_idVBO]);
+  glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[ui_idVBO]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount * 3, vertices, GL_STATIC_DRAW);
+
+  glGenBuffers(1, &colorBuffer[ui_idVBO]);
+  glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[ui_idVBO]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vCount * 3, colors, GL_STATIC_DRAW);
+
+  delete[] colors;
+  delete[] vertices;
+
+  // each part of the scene (pavement, left, right marker, ...) has 1 VBO
+  ui_idVBO++;
+
+  iVAOLstopHACK = vVAOs.size(); // 2do, merge vVAOs (triangles) and these LINE guys
+
+  return 0;
+}
 // rotate: https://www.opengl.org/discussion_boards/showthread.php/179290-Rotation-w-Rectangular-Pixels-(2D-VAO)
 
 void proj::Render::DrawVAOs_NEU()
@@ -612,7 +708,10 @@ void proj::Render::DrawVAOs_NEU()
     {
       if (b_solid)
       {
-        glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+        if ((ui < iVAOLstartHACK) || (ui > iVAOLstopHACK))
+          glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+        else
+          glDrawArrays(GL_LINE_STRIP, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
         err = glGetError();                                     //     it can be either positionbuffer, colorbuffer or uvbuffer
                                                                 //     if t_Shade == TEXTURE,
                                                                 //     then colorbuffer is NULL and vice versa!
@@ -797,6 +896,59 @@ void proj::Render::DrawVAOs_NEU()
   glDeleteVertexArrays(1, &vao3);
 
   err = glGetError();
+
+/*
+  for (unsigned int ui = 0; ui < vVAOsL.size(); ui++) // start with 1 as 0 is fps-counter
+  {
+
+
+    glUniform1i(sh1_unif_wirecolor, 0); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
+
+                                        //    if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    // vVAOs[ui].t_Shade == SHADER_COLOR_FLAT
+    {
+      glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
+    }
+    err = glGetError();
+
+    glBindVertexArray(vVertexArray[ui]); // <--- NVidia: hier Problem, wenn ui = 13 (beim ersten colorierten + texturierten Objekt!!)
+
+
+                                         //  wenn's hier crasht, dann ist der Fehler vermutlich vorher beim buffern passiert und
+                                         //  glGetError hätte etwas melden sollen!!
+
+    if (vVAOsL[ui].b_doDraw)
+    {
+      if (b_solid)
+      {
+        glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+        err = glGetError();                                     //     it can be either positionbuffer, colorbuffer or uvbuffer
+                                                                //     if t_Shade == TEXTURE,
+                                                                //     then colorbuffer is NULL and vice versa!
+
+                                                                // if solid: draw wireframe in black
+        glUniform1i(sh1_unif_wirecolor, 1); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
+      }
+      else
+        glUniform1i(sh1_unif_wirecolor, 0); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
+
+                                            //    if (b_wireframe)
+      if (ui == touch_object_vaoId)
+      {
+        glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
+        glLineWidth(5.0);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      }
+    }
+
+    glBindVertexArray(0); // 2019-04-13 unbind -> jetzt wird das letzte Objekt nicht mehr vom Cursor (s.u.) "überschrieben"
+                          //                      aber die Textur flackert
+  } // for ...
+*/
+
 
   //    if (b_PNG) FBO_to_PPM();
 }

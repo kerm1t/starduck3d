@@ -70,7 +70,9 @@ namespace proj
 //    GLuint ui_numVBOtex = 0;
 //    GLuint ui_numVBOcol = 0;
 
-    std::vector<c_VAO>  vVAOs;
+    // 2do: merge both and add attribute: < Type >
+    std::vector<c_VAO>  vVAOs; // for triangles
+///    std::vector<c_VAO>  vVAOsL; // for lines
     std::vector<GLuint> vVertexArray;    // stores VAO's: a) Position(x,y,z), b1) color OR b2) u,v-Texture
 
     GLuint vao2;
@@ -111,7 +113,8 @@ namespace proj
     void FPS();
 
     int Scene_to_VBO();//uint * p_idxVBO);
-//    int DestroyScene_VBO();
+    int Trajectory_to_VBO();
+      //    int DestroyScene_VBO();
 
     void Bind_NEW__VBOs_to_VAOs(int ui); // AHck!!
     void Bind_VBOs_to_VAOs();

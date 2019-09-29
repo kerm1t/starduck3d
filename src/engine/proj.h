@@ -104,6 +104,6 @@ namespace proj
     GLfloat winX, winY, winZ; //variables to hold screen x,y,z coordinates
     glm::vec3 Mouse2Dto3D(int x, int y); // 2do: move to editor.hpp
 
-    int Load_Objs_to_VBOs();
+    int Load_Scene_and_Objs_to_VBOs();
   };
 }

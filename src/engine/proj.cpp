@@ -22,9 +22,9 @@ Timer timer;
 
 #define VBOADD_GROUNDPLANE 1
 #define VBOADD_SCENE 1
-#define VBOADD_CURBSTONE 0
+#define VBOADD_CURBSTONE 1
 #define VBOADD_GUARDRAIL 0
-#define VBOADD_TUNNEL 0
+#define VBOADD_TUNNEL 1
 #define VBOADD_TRAFFICSIGNS 1
 #define VBOADD_REDCAR 0
 #define VBOADD_HOUSE 0
@@ -52,7 +52,7 @@ int proj::Proj::Init()
 
   // load geometry data (textures loaded within)
   // a) fill in all pos, color, uv infos into arrays
-  Load_Objs_to_VBOs();
+  Load_Scene_and_Objs_to_VBOs();
 
   // b) bind to VAO's
   m_render.Bind_VBOs_to_VAOs(); // now hand over VBO's to VAO's
@@ -109,7 +109,245 @@ std::vector<std::string> split(const char *str, char c = ' ')
   return result;
 }
 
-int proj::Proj::Load_Scene_Objs()
+
+int proj::Proj::Load_Scene_and_Objs_to_VBOs() // load individual objects to different V{A|B}O's to be able to manipulate 'em later
+{
+  proj::c_VAO vao;
+  CBMPLoader ldrBMP;
+  CIMGLoader ldrIMG;
+
+  m_render.FPS(); // <-- wenn ich das ins VAO fülle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
+                  //     beim LoadObjects(s.u.) call
+
+//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti",ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp")));
+//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", ldrIMG.loadIMG("..\\data\\virtualroad\\conti.png", true)));
+  glGenTextures(1, &id_tex_overlay);
+  // "Bind" the newly created texture : all future texture functions will modify this texture
+///  ldrIMG.loadIMG_texID(id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
+///  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", id_tex_overlay));
+
+
+#if (VBOADD_GROUNDPLANE == 1)
+  m_groundplane.p_render = &m_render;
+  vao = m_groundplane.Create();
+  m_render.vVAOs.push_back(vao);
+#endif
+
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Road",  ldrBMP.loadBMP("..\\data\\buggyboy\\bboy_road_vert4.bmp")));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Water", ldrBMP.loadBMP("..\\data\\buggyboy\\bboy_water.bmp")));
+
+
+
+  // i) Load Scene VAOs
+#if (VBOADD_SCENE == 1)
+  m_scene.Load();
+  m_render.p_Scene = &m_scene;
+  m_render.Scene_to_VBO();
+#endif
+
+
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Banner",   ldrIMG.loadIMG("..\\data\\buggyboy\\banner_t.png", true)));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Flag",     ldrIMG.loadIMG("..\\data\\buggyboy\\flag.png", true)));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Woodpile", ldrIMG.loadIMG("..\\data\\buggyboy\\woodpile2.png", true)));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Concrete", ldrIMG.loadIMG("..\\data\\nebulus\\road_tex_256x256.bmp", false)));
+//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Concrete", ldrBMP.loadBMP_custom("..\\data\\nebulus\\road_tex_256x256.bmp")));
+  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Tree",     ldrIMG.loadIMG("..\\data\\buggyboy\\tree4.png", true)));
+
+
+#if (VBOADD_SCENE_OBJS == 1)
+  Load_Scene_Objs();
+#endif
+
+
+
+#if (VBOADD_BILLBOARDS == 1)
+  obj::CBillboard* bb = new obj::CBillboard;
+  bb->p_render = &m_render;
+  vao = bb->Create("Banner", "tx_Banner", glm::vec3(10, 10, 0), glm::vec3(0, 1, 0));
+  bb->vVaoID.push_back(m_render.vVAOs.size());
+  m_render.vVAOs.push_back(vao);
+  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
+                          //  delete bb;
+
+  bb = new obj::CBillboard;
+  bb->p_render = &m_render;
+  vao = bb->Create("Woodpile", "tx_Woodpile", glm::vec3(20, 10, 0), glm::vec3(1, 0, 0));
+  bb->vVaoID.push_back(m_render.vVAOs.size());
+  m_render.vVAOs.push_back(vao);
+  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
+                          //  delete bb;
+
+  // wird nicht angezeigt (wg. z = 1?)
+  /*  vao = bb->Create("Concrete", "tx_Concrete", glm::vec3(10, 20, 1), glm::vec3(0, 0, 1));
+  bb->vVaoID.push_back(m_render.vVAOs.size());
+  m_render.vVAOs.push_back(vao);
+  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
+  */
+#endif
+
+
+
+  // ii) Load VAOs depending on scene
+  m_scenebuilder.p_render = &m_render;
+  m_scenebuilder.p_scene = &m_scene;
+
+#if (VBOADD_GUARDRAIL == 1)
+  vao = m_scenebuilder.CreateGuardrails(); // "align" to road
+  m_render.vVAOs.push_back(vao);
+#endif
+#if (VBOADD_CURBSTONE == 1)
+  vao = m_scenebuilder.CreateCurbstones(); // "align" to road
+  m_render.vVAOs.push_back(vao);
+#endif
+#if (VBOADD_TUNNEL == 1)
+  vao = m_scenebuilder.CreateTunnel();     // "align" to road
+  m_render.vVAOs.push_back(vao);
+#endif
+
+
+  // iii) Load individual VAO's
+#if (VBOADD_TRAFFICSIGNS == 1)
+  m_trafficsigns.p_render = &m_render;
+
+  vao = m_trafficsigns.Add(m_render.vVAOs, 12.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f);
+  m_render.vVAOs.push_back(vao);
+  vao = m_trafficsigns.Add(m_render.vVAOs, -12.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f);
+  m_render.vVAOs.push_back(vao);
+#endif
+
+
+  GLenum err = glGetError();
+
+#if (VBOADD_REDCAR == 1)
+  obj::CGL_ObjectWavefront car(&m_render);
+  car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
+  car.Load(glm::vec3(-5, -1, 0), glm::vec3(0, 1, 0), 0.04f, 0.0f); // scaled
+  vObjects.push_back(car); // 2do: wieviel Speicherverbrauch?
+#endif
+
+#if (VBOADD_HOUSE == 1)
+  obj::CGL_ObjectWavefront house(&m_render);
+  house.sObjectFullpath = "d:\\X\\untitled.obj";
+  house.Load(glm::vec3(-5, -30, 0), glm::vec3(0, 1, 0), 0.04f, 0.0f); // scaled
+  vObjects.push_back(house); // 2do: wieviel Speicherverbrauch?
+#endif
+
+#if (VBOADD_CONFERENCEROOM == 1)
+  obj::CGL_ObjectWavefront room(&m_render);
+  room.sObjectFullpath = "..\\data\\conference_room\\conference.obj";
+  room.Load(0.003f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
+  vObjects.push_back(room);
+#endif
+
+#if (VBOADD_ANTONS_VILLAGE == 1)
+  obj::CGL_ObjectWavefront* anton = new obj::CGL_ObjectWavefront(&m_render);
+  anton->sObjectFullpath = "..\\data\\virtualroad\\erstes_projekt2.obj";
+  anton->Load(glm::vec3(12.0f, 12.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 4.4f, 0.0f); // scaled
+  vObjects.push_back(anton);
+#endif
+
+  //  obj::CGL_ObjectWavefront holzstapel(&m_render);
+  //  holzstapel.sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
+  //  holzstapel.Load(0.4f, 0.0f, Vec3f(rand() % 100, rand() % 100, 0.5f)); // scaled
+
+#if (VBOADD_20_RANDOM_HOLZSTAPEL == 1)
+  //#define N_HOLZSTAPEL (40+20) // temp: 20 can be set later by Mouseklick
+  //  obj::CGL_ObjectWavefront holzstapel[N_HOLZSTAPEL];
+  for (unsigned int ui = 0; ui < 20; ui++)
+  {
+    //    holzstapel[ui].setRender(&m_render);
+    obj::CGL_ObjectWavefront* holzstapel = new obj::CGL_ObjectWavefront(&m_render);
+    holzstapel->sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
+    holzstapel->Load(glm::vec3(-100.0f + rand() % 200, -100.0f + rand() % 200, 0.5f), glm::vec3(0, 1, 1), 0.4f, 0.0f); // scaled
+    vObjects.push_back(holzstapel); // 2do: wieviel Speicherverbrauch?
+  }
+  //  n_holz_gestapelt = 20;
+#else
+  //  n_holz_gestapelt = 0;
+#endif
+
+#if (VBOADD_CONTICAR == 1)
+  obj::CGL_ObjectWavefront car2(&m_render);
+  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
+  car2.Load(glm::vec3(30, -2, .7f), glm::vec3(0, 1, 0), .6f, 0.0f); // scaled
+  vObjects.push_back(car2); // 2do: wieviel Speicherverbrauch?
+#endif
+
+#if (VBOADD_BLACKJEEP == 1)
+  obj::CGL_ObjectWavefront car3(&m_render);
+  car3.sObjectFullpath = "..\\data\\virtualroad\\lowpoly_jeep3\\jeep.obj";
+  car3.Load(glm::vec3(20, 6, 0), glm::vec3(0, -1, 0), .4f, 0.0f); // scaled
+  vObjects.push_back(car3); // 2do: wieviel Speicherverbrauch?
+#endif
+
+#if (VBOADD_JEEP == 1)
+  obj::CGL_ObjectWavefront* car4 = new obj::CGL_ObjectWavefront(&m_render);
+  car4->sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep_openair.obj";
+  car4->Load(glm::vec3(10, 3, 0), glm::vec3(-1, 0, 0), 0.4f, 0); // scaled
+  vObjects.push_back(car4); // 2do: wieviel Speicherverbrauch?
+#endif
+
+                            // b) place billboard here .. ok
+
+#if (VBOADD_BARRIERS == 1)
+  obj::CGL_ObjectWavefront barrier1(&m_render);
+  barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
+  barrier1.Load(1.0f, 0.0f, Vec3f(0.0f, 0.0f, 0.0f));
+  vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
+  for (unsigned int ui = 1; ui<5; ui++)
+  {
+    //    barrier1.setPos()
+    barrier1.PartsToVBOs(Vec3f(10.0f + (float)ui*4.0f, 0.0f, 0.0f));
+    barrier1.PartsToVAOs(Vec3f(10.0f + (float)ui*4.0f, 0.0f, 0.0f));
+    //    vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
+  }
+#endif
+
+#if (VBOADD_SPONZA == 1)
+  // currently loads too long
+  obj::CGL_ObjectWavefront sponza(&m_render);
+  sponza.sObjectFullpath = "..\\data\\sponza\\sponza.obj";
+  //  sponza.sObjectFullpath = "..\\..\\sponza\\sponza.obj";
+  sponza.Load(1.0f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
+#endif
+
+/*  // c) place billboard here: das letzte wird nicht gezeichnet !?
+  obj::CBillboard bb;
+  bb.p_render = &m_render;
+  vao = bb.Create("tx_Banner",10.0f, 10.0f, 0.0f);
+  m_render.vVAOs.push_back(vao);
+  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
+
+  vao = bb.Create("tx_Banner",20.0f, 10.0f, 0.0f);
+  m_render.vVAOs.push_back(vao);
+  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
+
+  vao = bb.Create("tx_Banner",30.0f, 10.0f, 0.0f);
+  m_render.vVAOs.push_back(vao);
+  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
+
+  vao = bb.Create("tx_Banner",40.0f, 10.0f, 0.0f);
+  m_render.vVAOs.push_back(vao);
+  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
+*/
+//  obj::CGL_ObjectWavefront* barrier1 = new obj::CGL_ObjectWavefront(&m_render);
+//  barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier4.obj";
+//  barrier1->Load(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, 0.0f);
+//  vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
+
+
+  // Hack!! put GL-lines after triangles
+  m_render.Trajectory_to_VBO();
+
+
+  err = glGetError();
+
+  assert(m_render.vVAOs.size()<m_render.VBOCOUNT);
+
+  return 0;
+}
+
+int proj::Proj::Load_Scene_Objs() // objects set by editor
 {
   std::ifstream file("obj.txt");
   std::string line;
@@ -192,238 +430,6 @@ void proj::Proj::Save_Scene_Objs()
   }
 
   file.close();
-}
-
-int proj::Proj::Load_Objs_to_VBOs() // load individual objects to different V{A|B}O's to be able to manipulate 'em later
-{ 
-  proj::c_VAO vao;
-  CBMPLoader ldrBMP;
-  CIMGLoader ldrIMG;
-
-  m_render.FPS(); // <-- wenn ich das ins VAO fülle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
-                  //     beim LoadObjects(s.u.) call
-
-//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti",ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp")));
-//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", ldrIMG.loadIMG("..\\data\\virtualroad\\conti.png", true)));
-  glGenTextures(1, &id_tex_overlay);
-  // "Bind" the newly created texture : all future texture functions will modify this texture
-///  ldrIMG.loadIMG_texID(id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
-///  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", id_tex_overlay));
-
-
-#if (VBOADD_GROUNDPLANE == 1)
-  m_groundplane.p_render = &m_render;
-  vao = m_groundplane.Create();
-  m_render.vVAOs.push_back(vao);
-#endif
-
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Road",  ldrBMP.loadBMP("..\\data\\buggyboy\\bboy_road_vert4.bmp")));
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Water", ldrBMP.loadBMP("..\\data\\buggyboy\\bboy_water.bmp")));
-
-
-
-  // i) Load Scene VAOs
-#if (VBOADD_SCENE == 1)
-  m_scene.Load();
-  m_render.p_Scene = &m_scene;
-  m_render.Scene_to_VBO();
-#endif
-
-
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Banner",   ldrIMG.loadIMG("..\\data\\buggyboy\\banner_t.png", true)));
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Flag",     ldrIMG.loadIMG("..\\data\\buggyboy\\flag.png", true)));
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Woodpile", ldrIMG.loadIMG("..\\data\\buggyboy\\woodpile2.png", true)));
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Concrete", ldrIMG.loadIMG("..\\data\\nebulus\\road_tex_256x256.bmp", false)));
-//  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Concrete", ldrBMP.loadBMP_custom("..\\data\\nebulus\\road_tex_256x256.bmp")));
-  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Tree",     ldrIMG.loadIMG("..\\data\\buggyboy\\tree4.png", true)));
-
-
-#if (VBOADD_SCENE_OBJS == 1)
-  Load_Scene_Objs();
-#endif
-
-
-
-#if (VBOADD_BILLBOARDS == 1)
-  obj::CBillboard* bb = new obj::CBillboard;
-  bb->p_render = &m_render;
-  vao = bb->Create("Banner","tx_Banner", glm::vec3(10, 10, 0), glm::vec3(0,1,0));
-  bb->vVaoID.push_back(m_render.vVAOs.size());
-  m_render.vVAOs.push_back(vao);
-  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
-//  delete bb;
-
-  bb = new obj::CBillboard; 
-  bb->p_render = &m_render;
-  vao = bb->Create("Woodpile", "tx_Woodpile", glm::vec3(20, 10, 0), glm::vec3(1, 0, 0));
-  bb->vVaoID.push_back(m_render.vVAOs.size());
-  m_render.vVAOs.push_back(vao);
-  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
-//  delete bb;
-
-  // wird nicht angezeigt (wg. z = 1?)
-/*  vao = bb->Create("Concrete", "tx_Concrete", glm::vec3(10, 20, 1), glm::vec3(0, 0, 1));
-  bb->vVaoID.push_back(m_render.vVAOs.size());
-  m_render.vVAOs.push_back(vao);
-  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
-*/#endif
-
-
-
-  // ii) Load VAOs depending on scene
-  m_scenebuilder.p_render = &m_render;
-  m_scenebuilder.p_scene = &m_scene;
-
-#if (VBOADD_GUARDRAIL == 1)
-  vao = m_scenebuilder.CreateGuardrails(); // "align" to road
-  m_render.vVAOs.push_back(vao);
-#endif
-#if (VBOADD_CURBSTONE == 1)
-  vao = m_scenebuilder.CreateCurbstones(); // "align" to road
-  m_render.vVAOs.push_back(vao);
-#endif
-#if (VBOADD_TUNNEL == 1)
-  vao = m_scenebuilder.CreateTunnel();     // "align" to road
-  m_render.vVAOs.push_back(vao);
-#endif
-
-
-  // iii) Load individual VAO's
-#if (VBOADD_TRAFFICSIGNS == 1)
-  m_trafficsigns.p_render = &m_render;
-
-  vao = m_trafficsigns.Add(m_render.vVAOs,  12.5f,0.5f,0.0f,  1.0f,0.0f,0.0f);
-  m_render.vVAOs.push_back(vao);
-  vao = m_trafficsigns.Add(m_render.vVAOs, -12.5f,0.5f,0.0f,  1.0f,0.0f,0.0f);
-  m_render.vVAOs.push_back(vao);
-#endif
-
-
-  GLenum err = glGetError();
-
-#if (VBOADD_REDCAR == 1)
-  obj::CGL_ObjectWavefront car(&m_render);
-  car.sObjectFullpath = "..\\data\\virtualroad\\LowPoly_Car\\CBRed_loadBMP.obj";
-  car.Load(glm::vec3(-5,-1,0),glm::vec3(0,1,0),0.04f, 0.0f); // scaled
-  vObjects.push_back(car); // 2do: wieviel Speicherverbrauch?
-#endif
-
-#if (VBOADD_HOUSE == 1)
-  obj::CGL_ObjectWavefront house(&m_render);
-  house.sObjectFullpath = "d:\\X\\untitled.obj";
-  house.Load(glm::vec3(-5,-30,0), glm::vec3(0,1,0), 0.04f, 0.0f); // scaled
-  vObjects.push_back(house); // 2do: wieviel Speicherverbrauch?
-#endif
-
-#if (VBOADD_CONFERENCEROOM == 1)
-  obj::CGL_ObjectWavefront room(&m_render);
-  room.sObjectFullpath = "..\\data\\conference_room\\conference.obj";
-  room.Load(0.003f, 0.0f, Vec3f(-5.0f, -1.0f, 0.0f)); // scaled
-  vObjects.push_back(room);
-#endif
-
-#if (VBOADD_ANTONS_VILLAGE == 1)
-  obj::CGL_ObjectWavefront* anton = new obj::CGL_ObjectWavefront(&m_render);
-  anton->sObjectFullpath = "..\\data\\virtualroad\\erstes_projekt2.obj";
-  anton->Load(glm::vec3(12.0f, 12.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 4.4f, 0.0f); // scaled
-  vObjects.push_back(anton);
-#endif
-
-//  obj::CGL_ObjectWavefront holzstapel(&m_render);
-//  holzstapel.sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
-//  holzstapel.Load(0.4f, 0.0f, Vec3f(rand() % 100, rand() % 100, 0.5f)); // scaled
-
-#if (VBOADD_20_RANDOM_HOLZSTAPEL == 1)
-//#define N_HOLZSTAPEL (40+20) // temp: 20 can be set later by Mouseklick
-//  obj::CGL_ObjectWavefront holzstapel[N_HOLZSTAPEL];
-  for (unsigned int ui = 0; ui < 20; ui++)
-  {
-//    holzstapel[ui].setRender(&m_render);
-    obj::CGL_ObjectWavefront* holzstapel = new obj::CGL_ObjectWavefront(&m_render);
-    holzstapel->sObjectFullpath = "..\\data\\virtualroad\\von_Anton\\planken.obj";
-    holzstapel->Load(glm::vec3(-100.0f+rand() % 200, -100.0f+rand() % 200, 0.5f), glm::vec3(0,1,1), 0.4f, 0.0f); // scaled
-    vObjects.push_back(holzstapel); // 2do: wieviel Speicherverbrauch?
-  }
-//  n_holz_gestapelt = 20;
-#else
-//  n_holz_gestapelt = 0;
-#endif
-
-#if (VBOADD_CONTICAR == 1)
-  obj::CGL_ObjectWavefront car2(&m_render);
-  car2.sObjectFullpath = "..\\data\\virtualroad\\conticar4.obj";
-  car2.Load(glm::vec3(30,-2,.7f),glm::vec3(0,1,0),.6f, 0.0f); // scaled
-  vObjects.push_back(car2); // 2do: wieviel Speicherverbrauch?
-#endif
-
-#if (VBOADD_BLACKJEEP == 1)
-  obj::CGL_ObjectWavefront car3(&m_render);
-  car3.sObjectFullpath = "..\\data\\virtualroad\\lowpoly_jeep3\\jeep.obj";
-  car3.Load(glm::vec3(20,6,0), glm::vec3(0,-1,0), .4f, 0.0f); // scaled
-  vObjects.push_back(car3); // 2do: wieviel Speicherverbrauch?
-#endif
-
-#if (VBOADD_JEEP == 1)
-  obj::CGL_ObjectWavefront* car4 = new obj::CGL_ObjectWavefront(&m_render);
-  car4->sObjectFullpath = "..\\data\\virtualroad\\Jeep\\Jeep_openair.obj";
-  car4->Load(glm::vec3(10,3,0), glm::vec3(-1,0,0), 0.4f, 0); // scaled
-  vObjects.push_back(car4); // 2do: wieviel Speicherverbrauch?
-#endif
-
-// b) place billboard here .. ok
-
-#if (VBOADD_BARRIERS == 1)
-  obj::CGL_ObjectWavefront barrier1(&m_render);
-  barrier1.sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
-  barrier1.Load(1.0f,0.0f,Vec3f(0.0f,0.0f,0.0f));
-  vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
-  for (unsigned int ui=1;ui<5;ui++)
-  {
-//    barrier1.setPos()
-    barrier1.PartsToVBOs(Vec3f(10.0f+(float)ui*4.0f, 0.0f, 0.0f));
-    barrier1.PartsToVAOs(Vec3f(10.0f + (float)ui*4.0f, 0.0f, 0.0f));
-//    vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
-  }
-#endif
-
-#if (VBOADD_SPONZA == 1)
-  // currently loads too long
-  obj::CGL_ObjectWavefront sponza(&m_render);
-  sponza.sObjectFullpath = "..\\data\\sponza\\sponza.obj";
-//  sponza.sObjectFullpath = "..\\..\\sponza\\sponza.obj";
-  sponza.Load(1.0f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
-#endif
-
-/*  // c) place billboard here: das letzte wird nicht gezeichnet !?
-  obj::CBillboard bb;
-  bb.p_render = &m_render;
-  vao = bb.Create("tx_Banner",10.0f, 10.0f, 0.0f);
-  m_render.vVAOs.push_back(vao);
-  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
-
-  vao = bb.Create("tx_Banner",20.0f, 10.0f, 0.0f);
-  m_render.vVAOs.push_back(vao);
-  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
-  
-  vao = bb.Create("tx_Banner",30.0f, 10.0f, 0.0f);
-  m_render.vVAOs.push_back(vao);
-  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
-
-  vao = bb.Create("tx_Banner",40.0f, 10.0f, 0.0f);
-  m_render.vVAOs.push_back(vao);
-  vObjects.push_back(bb); // zur Kollision, eigentlich redundant zu VAOs
-  */
-//  obj::CGL_ObjectWavefront* barrier1 = new obj::CGL_ObjectWavefront(&m_render);
-//  barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier4.obj";
-//  barrier1->Load(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, 0.0f);
-//  vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
-
-
-  err = glGetError();
-
-  assert(m_render.vVAOs.size()<m_render.VBOCOUNT);
-
-  return 0;
 }
 
 // https://www.opengl.org/discussion_boards/showthread.php/126012-converting-window-coordinates-to-world-coordinates
