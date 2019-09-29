@@ -708,7 +708,7 @@ void proj::Render::DrawVAOs_NEU()
     {
       if (b_solid)
       {
-        if ((ui < iVAOLstartHACK) || (ui > iVAOLstopHACK))
+        if ((ui < iVAOLstartHACK) || (ui >= iVAOLstopHACK))
           glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
         else
           glDrawArrays(GL_LINE_STRIP, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
