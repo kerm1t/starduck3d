@@ -523,8 +523,8 @@ int proj::Render::Trajectory_to_VBO()
 
     //    int textureID = rc_Param.m_TextureIDs[*p_idxVBO]; // nur die "Road" hat eine texture, Left+Right nicht
 
-    float fTexStrip = 0.0f; // store strip of texture, if not full texture is mapped to triangle
-    float fTexIncr = 0.1f;  // 2do <-- aus der "Höhe" des triangles berechnen!
+//    float fTexStrip = 0.0f; // store strip of texture, if not full texture is mapped to triangle
+//    float fTexIncr = 0.1f;  // 2do <-- aus der "Höhe" des triangles berechnen!
 
 
 //        S_6Dof step = rc_Param.m_c_Trajectory[iStep];
@@ -583,7 +583,7 @@ void proj::Render::DrawVAOs_NEU()
   //    GLenum glErr;
   glm::vec3 v3;
 
-  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   if (b_culling)
   {
@@ -596,13 +596,13 @@ void proj::Render::DrawVAOs_NEU()
     glDisable(GL_CULL_FACE);
   }
 
-//  glUseProgram(program_fps);
-  /*
-  [...] funktioniert noch nicht, dass 2 Shader hintereinander aktiv sind:
-  der program_fps funktioniert nur (weisses Dreieck darstellen), wenn ich den "program" shader kommentiere
-  */
+  //  glUseProgram(program_fps);
+    /*
+    [...] funktioniert noch nicht, dass 2 Shader hintereinander aktiv sind:
+    der program_fps funktioniert nur (weisses Dreieck darstellen), wenn ich den "program" shader kommentiere
+    */
 
-//  glUseProgram(program);
+    //  glUseProgram(program);
 
   GLenum err = GL_NO_ERROR;
 
@@ -611,7 +611,7 @@ void proj::Render::DrawVAOs_NEU()
 
   // draw Scene + Objects
   unsigned int ui_start = 1;
-//  if (b_splash_screen) ui_start = 0;
+  //  if (b_splash_screen) ui_start = 0;
   for (unsigned int ui = ui_start; ui < vVAOs.size(); ui++) // start with 1 as 0 is fps-counter
   {
     if (ui == 0)
@@ -620,7 +620,7 @@ void proj::Render::DrawVAOs_NEU()
       glUseProgram(program); // 2/2/19 für jedes Objekt glUseProgram aufrufen?
     err = glGetError();
 
-// MOVED ???? ... wenn ich das ausschalte, werden billboards ok, aber barriers (+ Jeep) falsch gezeichnet
+    // MOVED ???? ... wenn ich das ausschalte, werden billboards ok, aber barriers (+ Jeep) falsch gezeichnet
     bool bMoved = false; // workaround, removed later
 
     if (
@@ -635,14 +635,14 @@ void proj::Render::DrawVAOs_NEU()
       Model = glm::translate(Model, vVAOs[ui].pos);
       p_cam->change_Model(Model);
     }
-// MOVED ???? ... wenn ich das ausschalte, werden billboards ok, aber barriers (+ Jeep) falsch gezeichnet
+    // MOVED ???? ... wenn ich das ausschalte, werden billboards ok, aber barriers (+ Jeep) falsch gezeichnet
 
     if (p_cam->iStickToObj > 0)
     {
       // ----------------
       // move ego vehicle
       // ----------------
-      if (((p_cam->iStickToObj==1) && (vVAOs[ui].Name.compare("Jeep") == 0)) // Conticar, Jeep_Openair
+      if (((p_cam->iStickToObj == 1) && (vVAOs[ui].Name.compare("Jeep") == 0)) // Conticar, Jeep_Openair
         ||
         ((p_cam->iStickToObj == 2) && (vVAOs[ui].Name.compare("Jeep_default") == 0)))
       {
@@ -675,18 +675,18 @@ void proj::Render::DrawVAOs_NEU()
     if (vVAOs[ui].t_Shade == SHADER_TEXTURE)
     {
       glUniform1i(sh1_unif_col_tex, 1); // shader into texture-branch
-       
+
       // http://ogldev.atspace.co.uk/www/tutorial16/tutorial16.html
       glActiveTexture(GL_TEXTURE0);
       err = glGetError();
-// ----------------------
-// Fehler 1282 auf NVidia
-// Ideen: rendern im Wireframe - hilft nicht --> konnte die Textur nicht geladen werden?
-// ----------------------
-//      glBindTexture(GL_TEXTURE_2D, vGLTexture[vVAOs[ui].ui_idTexture-1]); // TEXTURE_ID shall be > 0 !     (-1!!)
+      // ----------------------
+      // Fehler 1282 auf NVidia
+      // Ideen: rendern im Wireframe - hilft nicht --> konnte die Textur nicht geladen werden?
+      // ----------------------
+      //      glBindTexture(GL_TEXTURE_2D, vGLTexture[vVAOs[ui].ui_idTexture-1]); // TEXTURE_ID shall be > 0 !     (-1!!)
       glBindTexture(GL_TEXTURE_2D, vVAOs[ui].ui_idTexture); // TEXTURE_ID shall be > 0 !     (-1!!)
       err = glGetError();
-      
+
       if (ui == 0) // hack!!
         glUniform1i(sh2_unif_ID, 0); // hack!!
       else
@@ -697,7 +697,7 @@ void proj::Render::DrawVAOs_NEU()
       glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
     }
     err = glGetError();
-    
+
     glBindVertexArray(vVertexArray[ui]); // <--- NVidia: hier Problem, wenn ui = 13 (beim ersten colorierten + texturierten Objekt!!)
 
 
@@ -711,7 +711,10 @@ void proj::Render::DrawVAOs_NEU()
         if ((ui < iVAOLstartHACK) || (ui >= iVAOLstopHACK))
           glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
         else
+        {
+          if (viewmode == 1) // Hack!!! 2do: draw physics shall be connected to this, i.e. use b_do_draw
           glDrawArrays(GL_LINE_STRIP, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
+        }
         err = glGetError();                                     //     it can be either positionbuffer, colorbuffer or uvbuffer
                                                                 //     if t_Shade == TEXTURE,
                                                                 //     then colorbuffer is NULL and vice versa!
@@ -733,14 +736,14 @@ void proj::Render::DrawVAOs_NEU()
       }
     }
 
-/*    if (vVAOs[ui].t_Shade == SHADER_TEXTURE)
-    {
-      //      glUniform1i(sh1_unif_col_tex, 1); // shader into texture-branch
-      //      glActiveTexture(GL_TEXTURE0);
-      //      err = glGetError();
-      glBindTexture(GL_TEXTURE_2D, 0);
-    }
-    */
+    /*    if (vVAOs[ui].t_Shade == SHADER_TEXTURE)
+        {
+          //      glUniform1i(sh1_unif_col_tex, 1); // shader into texture-branch
+          //      glActiveTexture(GL_TEXTURE0);
+          //      err = glGetError();
+          glBindTexture(GL_TEXTURE_2D, 0);
+        }
+        */
 
     glBindVertexArray(0); // 2019-04-13 unbind -> jetzt wird das letzte Objekt nicht mehr vom Cursor (s.u.) "überschrieben"
                           //                      aber die Textur flackert
@@ -752,7 +755,7 @@ void proj::Render::DrawVAOs_NEU()
     {
       p_cam->reset_Model();
     }
-// MOVED ???? ... wenn ich das ausschalte, werden billboards ok, aber barriers (+ Jeep) falsch gezeichnet
+    // MOVED ???? ... wenn ich das ausschalte, werden billboards ok, aber barriers (+ Jeep) falsch gezeichnet
 
   } // for ...
 
@@ -819,83 +822,87 @@ void proj::Render::DrawVAOs_NEU()
   err = glGetError();
   */
 
-  // --------------------------------------------
-  // Bug: dieser pinke Quad wird nur dargestellt, wenn Splash screen oben disabled !??!
-  //    das lag am shader!
-  // --------------------------------------------
-  // following block allocates memory, but doesn't free it again...
-  // --------------------------------------------
-  // draw sceneblock in purple, that player is on
-  // --------------------------------------------
-//  glPointSize(1.0);
-  GLfloat col[3*4] = { 1.0f, .5f, 1.f,   1.0f, .5f, 1.f,   1.0f, .5f, 1.f,   1.0f, .5f, 1.f };
-  GLfloat * pos = (GLfloat*)Scenepos;
+  if (viewmode == 1)
+  {
+    // --------------------------------------------
+    // Bug: dieser pinke Quad wird nur dargestellt, wenn Splash screen oben disabled !??!
+    //    das lag am shader!
+    // --------------------------------------------
+    // following block allocates memory, but doesn't free it again...
+    // --------------------------------------------
+    // draw sceneblock in purple, that player is on
+    // --------------------------------------------
+  //  glPointSize(1.0);
+    GLfloat col[3 * 4] = { 1.0f, .5f, 1.f,   1.0f, .5f, 1.f,   1.0f, .5f, 1.f,   1.0f, .5f, 1.f };
+    GLfloat * pos = (GLfloat*)Scenepos;
 
-  glGenVertexArrays(1, &vao3);
-  glBindVertexArray(vao3);
+    glGenVertexArrays(1, &vao3);
+    glBindVertexArray(vao3);
 
-  glEnableVertexAttribArray(sh1_attr_col); // Attribute indexes were received from calls to glGetAttribLocation, or passed into glBindAttribLocation.
-  glEnableVertexAttribArray(sh1_attr_pos);
+    glEnableVertexAttribArray(sh1_attr_col); // Attribute indexes were received from calls to glGetAttribLocation, or passed into glBindAttribLocation.
+    glEnableVertexAttribArray(sh1_attr_pos);
 
-  glGenBuffers(1, &colorBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
-  glBindBuffer(GL_ARRAY_BUFFER, colorBuf3);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3*4, col, GL_DYNAMIC_DRAW);
-  glVertexAttribPointer(sh1_attr_col, 3, GL_FLOAT, false, 0, 0); // col_data is a float*, 3 per vertex
+    glGenBuffers(1, &colorBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+    glBindBuffer(GL_ARRAY_BUFFER, colorBuf3);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * 4, col, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(sh1_attr_col, 3, GL_FLOAT, false, 0, 0); // col_data is a float*, 3 per vertex
 
-  glGenBuffers(1, &positionBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
-  glBindBuffer(GL_ARRAY_BUFFER, positionBuf3);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3*4, pos, GL_DYNAMIC_DRAW);
-  glVertexAttribPointer(sh1_attr_pos, 3, GL_FLOAT, false, 0, 0); // vertex_data is a float*, 3 per vertex, representing the position of each vertex
+    glGenBuffers(1, &positionBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+    glBindBuffer(GL_ARRAY_BUFFER, positionBuf3);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * 4, pos, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(sh1_attr_pos, 3, GL_FLOAT, false, 0, 0); // vertex_data is a float*, 3 per vertex, representing the position of each vertex
 
-  glDrawArrays(GL_QUADS, 0, 4); // 4 = vertexcount
-  glBindVertexArray(0);
-  glDisableVertexAttribArray(sh1_attr_pos);
-  glDisableVertexAttribArray(sh1_attr_col);
-  
-  glDeleteBuffers(1, &colorBuf3);
-  glDeleteBuffers(1, &positionBuf3);
-  glDeleteVertexArrays(1,&vao3);
+    glDrawArrays(GL_QUADS, 0, 4); // 4 = vertexcount
+    glBindVertexArray(0);
+    glDisableVertexAttribArray(sh1_attr_pos);
+    glDisableVertexAttribArray(sh1_attr_col);
 
-  err = glGetError();
+    glDeleteBuffers(1, &colorBuf3);
+    glDeleteBuffers(1, &positionBuf3);
+    glDeleteVertexArrays(1, &vao3);
 
+    err = glGetError();
+  }
 
+  if (viewmode == 1)
+  {
+    // ----------------------------------
+    // draw arrow in direction of driving
+    // ----------------------------------
+    glPointSize(30.0f);
 
-  // ----------------------------------
-  // draw arrow in direction of driving
-  // ----------------------------------
-  glPointSize(30.0f);
+    GLfloat _col[3 * 2] = { .5f, .5f, .5f,   .0f, .0f, .5f };
+    GLfloat _pos[3 * 2] = { Cursor.x,Cursor.y,1.0f,Cursor.x + dir.x,Cursor.y + dir.y,1.0f };
 
-  GLfloat _col[3 * 2] = { .5f, .5f, .5f,   .0f, .0f, .5f };
-  GLfloat _pos[3 * 2] = {Cursor.x,Cursor.y,1.0f,Cursor.x+dir.x,Cursor.y+dir.y,1.0f};
+    glGenVertexArrays(1, &vao3);
+    glBindVertexArray(vao3);
 
-  glGenVertexArrays(1, &vao3);
-  glBindVertexArray(vao3);
+    glEnableVertexAttribArray(sh1_attr_col); // Attribute indexes were received from calls to glGetAttribLocation, or passed into glBindAttribLocation.
+    glEnableVertexAttribArray(sh1_attr_pos);
 
-  glEnableVertexAttribArray(sh1_attr_col); // Attribute indexes were received from calls to glGetAttribLocation, or passed into glBindAttribLocation.
-  glEnableVertexAttribArray(sh1_attr_pos);
+    glGenBuffers(1, &colorBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+    glBindBuffer(GL_ARRAY_BUFFER, colorBuf3);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * 2, _col, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(sh1_attr_col, 3, GL_FLOAT, false, 0, 0); // col_data is a float*, 3 per vertex
 
-  glGenBuffers(1, &colorBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
-  glBindBuffer(GL_ARRAY_BUFFER, colorBuf3);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * 2, _col, GL_DYNAMIC_DRAW);
-  glVertexAttribPointer(sh1_attr_col, 3, GL_FLOAT, false, 0, 0); // col_data is a float*, 3 per vertex
+    glGenBuffers(1, &positionBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
+    glBindBuffer(GL_ARRAY_BUFFER, positionBuf3);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * 2, _pos, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(sh1_attr_pos, 3, GL_FLOAT, false, 0, 0); // vertex_data is a float*, 3 per vertex, representing the position of each vertex
 
-  glGenBuffers(1, &positionBuf3); // <-- Achtung !! nimmt die aktuelle Anzahl VBO als index !!
-  glBindBuffer(GL_ARRAY_BUFFER, positionBuf3);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * 2, _pos, GL_DYNAMIC_DRAW);
-  glVertexAttribPointer(sh1_attr_pos, 3, GL_FLOAT, false, 0, 0); // vertex_data is a float*, 3 per vertex, representing the position of each vertex
+    err = glGetError();
+    glDrawArrays(GL_LINES, 0, 2); // 2 = vertexcount
+    err = glGetError();
+    glBindVertexArray(0);
+    glDisableVertexAttribArray(sh1_attr_pos);
+    glDisableVertexAttribArray(sh1_attr_col);
 
-  err = glGetError();
-  glDrawArrays(GL_LINES, 0, 2); // 2 = vertexcount
-  err = glGetError();
-  glBindVertexArray(0);
-  glDisableVertexAttribArray(sh1_attr_pos);
-  glDisableVertexAttribArray(sh1_attr_col);
+    glDeleteBuffers(1, &colorBuf3);
+    glDeleteBuffers(1, &positionBuf3);
+    glDeleteVertexArrays(1, &vao3);
 
-  glDeleteBuffers(1, &colorBuf3);
-  glDeleteBuffers(1, &positionBuf3);
-  glDeleteVertexArrays(1, &vao3);
-
-  err = glGetError();
+    err = glGetError();
+  }
 
 /*
   for (unsigned int ui = 0; ui < vVAOsL.size(); ui++) // start with 1 as 0 is fps-counter

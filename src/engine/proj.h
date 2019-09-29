@@ -80,7 +80,16 @@ namespace proj
     int simulationcounter; // simulation steps
     int statecounter;      // sim. steps since this state started
 
+    // ==============================
+    // 2 drive modes
+    // a) autodrive, original style: 2 speeds
+    // b) selfdrive (driving dynamics)
+    // ==============================
+    // a) autodrive:
+    unsigned int autodrivepos;
+    
     unsigned int pp; // playerpos
+
 
     /* ===== FUNCTIONS ===== */
 

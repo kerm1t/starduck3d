@@ -95,6 +95,8 @@ namespace proj
     bool b_wireframe;
     bool b_culling;
 
+    int viewmode; // std, physics
+
     // =============
     Camera * p_cam;
     float f_camy;

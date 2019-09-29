@@ -232,7 +232,8 @@ void RenderThread(void *args)
       // Camera user controlled
       m_cam.change_Aspect(win_w,win_h);
       // mouse-move camera
-      m_cam.Look_with_Mouse(glm::vec2(mouse_x, -5.0f + (float)mouse_y/(float)win_h*10.0f));
+// 2do: im autodrive mode keine Kamera-steuerung
+///      m_cam.Look_with_Mouse(glm::vec2(mouse_x, -5.0f + (float)mouse_y/(float)win_h*10.0f));
     }
 
     m_cam.update_View(); // View = Pos,At,Norm

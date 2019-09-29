@@ -29,10 +29,10 @@ Timer timer;
 #define VBOADD_REDCAR 0
 #define VBOADD_HOUSE 0
 #define VBOADD_CONFERENCEROOM 0
-#define VBOADD_ANTONS_VILLAGE 0
+#define VBOADD_ANTONS_VILLAGE 1
 #define VBOADD_SCENE_OBJS 1            // load from obj.txt
 #define VBOADD_BILLBOARDS 0            // shall be more than 1 type of billboard
-#define VBOADD_20_RANDOM_HOLZSTAPEL 0
+#define VBOADD_20_RANDOM_HOLZSTAPEL 1
 #define VBOADD_CONTICAR 0
 #define VBOADD_BLACKJEEP 0
 #define VBOADD_JEEP 1
@@ -539,6 +539,24 @@ int proj::Proj::DoIt()
 
 
 
+  // =========
+  // autodrive
+  // =========
+  if (autodrivepos < m_scene.m_SceneLoader.m_c_Trajectory.size()-1)
+    autodrivepos += 1;
+  else
+    autodrivepos = 0;
+  S_Point3D p0 = m_scene.m_SceneLoader.m_c_Trajectory[autodrivepos].s_Pos;
+  S_Point3D p1;
+  if (autodrivepos < m_scene.m_SceneLoader.m_c_Trajectory.size() - 2)
+    p1 = m_scene.m_SceneLoader.m_c_Trajectory[autodrivepos+1].s_Pos;
+  m_render.p_cam->Pos = glm::vec3(p0.rl_X, p0.rl_Y, 1.34f);
+//  glm::vec3 dir_ = glm::vec3(p1.rl_X, p1.rl_Y, 1.34f) - m_render.p_cam->Pos;
+//  m_render.p_cam->Dir = dir_;
+  m_render.p_cam->At = glm::vec3(p1.rl_X, p1.rl_Y, 1.34f);
+
+
+
   m_render.DrawVAOs_NEU();          // Draw The Scene
   err = glGetError();
 
@@ -562,6 +580,7 @@ int proj::Proj::DoIt()
   return 0;
 }
 
+// 2do: move ImGUI drawing to render
 void proj::Proj::draw_ImGui()
 {
   char buf[100];
@@ -575,9 +594,9 @@ void proj::Proj::draw_ImGui()
   ImGui::Begin("Virtualroad");
   ImGui::Text("mouse: %.1f,%.1f", io.MousePos.x, io.MousePos.y);
   ImGui::Text("loaded: %s", m_scene.c_Scene.c_str());
-  static int viewmode;
-  ImGui::RadioButton("Std", &viewmode, 0);
-  ImGui::RadioButton("Physics", &viewmode, 1);
+//  static int viewmode;
+  ImGui::RadioButton("Std", &m_render.viewmode, 0);
+  ImGui::RadioButton("Physics", &m_render.viewmode, 1);
 
   ImGui::Checkbox("solid", &m_render.b_solid);
   ImGui::Checkbox("wireframe", &m_render.b_wireframe);
@@ -675,9 +694,9 @@ void proj::Proj::draw_ImGui()
     ImGui::Text("Obj"); ImGui::NextColumn();
     ImGui::Text("#Vao"); ImGui::NextColumn();
     ImGui::Text("VAOs"); ImGui::NextColumn();
-                                              //    ImGui::Text("#Vtx"); ImGui::NextColumn();
-                                              //    ImGui::Text("Pos"); ImGui::NextColumn();
-                                              //    ImGui::Text("idTxt"); ImGui::NextColumn();
+//    ImGui::Text("#Vtx"); ImGui::NextColumn();
+//    ImGui::Text("Pos"); ImGui::NextColumn();
+//    ImGui::Text("idTxt"); ImGui::NextColumn();
     ImGui::Separator();
     for (unsigned int i = 0; i < vObjects.size(); i++)
     {
@@ -690,9 +709,9 @@ void proj::Proj::draw_ImGui()
         s += std::to_string(vObjects[i]->vVaoID[j]) + ',';
       }
       ImGui::Text(s.c_str()); ImGui::NextColumn();
-      //      ImGui::Text("%d", m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
-      //      ImGui::Text("%.2f,%.2f,%.2f", m_render.vVAOs[i].vPos.x, m_render.vVAOs[i].vPos.y, m_render.vVAOs[i].vPos.z); ImGui::NextColumn();
-      //      ImGui::Text("%d", m_render.vVAOs[i].ui_idTexture); ImGui::NextColumn();
+//      ImGui::Text("%d", m_render.vVAOs[i].uiVertexCount); ImGui::NextColumn();
+//      ImGui::Text("%.2f,%.2f,%.2f", m_render.vVAOs[i].vPos.x, m_render.vVAOs[i].vPos.y, m_render.vVAOs[i].vPos.z); ImGui::NextColumn();
+//      ImGui::Text("%d", m_render.vVAOs[i].ui_idTexture); ImGui::NextColumn();
     }
     ImGui::Columns(1);
     ImGui::Separator();
