@@ -92,153 +92,162 @@ void CalculateFrameRate()
 void RenderThread(void *args)
 {
   // Renderloop now
-  while ((true) && (!b_program_stopped)) // do not interfere with freeing of ressources (Imgui, ...)
+  while (true) 
   {
-
-
-    // ===== output Text to Overlay =====
-    if (m_proj.overlaystate == proj::ovlPlay)
+    if (b_program_stopped) // do not interfere with freeing of ressources (Imgui, ...)
     {
-      s_bmp4 bmp4; // overlay
-      CBMP4 BMP4;
-      BMP4.BMP(bmp4, 100, 80);                           // create empty bitmap
-      std::string s = std::to_string(m_proj.score);
-      m_proj.fnt.word(s, bmp4, 10, 0);
-      BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
-      delete bmp4.data;
+//      DestroyWindow(hWnd);
+//      exit(0);
+//      PostQuitMessage(0);
+      std::exit(0);
     }
-    else if (m_proj.overlaystate == proj::ovlHelp)
+    else
     {
-      s_bmp4 bmp4; // overlay
-      CBMP4 BMP4;
-      BMP4.BMP(bmp4, 200, 150);                          // create empty bitmap
-      std::string s = std::to_string(m_proj.score);
-      m_proj.fnt.word("HELP", bmp4, 10, 0);
-      m_proj.fnt.word("1-BARRIER", bmp4, 10, 16);
-      m_proj.fnt.word("2-BANNER", bmp4, 10, 32);
-      m_proj.fnt.word("3-FLAG", bmp4, 10, 48);
-      m_proj.fnt.word("4-WOODPILE", bmp4, 10, 64);
-      m_proj.fnt.word("5-CONCRETE", bmp4, 10, 80);
-      m_proj.fnt.word("6-TREE", bmp4, 10, 96);
-      m_proj.fnt.word("Y-DELETE", bmp4, 10, 112);
-      m_proj.fnt.word("Z-SAVE", bmp4, 10, 128);
-      BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
-      delete bmp4.data;
-    }
-    // ===== output Text to Overlay =====
+      // ===== output Text to Overlay =====
+      if (m_proj.overlaystate == proj::ovlPlay)
+      {
+        s_bmp4 bmp4; // overlay
+        CBMP4 BMP4;
+        BMP4.BMP(bmp4, 100, 80);                           // create empty bitmap
+        std::string s = std::to_string(m_proj.score);
+        m_proj.fnt.word(s, bmp4, 10, 0);
+        BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
+        delete bmp4.data;
+      }
+      else if (m_proj.overlaystate == proj::ovlHelp)
+      {
+        s_bmp4 bmp4; // overlay
+        CBMP4 BMP4;
+        BMP4.BMP(bmp4, 200, 150);                          // create empty bitmap
+        std::string s = std::to_string(m_proj.score);
+        m_proj.fnt.word("HELP", bmp4, 10, 0);
+        m_proj.fnt.word("1-BARRIER", bmp4, 10, 16);
+        m_proj.fnt.word("2-BANNER", bmp4, 10, 32);
+        m_proj.fnt.word("3-FLAG", bmp4, 10, 48);
+        m_proj.fnt.word("4-WOODPILE", bmp4, 10, 64);
+        m_proj.fnt.word("5-CONCRETE", bmp4, 10, 80);
+        m_proj.fnt.word("6-TREE", bmp4, 10, 96);
+        m_proj.fnt.word("Y-DELETE", bmp4, 10, 112);
+        m_proj.fnt.word("Z-SAVE", bmp4, 10, 128);
+        BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
+        delete bmp4.data;
+      }
+      // ===== output Text to Overlay =====
 
 
 
-    if (b_add_obj)
-    {
-      int nVAOs = m_proj.m_render.vVAOs.size();
+      if (b_add_obj)
+      {
+        int nVAOs = m_proj.m_render.vVAOs.size();
 
-      // place objects orthogonal to viewing direction
-      glm::vec3 cam_dir = m_proj.m_render.p_cam->At - m_proj.m_render.p_cam->Pos;
-      glm::vec3 obj_dir = -cam_dir;
-      obj_dir.z = 0.0f; // being used for obj's BBox, thus z-comp always same
-      glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, m_proj.m_render.p_cam->Pos.z-CAM_Z); // cursor is just a little bit ahead of the camera pos.
+        // place objects orthogonal to viewing direction
+        glm::vec3 cam_dir = m_proj.m_render.p_cam->At - m_proj.m_render.p_cam->Pos;
+        glm::vec3 obj_dir = -cam_dir;
+        obj_dir.z = 0.0f; // being used for obj's BBox, thus z-comp always same
+        glm::vec3 obj_pos = glm::vec3(m_proj.m_render.Cursor.x, m_proj.m_render.Cursor.y, m_proj.m_render.p_cam->Pos.z - CAM_Z); // cursor is just a little bit ahead of the camera pos.
 
-      if ((editor_Obj == ED_OBJ_BB_BANNER) ||
+        if ((editor_Obj == ED_OBJ_BB_BANNER) ||
           (editor_Obj == ED_OBJ_BB_FLAG) ||
           (editor_Obj == ED_OBJ_BB_WOODPILE) ||
           (editor_Obj == ED_OBJ_BB_CONCRETE) ||
           (editor_Obj == ED_OBJ_BB_TREE))
-      {
-        obj::CBillboard* bb = new obj::CBillboard;
-        bb->p_render = &m_proj.m_render;
-        proj::c_VAO vao;
-        if      (editor_Obj == ED_OBJ_BB_BANNER)   vao = bb->Create("Banner", "tx_Banner", obj_pos, obj_dir);
-        else if (editor_Obj == ED_OBJ_BB_FLAG)     vao = bb->Create("Flag", "tx_Flag", obj_pos, obj_dir, 0.9, 1.5);
-        else if (editor_Obj == ED_OBJ_BB_WOODPILE) vao = bb->Create("Woodpile", "tx_Woodpile", obj_pos, obj_dir, 1.4, 1.4);
-        else if (editor_Obj == ED_OBJ_BB_CONCRETE) vao = bb->Create("Concrete", "tx_Concrete", obj_pos, obj_dir);
-        else /*if (editor_Obj == ED_OBJ_BB_TREE)*/ vao = bb->Create("Tree", "tx_Tree", obj_pos, obj_dir, 1.0f);
-        m_proj.m_render.vVAOs.push_back(vao);
-        bb->vVaoID.push_back(nVAOs);
+        {
+          obj::CBillboard* bb = new obj::CBillboard;
+          bb->p_render = &m_proj.m_render;
+          proj::c_VAO vao;
+          if (editor_Obj == ED_OBJ_BB_BANNER)   vao = bb->Create("Banner", "tx_Banner", obj_pos, obj_dir);
+          else if (editor_Obj == ED_OBJ_BB_FLAG)     vao = bb->Create("Flag", "tx_Flag", obj_pos, obj_dir, 0.9, 1.5);
+          else if (editor_Obj == ED_OBJ_BB_WOODPILE) vao = bb->Create("Woodpile", "tx_Woodpile", obj_pos, obj_dir, 1.4, 1.4);
+          else if (editor_Obj == ED_OBJ_BB_CONCRETE) vao = bb->Create("Concrete", "tx_Concrete", obj_pos, obj_dir);
+          else /*if (editor_Obj == ED_OBJ_BB_TREE)*/ vao = bb->Create("Tree", "tx_Tree", obj_pos, obj_dir, 1.0f);
+          m_proj.m_render.vVAOs.push_back(vao);
+          bb->vVaoID.push_back(nVAOs);
 #if(B_ADD_BBOX_VAO == 1)
-        bb->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
+          bb->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
 #endif
-        m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
-        m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
-      }
-      if (editor_Obj == ED_OBJ_BARRIER)
-      {
-        obj::CGL_ObjectWavefront* barrier1 = new obj::CGL_ObjectWavefront(&m_proj.m_render);
-        barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
-        barrier1->Load(obj_pos, obj_dir, 1.0f, 0.0f);
-        barrier1->vVaoID.push_back(nVAOs);
+          m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+          m_proj.vObjects.push_back(bb); // 2do: wieviel Speicherverbrauch?
+        }
+        if (editor_Obj == ED_OBJ_BARRIER)
+        {
+          obj::CGL_ObjectWavefront* barrier1 = new obj::CGL_ObjectWavefront(&m_proj.m_render);
+          barrier1->sObjectFullpath = "..\\data\\virtualroad\\barrier\\bboy_barrier3.obj";
+          barrier1->Load(obj_pos, obj_dir, 1.0f, 0.0f);
+          barrier1->vVaoID.push_back(nVAOs);
 #if(B_ADD_BBOX_VAO == 1)
-        barrier1->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
+          barrier1->vVaoID.push_back(nVAOs + 1); // 2do: easier (add in the obj.Create etc...)
 #endif
-        m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
-        m_proj.vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
-      }
+          m_proj.m_render.Bind_NEW__VBOs_to_VAOs(nVAOs);
+          m_proj.vObjects.push_back(barrier1); // 2do: wieviel Speicherverbrauch?
+        }
 
-      b_add_obj = false;
-    } // if (b_add_obj)
+        b_add_obj = false;
+      } // if (b_add_obj)
 
-    if ((b_del_obj) && (i_del_obj > -1))
-    {
-      // a) remove from v_object
-      // b) remove vao(s): i) obj, ii) bbox, iii) parts
-      for (int i = 0; i < m_proj.vObjects[i_del_obj]->vVaoID.size(); i++)
+      if ((b_del_obj) && (i_del_obj > -1))
       {
-        int vaoID = m_proj.vObjects[i_del_obj]->vVaoID[i];
-        m_proj.m_render.vVAOs[vaoID].b_doDraw = false;
+        // a) remove from v_object
+        // b) remove vao(s): i) obj, ii) bbox, iii) parts
+        for (int i = 0; i < m_proj.vObjects[i_del_obj]->vVaoID.size(); i++)
+        {
+          int vaoID = m_proj.vObjects[i_del_obj]->vVaoID[i];
+          m_proj.m_render.vVAOs[vaoID].b_doDraw = false;
+        }
+        //      int vaoID = m_proj.vObjects[i_del_obj]->vaoID;
+        //      m_proj.m_render.vVAOs[vaoID].b_doDraw = false;
+        //      if (typeid(m_proj.vObjects[i_del_obj]) == typeid(obj::CGL_ObjectParts))
+        //      {
+        //      }
+        b_del_obj = false;
       }
-//      int vaoID = m_proj.vObjects[i_del_obj]->vaoID;
-//      m_proj.m_render.vVAOs[vaoID].b_doDraw = false;
-//      if (typeid(m_proj.vObjects[i_del_obj]) == typeid(obj::CGL_ObjectParts))
-//      {
-//      }
-      b_del_obj = false;
+
+      if (m_proj.gamestate != proj::gsHit) //if object is hit -> stop for some time
+      {
+        float slowdown = 15.0f;
+        if (GetAsyncKeyState(VK_UP))
+        {
+          m_cam.MoveFwd(1.0f / slowdown);
+        }
+        if (GetAsyncKeyState(VK_DOWN))
+        {
+          m_cam.MoveBack(1.0f / slowdown);
+        }
+        if (GetAsyncKeyState(VK_LEFT))
+        {
+          m_cam.StrafeLeft(1.0f / 30.0f);
+        }
+        if (GetAsyncKeyState(VK_RIGHT))
+        {
+          m_cam.StrafeRight(1.0f / 30.0f);
+        }
+      }
+
+      if (b_WM_resized)
+      {
+        m_proj.m_render.ReSizeGLScene(win_w, win_h);
+        b_WM_resized = false;
+      }
+
+      // 2do: mouse-move camera
+
+      if (bCamStickToTrack)
+      {
+        // Camera fixed to vehicle
+      }
+      else
+      {
+        // Camera user controlled
+        m_cam.change_Aspect(win_w, win_h);
+        // mouse-move camera
+  // 2do: im autodrive mode keine Kamera-steuerung
+  ///      m_cam.Look_with_Mouse(glm::vec2(mouse_x, -5.0f + (float)mouse_y/(float)win_h*10.0f));
+      }
+
+      m_cam.update_View(); // View = Pos,At,Norm
+
+      m_proj.DoIt(); // render code
     }
 
-    if (m_proj.gamestate != proj::gsHit) //if object is hit -> stop for some time
-    {
-      float slowdown = 15.0f;
-      if (GetAsyncKeyState(VK_UP))
-      {
-        m_cam.MoveFwd(1.0f / slowdown);
-      }
-      if (GetAsyncKeyState(VK_DOWN))
-      {
-        m_cam.MoveBack(1.0f / slowdown);
-      }
-      if (GetAsyncKeyState(VK_LEFT))
-      {
-        m_cam.StrafeLeft(1.0f / 30.0f);
-      }
-      if (GetAsyncKeyState(VK_RIGHT))
-      {
-        m_cam.StrafeRight(1.0f / 30.0f);
-      }
-    }
-
-    if (b_WM_resized)
-    {
-      m_proj.m_render.ReSizeGLScene(win_w,win_h);
-      b_WM_resized = false;
-    }
-
-    // 2do: mouse-move camera
-
-    if (bCamStickToTrack)
-    {
-      // Camera fixed to vehicle
-    }
-    else
-    {
-      // Camera user controlled
-      m_cam.change_Aspect(win_w,win_h);
-      // mouse-move camera
-// 2do: im autodrive mode keine Kamera-steuerung
-///      m_cam.Look_with_Mouse(glm::vec2(mouse_x, -5.0f + (float)mouse_y/(float)win_h*10.0f));
-    }
-
-    m_cam.update_View(); // View = Pos,At,Norm
-
-    m_proj.DoIt(); // render code
   }
   _endthread();
 
@@ -522,6 +531,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
   switch (message)
   {
+    case WM_CLOSE:
+      b_program_stopped = true;
+      break;
     // ----------------------------------------------------------------------------
     // problem: we need relative mouse movement, that's why we utilize WM_INUT here
     // s. https://docs.microsoft.com/en-us/windows/desktop/dxtecharts/taking-advantage-of-high-dpi-mouse-movement
