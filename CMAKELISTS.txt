@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.6)
 
 project (starduck)
 
-set(glew "glew-2.0.0")
+set(glew "glew-2.1.0")
 
 ##find_package(GLEW REQUIRED)
 ##if (GLEW_FOUND)
@@ -16,7 +16,8 @@ set(glew "glew-2.0.0")
 
 add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLEW _CRT_SECURE_NO_WARNINGS)
  
-link_directories(lib/${glew}/lib/Debug/Win32)
+#link_directories(lib/${glew}/lib/Debug/Win32)
+link_directories(lib/${glew}/build/lib)
 
 #target_include_directories(starduck PRIVATE
 include_directories(src/common
@@ -77,7 +78,8 @@ add_executable(starduck WIN32
 
 source_group("imgui" FILES ${SRC_IMGUI})
 
-target_link_libraries(starduck OpenGL32.lib GLu32.lib glew32sd)
+#target_link_libraries(starduck OpenGL32.lib GLu32.lib glew32sd)
+target_link_libraries(starduck OpenGL32.lib GLu32.lib libglew32d)
 
 #find_library(GLEW_LIB glew HINTS lib/${glew}/lib/Debug/Win32/glew32sd)
 #target_link_libraries(starduck PUBLIC ${GLEW_LIB})

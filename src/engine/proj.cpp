@@ -640,7 +640,7 @@ void proj::Proj::draw_ImGui()
   ImGui::Text("%.0f FPS", FPS);
 
   static int selected = -1;
-  sprintf(buf, "%d VAOs rendered", m_render.vVAOs.size());
+  sprintf(buf, "%d VAOs rendered", (int)m_render.vVAOs.size());
   if (ImGui::TreeNode(buf))
   {
     ImGui::Columns(5, "cols"); // no. of columns
@@ -685,7 +685,7 @@ void proj::Proj::draw_ImGui()
   ImGui::Text("Touched object: %d (%s)", touch_object_id, s_obj.c_str());
 
   //  static int selected = -1;
-  sprintf(buf, "%d Obj's collision checked", vObjects.size());
+  sprintf(buf, "%d Obj's collision checked", (int)vObjects.size());
   if (ImGui::TreeNode(buf))
   {
     ImGui::Columns(4, "cols"); // no. of columns
