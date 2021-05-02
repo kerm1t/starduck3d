@@ -1,3 +1,16 @@
+2021
+5/2
+imgui std/physics view + culling/wireframe in render window
+
+5/1
+- zweites Projekt anlegen, das auch die starduck engine nutzt!
+- slider for ego velocity
+- fix: ruckeln vom Jeep alle paar frames
+- Jeep springen ueber Holzstuecke
+- Jeep Schatten!
+- Streckenverlauf zeigen
+
+2019
 9/29
 - load anton's village / holzstapel takes quite some time,
   e.g. load as binary?
@@ -323,6 +336,7 @@ Inspiration: https://www.youtube.com/watch?v=Sg07FTzDKzk
 + wie kann ich ein Objekt hinzufügen, einfach ein Objekt "room" geht nicht
   doch, lag daran, dass die Datei nicht existierte
 
+2018
 2018-11-18
 - randomly place
   - traffic signs
@@ -424,7 +438,7 @@ https://www.youtube.com/watch?v=EhyqW-r2i5g
 ----
 - Geschwindigkeit auf Framesync (NVidia??) anpassen, da unterschiedl.
   Bewegungsgeschw. auf Intel (SONY) + NVidia (PC)
-+ einen nebulus zylinder kreien
++ einen nebulus zylinder kreiren
 - nebulus anlegen
 - nebulus game --> ist eigentlich virtualroad
 + von obj --> Guardrail + Wavefront ableiten !!

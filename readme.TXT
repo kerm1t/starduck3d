@@ -1,3 +1,7 @@
+9/20/2020
+- FPS auf 60 begrenzen
+  https://stackoverflow.com/questions/14968857/controlling-fps-limit-in-opengl-application
+
 9/11/2020
 How to build
 1) get libraries ImGUI, Glew
@@ -27,4 +31,4 @@ Das Projekt ist von irgendwo her und angepasst,
 jedenfalls nicht mit einem Build Tool (CMake) generiert.
 
 Das Laden der conferenceroom Datei (~26MB) dauert definitiv
-zu lange auf meinem SONY. 
+zu lange auf meinem SONY. 2020-10-14, auf dem Razor auch

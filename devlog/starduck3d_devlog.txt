@@ -1,4 +1,9 @@
-﻿2/3/2019
+﻿
+10/14/2020
+wieder aufgegriffen. habe neuen Razor Laptop. Darauf m. VStudio 2019
+
+
+2/3/2019
 transformation des ego-Fahrzeugs war kein Problem. Jetzt zur rotation.
 Das ist unsere MVP Matrix. wie geht das jetzt eigentlich mit Push und Pop?
 die transformation in offset kann man eigentlich auch mit in die MVP packen
