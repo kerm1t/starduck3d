@@ -1,5 +1,6 @@
-// nebulus.cpp : Definiert den Einstiegspunkt für die Anwendung.
-//
+// Buggyboy,
+// fun game on Amiga and soon on PC and any other platform with Starduck3D
+// (C) 2016-...
 
 #include "stdafx.h"
 #include "buggyboy.h"
@@ -20,6 +21,7 @@
 #include <fstream>
 
 #include <typeinfo>
+//#include <mutex>
 
 //#include "img_bitmap4.hpp" // text overlay
 
@@ -41,6 +43,7 @@ HDC              hDC=NULL;                      // Private GDI Device Context
 HWND             hWnd=NULL;                     // Holds Our Window Handle
 
 // 2do: think about add variables to which classes
+//std::mutex mtx;
 
 proj::Proj m_proj;
 
@@ -53,8 +56,6 @@ int mouse_left, mouse_right;
 int iT = 1;
 bool bCamStickToTrack = FALSE;
 
-static float framesPerSecond = 0.0f;            // This will store our fps
-static float lastTime = 0.0f;                   // This will hold the time from the last frame
 
 bool b_WM_resized = false;
 bool b_program_stopped = false;
@@ -75,16 +76,6 @@ bool b_test = false;
 #define ED_OBJ_BB_TREE      6
 int editor_Obj = ED_OBJ_BB_BANNER;
 
-void CalculateFrameRate()
-{
-  float currentTime = GetTickCount() * 0.001f;
-  ++framesPerSecond;
-  if( currentTime - lastTime > 1.0f )
-  {
-    lastTime = currentTime;
-    framesPerSecond = 0.0;
-  }
-}
 
 // OpenGL calls moved to own thread
 // s. http://stackoverflow.com/questions/9833852/opengl-game-loop-multithreading
@@ -94,6 +85,9 @@ void RenderThread(void *args)
   // Renderloop now
   while (true) 
   {
+//    m_proj.drawStart = GetTickCount() * 0.001f; // resolution is not high enough for measure of frame duration!
+    m_proj.StartCounter(); // start hi-res counter (each frame)
+
     if (b_program_stopped) // do not interfere with freeing of ressources (Imgui, ...)
     {
 //      DestroyWindow(hWnd);
@@ -103,7 +97,7 @@ void RenderThread(void *args)
     }
     else
     {
-      // ===== output Text to Overlay =====
+      // (1) ===== output Text to Overlay ===== 2do: move to 2drender
       if (m_proj.overlaystate == proj::ovlPlay)
       {
         s_bmp4 bmp4; // overlay
@@ -119,7 +113,6 @@ void RenderThread(void *args)
         s_bmp4 bmp4; // overlay
         CBMP4 BMP4;
         BMP4.BMP(bmp4, 200, 150);                          // create empty bitmap
-        std::string s = std::to_string(m_proj.score);
         m_proj.fnt.word("HELP", bmp4, 10, 0);
         m_proj.fnt.word("1-BARRIER", bmp4, 10, 16);
         m_proj.fnt.word("2-BANNER", bmp4, 10, 32);
@@ -135,7 +128,7 @@ void RenderThread(void *args)
       // ===== output Text to Overlay =====
 
 
-
+      // (2) objects were added by the user / player, 2do: move to manipulation
       if (b_add_obj)
       {
         int nVAOs = m_proj.m_render.vVAOs.size();
@@ -184,6 +177,7 @@ void RenderThread(void *args)
         b_add_obj = false;
       } // if (b_add_obj)
 
+      // (3) objects were removed by player, 2do: move to manipulation
       if ((b_del_obj) && (i_del_obj > -1))
       {
         // a) remove from v_object
@@ -201,6 +195,7 @@ void RenderThread(void *args)
         b_del_obj = false;
       }
 
+      // (4) keys, 2do: move to input
       if (m_proj.gamestate != proj::gsHit) //if object is hit -> stop for some time
       {
         float slowdown = 15.0f;
@@ -240,14 +235,24 @@ void RenderThread(void *args)
         m_cam.change_Aspect(win_w, win_h);
         // mouse-move camera
   // 2do: im autodrive mode keine Kamera-steuerung
-  ///      m_cam.Look_with_Mouse(glm::vec2(mouse_x, -5.0f + (float)mouse_y/(float)win_h*10.0f));
+///        m_cam.Look_with_Mouse(glm::vec2(mouse_x, -5.0f + (float)mouse_y/(float)win_h*10.0f));
       }
 
       m_cam.update_View(); // View = Pos,At,Norm
 
       m_proj.DoIt(); // render code
     }
-
+//    mtx.lock();
+//    m_proj.drawEnd = GetTickCount() * 0.001f;
+ //   m_proj.drawTime = (GetTickCount() * 0.001f) - m_proj.drawStart;
+//    mtx.unlock();
+    m_proj.drawTime = m_proj.GetCounter();
+    float frametime_req = 1000.0f / 60.0f;
+    if ((frametime_req - m_proj.drawTime) > 0)
+    {
+        int sleeptime = frametime_req - m_proj.drawTime;
+ //       Sleep(sleeptime); // doesn't affect the framerate here
+    }
   }
   _endthread();
 
