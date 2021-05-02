@@ -29,6 +29,16 @@ namespace proj
     bool bPause;
     bool b_show_debug;
 
+    // counter
+    float drawStart;
+    float drawEnd;
+    float drawTime;
+    // high res counter
+    double PCFreq = 0.0;
+    __int64 CounterStart = 0;
+    void StartCounter();
+    double GetCounter();
+
     /* ===== Constructor ===== */
 
     Proj();

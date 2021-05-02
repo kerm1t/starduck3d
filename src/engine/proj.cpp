@@ -37,9 +37,29 @@ Timer timer;
 #define VBOADD_BLACKJEEP 0
 #define VBOADD_JEEP 1
 #define VBOADD_BARRIERS 0
-#define VBOADD_SPONZA 0
+#define VBOADD_SPONZA 0                // load time too long
 
 //#define TEX_TRANSPARENT true // 2do: move to e.g. GFX_defines
+
+// https://stackoverflow.com/questions/1739259/how-to-use-queryperformancecounter
+void proj::Proj::StartCounter()
+{
+    LARGE_INTEGER li;
+    if (!QueryPerformanceFrequency(&li))
+        //        cout << "QueryPerformanceFrequency failed!\n";
+        ;
+
+    PCFreq = double(li.QuadPart) / 1000.0; // milliseconds
+
+    QueryPerformanceCounter(&li);
+    CounterStart = li.QuadPart;
+}
+double proj::Proj::GetCounter() // milliseconds
+{
+    LARGE_INTEGER li;
+    QueryPerformanceCounter(&li);
+    return double(li.QuadPart - CounterStart) / PCFreq;
+}
 
 proj::Proj::Proj()
 {
@@ -308,7 +328,7 @@ int proj::Proj::Load_Scene_and_Objs_to_VBOs() // load individual objects to diff
   obj::CGL_ObjectWavefront sponza(&m_render);
   sponza.sObjectFullpath = "..\\data\\sponza\\sponza.obj";
   //  sponza.sObjectFullpath = "..\\..\\sponza\\sponza.obj";
-  sponza.Load(1.0f, 0.0f, Vec3f(12.0f, 12.0f, 0.0f)); // scaled
+  sponza.Load(glm::vec3(1, 0, 0), glm::vec3(12, 12, 0), 1); // scaled
 #endif
 
 /*  // c) place billboard here: das letzte wird nicht gezeichnet !?
@@ -591,16 +611,12 @@ void proj::Proj::draw_ImGui()
   ImGui::NewFrame();
 
   ImGuiIO& io = ImGui::GetIO();
+
+  // ================ GAME ================================================================ 
   ImGui::Begin("Virtualroad");
   ImGui::Text("mouse: %.1f,%.1f", io.MousePos.x, io.MousePos.y);
   ImGui::Text("loaded: %s", m_scene.c_Scene.c_str());
-//  static int viewmode;
-  ImGui::RadioButton("Std", &m_render.viewmode, 0);
-  ImGui::RadioButton("Physics", &m_render.viewmode, 1);
 
-  ImGui::Checkbox("solid", &m_render.b_solid);
-  ImGui::Checkbox("wireframe", &m_render.b_wireframe);
-  ImGui::Checkbox("culling", &m_render.b_culling);
   ImGui::RadioButton("Free", &m_render.p_cam->iStickToObj, 0);
   ImGui::RadioButton("Jeep1", &m_render.p_cam->iStickToObj, 1);
   ImGui::RadioButton("Jeep2", &m_render.p_cam->iStickToObj, 2);
@@ -627,7 +643,7 @@ void proj::Proj::draw_ImGui()
   ImGui::End();
 
 
-
+// ================ RENDER ================================================================ 
   ImGui::Begin("Render");
 
   const GLubyte* vendor = glGetString(GL_VENDOR); // Returns the vendor
@@ -638,6 +654,15 @@ void proj::Proj::draw_ImGui()
   m_render.aFPS[m_render.idxFPS++ % FPS_LOWPASS] = FPS;
   FPS = 0.0; for (int i = 0; i < FPS_LOWPASS; i++) { FPS += m_render.aFPS[i]; } FPS = FPS / FPS_LOWPASS;
   ImGui::Text("%.0f FPS", FPS);
+  ImGui::Text("%.0f ms per frame", this->drawTime);
+
+  //  static int viewmode;
+  ImGui::RadioButton("Std", &m_render.viewmode, 0);
+  ImGui::RadioButton("Physics", &m_render.viewmode, 1);
+
+  ImGui::Checkbox("solid", &m_render.b_solid);
+  ImGui::Checkbox("wireframe", &m_render.b_wireframe);
+  ImGui::Checkbox("culling", &m_render.b_culling);
 
   static int selected = -1;
   sprintf(buf, "%d VAOs rendered", (int)m_render.vVAOs.size());
@@ -667,7 +692,7 @@ void proj::Proj::draw_ImGui()
   ImGui::End();
 
 
-
+  // ================ PHYSICS ================================================================ 
   ImGui::Begin("Physics");
 
   ImGui::Text("Track nearest: %d", pp);
