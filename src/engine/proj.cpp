@@ -79,15 +79,17 @@ int proj::Proj::Init()
 
   vTrajPosprev = glm::vec3(0.0f,0.0f,0.0f);
 
-  hit_object_id      = -1;
-  hit_object_id_prev = -1;
+  hit_object_id         = -1;
+  hit_object_id_prev    = -1;
 
-  score              = 0;
+  score                 = 0;
 
-  overlaystate       = ovlPlay;
-  gamestate          = gsPlay;
-  simulationcounter  = 0;
-  statecounter       = 0;
+  m_render.overlaystate = ovlPlay;
+  gamestate             = gsPlay;
+  simulationcounter     = 0;
+  statecounter          = 0;
+
+  autodrive = true;
 
 //  CBMPLoader ldrBMP;
 //  size_t result = ldrBMP.loadBMP_to_bmp("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
@@ -129,7 +131,7 @@ std::vector<std::string> split(const char *str, char c = ' ')
   return result;
 }
 
-
+// evtl. das hier umbenennen
 int proj::Proj::Load_Scene_and_Objs_to_VBOs() // load individual objects to different V{A|B}O's to be able to manipulate 'em later
 {
   proj::c_VAO vao;
@@ -141,7 +143,7 @@ int proj::Proj::Load_Scene_and_Objs_to_VBOs() // load individual objects to diff
 
 //  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti",ldrBMP.loadBMP_custom("..\\data\\virtualroad\\conti.bmp")));
 //  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", ldrIMG.loadIMG("..\\data\\virtualroad\\conti.png", true)));
-  glGenTextures(1, &id_tex_overlay);
+  glGenTextures(1, &m_render.id_tex_overlay);
   // "Bind" the newly created texture : all future texture functions will modify this texture
 ///  ldrIMG.loadIMG_texID(id_tex_overlay, "..\\data\\buggyboy\\overlay2.png", true);
 ///  m_render.tex_map.insert(std::pair<std::string, GLuint>("tx_Conti", id_tex_overlay));
@@ -562,19 +564,21 @@ int proj::Proj::DoIt()
   // =========
   // autodrive
   // =========
-  if (autodrivepos < m_scene.m_SceneLoader.m_c_Trajectory.size()-1)
-    autodrivepos += 1;
-  else
-    autodrivepos = 0;
-  S_Point3D p0 = m_scene.m_SceneLoader.m_c_Trajectory[autodrivepos].s_Pos;
-  S_Point3D p1;
-  if (autodrivepos < m_scene.m_SceneLoader.m_c_Trajectory.size() - 2)
-    p1 = m_scene.m_SceneLoader.m_c_Trajectory[autodrivepos+1].s_Pos;
-  m_render.p_cam->Pos = glm::vec3(p0.rl_X, p0.rl_Y, 1.34f);
-//  glm::vec3 dir_ = glm::vec3(p1.rl_X, p1.rl_Y, 1.34f) - m_render.p_cam->Pos;
-//  m_render.p_cam->Dir = dir_;
-  m_render.p_cam->At = glm::vec3(p1.rl_X, p1.rl_Y, 1.34f);
-
+  if (autodrive)
+  {
+    if (autodrivepos < m_scene.m_SceneLoader.m_c_Trajectory.size() - 1)
+      autodrivepos += 1;
+    else
+      autodrivepos = 0;
+    S_Point3D p0 = m_scene.m_SceneLoader.m_c_Trajectory[autodrivepos].s_Pos;
+    S_Point3D p1;
+    if (autodrivepos < m_scene.m_SceneLoader.m_c_Trajectory.size() - 2)
+      p1 = m_scene.m_SceneLoader.m_c_Trajectory[autodrivepos + 1].s_Pos;
+    m_render.p_cam->Pos = glm::vec3(p0.rl_X, p0.rl_Y, 1.34f);
+    //  glm::vec3 dir_ = glm::vec3(p1.rl_X, p1.rl_Y, 1.34f) - m_render.p_cam->Pos;
+    //  m_render.p_cam->Dir = dir_;
+    m_render.p_cam->At = glm::vec3(p1.rl_X, p1.rl_Y, 1.34f);
+  }
 
 
   m_render.DrawVAOs_NEU();          // Draw The Scene
@@ -617,6 +621,8 @@ void proj::Proj::draw_ImGui()
   ImGui::Text("mouse: %.1f,%.1f", io.MousePos.x, io.MousePos.y);
   ImGui::Text("loaded: %s", m_scene.c_Scene.c_str());
 
+  ImGui::Checkbox("Autodrive", &autodrive);
+
   ImGui::RadioButton("Free", &m_render.p_cam->iStickToObj, 0);
   ImGui::RadioButton("Jeep1", &m_render.p_cam->iStickToObj, 1);
   ImGui::RadioButton("Jeep2", &m_render.p_cam->iStickToObj, 2);
@@ -657,8 +663,8 @@ void proj::Proj::draw_ImGui()
   ImGui::Text("%.0f ms per frame", this->drawTime);
 
   //  static int viewmode;
-  ImGui::RadioButton("Std", &m_render.viewmode, 0);
-  ImGui::RadioButton("Physics", &m_render.viewmode, 1);
+  ImGui::RadioButton("Std", &(int)m_render.viewmode, 0);
+  ImGui::RadioButton("Physics", &(int)m_render.viewmode, 1);
 
   ImGui::Checkbox("solid", &m_render.b_solid);
   ImGui::Checkbox("wireframe", &m_render.b_wireframe);
