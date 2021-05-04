@@ -32,7 +32,7 @@ proj::Render::Render() // constructor
 
 //  Init_Textures();
   b_solid = true;
-  b_wireframe = true; // 2do: only debugging: set to default
+  b_wireframe = false; // 2do: only debugging: set to default
 }
 
 int proj::Render::Init()
@@ -153,6 +153,38 @@ HDC proj::Render::GL_attach_to_DC(HWND hWnd)
 
   ReSizeGLScene(width, height); // Set Up Our Perspective GL Screen
   return hDC;
+}
+
+// ===== output Text to Overlay =====
+void proj::Render::Overlays2D(ovlinfo oi)
+{
+  if (overlaystate == proj::ovlPlay)
+  {
+    s_bmp4 bmp4; // overlay
+    CBMP4 BMP4;
+    BMP4.BMP(bmp4, 100, 80);                           // create empty bitmap
+    std::string s = std::to_string(oi.score);
+    fnt.word(s, bmp4, 10, 0);
+    BMP4.BMP_texID(bmp4, id_tex_overlay);              // bmp to texture now
+    delete bmp4.data;
+  }
+  else if (overlaystate == proj::ovlHelp)
+  {
+    s_bmp4 bmp4; // overlay
+    CBMP4 BMP4;
+    BMP4.BMP(bmp4, 200, 150);                          // create empty bitmap
+    fnt.word("HELP", bmp4, 10, 0);
+    fnt.word("1-BARRIER", bmp4, 10, 16);
+    fnt.word("2-BANNER", bmp4, 10, 32);
+    fnt.word("3-FLAG", bmp4, 10, 48);
+    fnt.word("4-WOODPILE", bmp4, 10, 64);
+    fnt.word("5-CONCRETE", bmp4, 10, 80);
+    fnt.word("6-TREE", bmp4, 10, 96);
+    fnt.word("Y-DELETE", bmp4, 10, 112);
+    fnt.word("Z-SAVE", bmp4, 10, 128);
+    BMP4.BMP_texID(bmp4, id_tex_overlay);              // bmp to texture now
+    delete bmp4.data;
+  }
 }
 
 // HACK!!!
@@ -671,6 +703,7 @@ void proj::Render::DrawVAOs_NEU()
     glUniform1i(sh1_unif_wirecolor, 0); // sh1_unif_wirecolor 0: nothing 1: set col f. overlayed wireframe (needed for colored, not textures objects)
 
 //    if (vVAOs[ui].b_Wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    if (b_wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     if (vVAOs[ui].t_Shade == SHADER_TEXTURE)
     {
@@ -712,7 +745,7 @@ void proj::Render::DrawVAOs_NEU()
           glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
         else
         {
-          if (viewmode == 1) // Hack!!! 2do: draw physics shall be connected to this, i.e. use b_do_draw
+          if (viewmode == vmPhysics) // Hack!!! 2do: draw physics shall be connected to this, i.e. use b_do_draw
           glDrawArrays(GL_LINE_STRIP, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
         }
         err = glGetError();                                     //     it can be either positionbuffer, colorbuffer or uvbuffer
@@ -822,7 +855,7 @@ void proj::Render::DrawVAOs_NEU()
   err = glGetError();
   */
 
-  if (viewmode == 1)
+  if (viewmode == vmPhysics)
   {
     // --------------------------------------------
     // Bug: dieser pinke Quad wird nur dargestellt, wenn Splash screen oben disabled !??!
@@ -864,7 +897,7 @@ void proj::Render::DrawVAOs_NEU()
     err = glGetError();
   }
 
-  if (viewmode == 1)
+  if (viewmode == vmPhysics)
   {
     // ----------------------------------
     // draw arrow in direction of driving

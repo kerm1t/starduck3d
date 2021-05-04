@@ -8,10 +8,19 @@
 #include "obj_moving.hpp"
 //#include "obj.hpp"
 
+#include "img_font.hpp"
+
 #include <map>
 
 namespace proj
 {
+  enum Overlaystate { ovlPlay, ovlHelp };
+  enum ViewMode     { vmStandard=0, vmPhysics=1};
+
+  struct ovlinfo {
+    int score;
+  };
+
   class Render: public ShaderMan
   {
   public:
@@ -26,6 +35,11 @@ namespace proj
     glm::vec3 dir; // 2do: move to ego-class!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     int touch_object_vaoId; // (not fully) redundant to proj.touch_object_id
+
+    Overlaystate overlaystate;
+    GLuint id_tex_overlay; // texture, that stores overlay, e.g. display of speed, score points etc.
+
+    C_BMP_FONT fnt;
 
     //        bool b_PNG;
 
@@ -95,7 +109,7 @@ namespace proj
     bool b_wireframe;
     bool b_culling;
 
-    int viewmode; // std, physics
+    ViewMode viewmode; // std, physics
 
     // =============
     Camera * p_cam;
@@ -113,6 +127,7 @@ namespace proj
 
 //    void Groundplane();
     void FPS();
+    void Overlays2D(ovlinfo oi);
 
     int Scene_to_VBO();//uint * p_idxVBO);
     int Trajectory_to_VBO();
