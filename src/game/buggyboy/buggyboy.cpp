@@ -49,6 +49,8 @@ proj::Proj m_proj;
 
 Camera m_cam; // 2do: besser dort als m_cam und hier p_cam-> m_proj.m_render.p_cam
 
+proj::ovlinfo oi;
+
 int win_h,win_w;
 int mouse_x,mouse_y;
 int mouse_left, mouse_right;
@@ -97,36 +99,8 @@ void RenderThread(void *args)
     }
     else
     {
-      // (1) ===== output Text to Overlay ===== 2do: move to 2drender
-      if (m_proj.overlaystate == proj::ovlPlay)
-      {
-        s_bmp4 bmp4; // overlay
-        CBMP4 BMP4;
-        BMP4.BMP(bmp4, 100, 80);                           // create empty bitmap
-        std::string s = std::to_string(m_proj.score);
-        m_proj.fnt.word(s, bmp4, 10, 0);
-        BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
-        delete bmp4.data;
-      }
-      else if (m_proj.overlaystate == proj::ovlHelp)
-      {
-        s_bmp4 bmp4; // overlay
-        CBMP4 BMP4;
-        BMP4.BMP(bmp4, 200, 150);                          // create empty bitmap
-        m_proj.fnt.word("HELP", bmp4, 10, 0);
-        m_proj.fnt.word("1-BARRIER", bmp4, 10, 16);
-        m_proj.fnt.word("2-BANNER", bmp4, 10, 32);
-        m_proj.fnt.word("3-FLAG", bmp4, 10, 48);
-        m_proj.fnt.word("4-WOODPILE", bmp4, 10, 64);
-        m_proj.fnt.word("5-CONCRETE", bmp4, 10, 80);
-        m_proj.fnt.word("6-TREE", bmp4, 10, 96);
-        m_proj.fnt.word("Y-DELETE", bmp4, 10, 112);
-        m_proj.fnt.word("Z-SAVE", bmp4, 10, 128);
-        BMP4.BMP_texID(bmp4, m_proj.id_tex_overlay);       // bmp to texture now
-        delete bmp4.data;
-      }
-      // ===== output Text to Overlay =====
-
+      oi.score = m_proj.score;
+      m_proj.m_render.Overlays2D(oi); // update FPS counter display, show help etc.
 
       // (2) objects were added by the user / player, 2do: move to manipulation
       if (b_add_obj)
@@ -235,7 +209,10 @@ void RenderThread(void *args)
         m_cam.change_Aspect(win_w, win_h);
         // mouse-move camera
   // 2do: im autodrive mode keine Kamera-steuerung
-///        m_cam.Look_with_Mouse(glm::vec2(mouse_x, -5.0f + (float)mouse_y/(float)win_h*10.0f));
+        if (!m_proj.autodrive)
+        {
+          m_cam.Look_with_Mouse(glm::vec2(mouse_x, -5.0f + (float)mouse_y / (float)win_h*10.0f));
+        }
       }
 
       m_cam.update_View(); // View = Pos,At,Norm
@@ -460,10 +437,10 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
       {
         int xPosRelative = raw->data.mouse.lLastX;
         int yPosRelative = raw->data.mouse.lLastY;
-        mouse_x += xPosRelative; // we want this to be unlimited for rotation
+///        mouse_x += xPosRelative; // we want this to be unlimited for rotation
 //        mouse_y += yPosRelative; ... we want this to be limited by the upper and lower screen, as used to look up / down
                                  //    that is why this is set in regular WndProc() routine
-        mouse_y += yPosRelative; //... we want this to be limited by the upper and lower screen, as used to look up / down
+///        mouse_y += yPosRelative; //... we want this to be limited by the upper and lower screen, as used to look up / down
 
 //        if ((xPosRelative > 0) && (yPosRelative > 0)) // hack! has to be inside Window!
                                                       //       yet (0,0) cannot be klicked now, maybe fix that later
@@ -500,7 +477,12 @@ int ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     io.MousePos = ImVec2((float)pt_x, (float)pt_y);
     if (!io.WantCaptureMouse)
     {
-//      mouse_y = pt_y;
+// 2021-5-4, the above
+//        xPosRelative = raw->data.mouse.lLastX;
+//        mouse_x += xPosRelative
+// didn't work, this was always 0. So now enabled this (again).
+      mouse_x = pt_x;
+      mouse_y = pt_y;
     }
     break;
   case WM_LBUTTONDOWN:
@@ -633,7 +615,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       b_add_obj = true;
       break;
     case 72: // h
-      if (m_proj.overlaystate == proj::gsPlay) m_proj.overlaystate = proj::ovlHelp; else m_proj.overlaystate = proj::ovlPlay;
+      if (m_proj.m_render.overlaystate == proj::gsPlay) m_proj.m_render.overlaystate = proj::ovlHelp; else m_proj.m_render.overlaystate = proj::ovlPlay;
       break;
     case 80: // P >> Pause ON/OFF
       m_proj.bPause = !(m_proj.bPause);
