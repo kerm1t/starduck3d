@@ -1,6 +1,16 @@
-2021
+== 2021 ==
+5-4
+- in autodrive mode: mousewheel for Jeep Cam zoom
+
 5/2
-imgui std/physics view + culling/wireframe in render window
+- autodrive: center to road / screen
++ if not autodrive: look around with mouse
+- Schatten = einfaches billboard (liegend) -> bewegt sich beim Springen
+- BMP4 constructor
+- clean up!
+- buggyboy.h not part of project?
++ overlay: move from proj to render
+- imgui std/physics view + culling/wireframe in render window
 
 5/1
 - zweites Projekt anlegen, das auch die starduck engine nutzt!
@@ -10,7 +20,7 @@ imgui std/physics view + culling/wireframe in render window
 - Jeep Schatten!
 - Streckenverlauf zeigen
 
-2019
+== 2019 ==
 9/29
 - load anton's village / holzstapel takes quite some time,
   e.g. load as binary?
@@ -336,7 +346,7 @@ Inspiration: https://www.youtube.com/watch?v=Sg07FTzDKzk
 + wie kann ich ein Objekt hinzufügen, einfach ein Objekt "room" geht nicht
   doch, lag daran, dass die Datei nicht existierte
 
-2018
+== 2018 ==
 2018-11-18
 - randomly place
   - traffic signs
@@ -394,6 +404,7 @@ https://www.funstockretro.co.uk/news/throwback-thursday-buggy-boy/
 + vertikale Mausbewegung nOK
 
 
+== 2017 ==
 13.5.'17
 https://www.youtube.com/watch?v=EhyqW-r2i5g
 - mehr Buggyboy Elemente einbauen
