@@ -15,13 +15,12 @@
 
 #include "physics.hpp"
 
-#include "img_font.hpp"
+//#include "img_font.hpp"
 
 
 namespace proj
 {
   enum Gamestate    { gsPlay, gsHit };
-  enum Overlaystate { ovlPlay, ovlHelp };
 
   class Proj
   {
@@ -44,7 +43,7 @@ namespace proj
     Proj();
 
     /* ===== Variables ===== */
-
+    
     proj::M3uLoader m_m3u; // to load a series of scenes
 
     obj::CGroundplane m_groundplane;
@@ -78,14 +77,8 @@ namespace proj
     int hit_object_id_prev;
     int touch_object_id;
 
-    GLuint id_tex_overlay; // texture, that stores overlay, e.g. display of speed, score points etc.
-
-//    s_bmp bmp_font;
-    C_BMP_FONT fnt;
-
     int score;
 
-    Overlaystate overlaystate;
     Gamestate gamestate;
     int simulationcounter; // simulation steps
     int statecounter;      // sim. steps since this state started
@@ -95,6 +88,7 @@ namespace proj
     // a) autodrive, original style: 2 speeds
     // b) selfdrive (driving dynamics)
     // ==============================
+    bool autodrive;
     // a) autodrive:
     unsigned int autodrivepos;
     
