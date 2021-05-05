@@ -7,10 +7,11 @@
 #             needs vec.py and __init__.py to import
 #
 import math
+import sys
 
-from Tkinter import *
-import tkMessageBox
-import Tkinter
+from tkinter import *
+#import tkMessageBox
+import tkinter as tk
 import csv
 #from scene_basic import FlatArc
 from vec import Vec3
@@ -46,8 +47,8 @@ TEXdef    = "texRoad"
 aTrack    = []
 
 
-root   = Tkinter.Tk()
-root.title("Buggyboy Scene Editor (C) 2018")
+root   = tk.Tk()
+root.title("Buggyboy Scene Editor (C) starduck 2016-2021")
 segtype = StringVar()
 s_l1  = StringVar()      # Labels
 s_l2  = StringVar()
@@ -248,7 +249,7 @@ class Snake: # only used for 6DoF (trajectory)?
         self.name = 'Snake'
 #        self.texture = TEXdef # texRoad, texWater, ...
     def generate(self, PStart, DirStart, NumberOfSegments, width):
-        print 'snake not implemented yet.'
+        print('snake not implemented yet.')
         res1 = []
         res2 = []
         P = PStart
@@ -373,8 +374,8 @@ class Zebra:
     def set_texture(self,texture):
         self.texture = texture
     def tostr(self):
-        print self.name
-        print self.l
+        print(self.name)
+        print(self.l)
         return '%s,%f' % (self.name,float(self.l))
 
 class SixDofGenerator:
@@ -399,7 +400,7 @@ def CreateTrajectory(P, Dir, scale, objects, sixdof, name, stream = sys.stdout):
     Dir = vector(*Dir)
     res = []
     resTmp = []
-    print "scale=%d" % scale
+    print("scale=%d" % scale)
     for o in objects:
         (r1, r2, P, Dir) = o.generate(P, Dir, int(round(o.length()/scale)),0.0)
         res.extend(r1)
@@ -412,15 +413,15 @@ def CreateTrajectory(P, Dir, scale, objects, sixdof, name, stream = sys.stdout):
         #print res[i]
     res[-1] = res[-1].tolist()
     res[-1].extend(res[-2][3:])
-    print >>stream, "static S_6Dof %s[] = {" % (name)
+    print("static S_6Dof %s[] = {" % (name), file=stream)
     for i in range(len(res)):
-        print >>stream, '{',
+        print('{', file=stream)
         for j in range(6):
-            print >>stream, res[i][j], ',',
-        print >>stream, res[i][6], " }",
-        if i != len(res)-1: print >>stream, ","
+            print(res[i][j], ',', file=stream)
+        print(res[i][6], " }", file=stream)
+        if i != len(res)-1: print (",", file=stream)
         else: print >>stream
-    print >>stream, "}"
+    print("}", file=stream)
     return res
 
 # <---------------------------------------------------------------------------------------------------------------
@@ -513,7 +514,7 @@ def marker_properties(root):
     p2.pack(side=RIGHT)
 
 def drawTrack(iSel):
-    print aTrack
+    print(aTrack)
     cnv.create_rectangle(0, 0, cnv.width, cnv.height, fill="white", tags="bg")
     r1 = []
     r2 = []
@@ -730,12 +731,12 @@ def export():
     print >>f, a # color
     # =================== Hack !!!!
 
-    print "Export done."
+    print("Export done.")
 
 
 def change_scale(event):
     global cnvScale,cnv_scale
-    print cnvScale.get()
+    print(cnvScale.get())
     cnv_scale = float(cnvScale.get())
     drawTrack(-1)
 
@@ -765,7 +766,7 @@ if __name__ == "__main__":
     root.rowconfigure(1, weight=1)  # column 1 will resize
 
 
-    scrollbar = Tkinter.Scrollbar(root, orient="vertical")
+    scrollbar = tk.Scrollbar(root, orient="vertical")
 
     frame = Frame(root, relief=RAISED, borderwidth=1)
     frame.pack(side=LEFT,fill=BOTH,expand=YES)
