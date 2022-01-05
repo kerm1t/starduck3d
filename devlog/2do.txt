@@ -1,4 +1,9 @@
 == 2021 ==
+5-8
+- py: center scene
+- py: check adjacency of parts (there are gaps in the ogl-demo)
+- py: center trajectory
+
 5-4
 - started porting the scene editor to python 3.9 (which I freshly installed from the Microsoft App Store, what a pleasant experience)
 - in autodrive mode: mousewheel for Jeep Cam zoom

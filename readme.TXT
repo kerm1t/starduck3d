@@ -1,6 +1,12 @@
+5/24/2021
+- build starduck for x64 (cmake .. -A x64)
+  ... maybe starduck needs quite a lot of changes for a simple 3D devkit, let's try paulafast
+
+
 9/20/2020
 - FPS auf 60 begrenzen
   https://stackoverflow.com/questions/14968857/controlling-fps-limit-in-opengl-application
+
 
 9/11/2020
 How to build

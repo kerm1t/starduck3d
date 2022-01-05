@@ -1,6 +1,8 @@
 #!/usr/bin/python
 #
 # changes
+# 2021-5-8    Update to python 3.9
+# there is an automated conversion tool: 2to3  https://docs.python.org/3/library/2to3.html
 # 2018-11-18, resizeable canvas, texture
 # 2018-11-18, buggyboy-flavor: store road as segments, do not store markers anymore
 # 2017-07-12, get rid of NumPy (as installation is a hassle), runs with plain Python install
@@ -119,7 +121,7 @@ class FlatArc:
         D0 = Vec3(-DirStart.y, DirStart.x, 0) # orthogonal to Dir
         aLeft  = []
         aRight = []
-        aLeft.append(PStart + D0*width/2.0)
+        aLeft.append(PStart + D0*width/float(2.0))
         aRight.append(PStart - D0*width/2.0)
 
         m = PStart + D0 * self.radius * self.direction
@@ -593,7 +595,7 @@ def enter_marker(): # edit
 def load():
     global aTrack
     aTrack = []
-    with open(descr_file, 'rb') as csvfile:
+    with open(descr_file) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
             if row[0] == 'FlatArc':
@@ -613,8 +615,8 @@ def load():
 def save():
     f = open(descr_file, "w")
     for seg in aTrack:
-        print >>f, seg.tostr()
-
+#python2        print >>f, seg.tostr()
+        print(seg.tostr(),end='\n',file=f)
 
 
 def export():
@@ -628,6 +630,7 @@ def export():
 
 # ===========================
 #  a) Trajectory (enemy autodrive help / driving limitations?)
+# ... it is created in CreateTrajectory
 # ===========================
     fSpeed   = 30.0
     a6DOF    = []

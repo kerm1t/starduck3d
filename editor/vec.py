@@ -24,7 +24,8 @@ class Vec3:
             return Vec3(self.x*other.x, self.y*other.y, self.z*other.z)
         else: #Raise an exception if not a float or integer
             return Vec3(self.x*other, self.y*other, self.z*other)
-    def __div__(self, other):
+# python2    def __div__(self, other):
+    def __truediv__(self, other):
         '''Division, supports types Vec3 and other 
         types that supports the / operator '''
         if isinstance(other, Vec3):
