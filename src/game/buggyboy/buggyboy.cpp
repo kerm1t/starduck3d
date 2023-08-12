@@ -122,7 +122,7 @@ void RenderThread(void *args)
           obj::CBillboard* bb = new obj::CBillboard;
           bb->p_render = &m_proj.m_render;
           proj::c_VAO vao;
-          if (editor_Obj == ED_OBJ_BB_BANNER)   vao = bb->Create("Banner", "tx_Banner", obj_pos, obj_dir);
+          if      (editor_Obj == ED_OBJ_BB_BANNER)   vao = bb->Create("Banner", "tx_Banner", obj_pos, obj_dir);
           else if (editor_Obj == ED_OBJ_BB_FLAG)     vao = bb->Create("Flag", "tx_Flag", obj_pos, obj_dir, 0.9, 1.5);
           else if (editor_Obj == ED_OBJ_BB_WOODPILE) vao = bb->Create("Woodpile", "tx_Woodpile", obj_pos, obj_dir, 1.4, 1.4);
           else if (editor_Obj == ED_OBJ_BB_CONCRETE) vao = bb->Create("Concrete", "tx_Concrete", obj_pos, obj_dir);

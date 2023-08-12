@@ -89,7 +89,7 @@ int proj::Proj::Init()
   simulationcounter     = 0;
   statecounter          = 0;
 
-  autodrive = true;
+  autodrive = false;// true;
 
 //  CBMPLoader ldrBMP;
 //  size_t result = ldrBMP.loadBMP_to_bmp("..\\data\\buggyboy\\fnt_Sylfaen.bmp", bmp_font);
